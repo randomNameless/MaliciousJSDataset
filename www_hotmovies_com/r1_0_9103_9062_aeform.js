@@ -1,0 +1,272 @@
+$(function () {
+	$('form[data-on-success]').submit(aeFormProcess);
+});
+
+var aeForm;
+
+function aeFormProcess(event) {
+	event.preventDefault();
+
+	// Load form from event into var
+	aeForm = $(this);
+
+	// Load submit button(s) into var
+	var submitButton = aeForm.find('button[type="submit"]');
+	submitButton.attr('data-original', submitButton.html());
+
+	// Disable submit button
+	submitButton.attr('disabled', 'disabled');
+	submitButton.html(submitButton.attr('data-working'));
+
+	// POST form
+	$.post(aeForm.attr('action'), aeForm.serialize(), null, 'json')
+		.done(aeFormExecuteOnSuccess)
+		.done(aeFormExecuteOnFail)
+		.done(aeFormSuccess)        
+		.fail(aeFormFail);
+
+}
+
+function aeFormExecuteOnFail(msg) {
+    var formResp = msg;
+
+    if (formResp.success != true && aeForm.attr('function-on-fail')) {
+        window[aeForm.attr('function-on-fail')](formResp);
+    }
+}
+
+function aeFormExecuteOnSuccess(msg) {
+    var formResp = msg;
+
+    if (formResp.success == true && aeForm.attr('function-on-success')) {
+        window[aeForm.attr('function-on-success')](formResp);
+    }
+}
+
+function aeFormSuccess(msg) {
+	var formResp = msg;
+
+	//console.log(JSON.stringify(formResp));
+	
+	try {
+	    if (formResp.success == true) {	        
+	        if (aeForm.attr('data-on-success') != "#") {
+				var urlVars = aeFormGetUrlVars();
+				if ('from' in urlVars) {
+					window.location = decodeURIComponent(urlVars['from']);
+            	}
+				else {
+					window.location = aeForm.attr('data-on-success').replace(/^.*\/\/[^\/]*/, '')  || '/'
+					//window.location = aeForm.attr('data-on-success');	                
+				}
+				return;
+            } 
+            else {                
+                aeFormCleanUp();
+                // Show possible form message
+                if (formResp.hasOwnProperty('message')) {
+                	aeFormMessage(aeForm, { title: formResp.message.title, text: formResp.message.text }, formResp.success)
+                }
+                aeForm.find('[data-hide-on-success]').addClass('hidden');
+                
+			}
+		} else {
+              	aeFormCleanUp();
+			// Show possible form message
+			if (formResp.hasOwnProperty('message')) {
+				aeFormMessage(aeForm, { title: formResp.message.title, text: formResp.message.text }, formResp.success)
+
+				//captcha check.
+				if (formResp.requirescaptcha) {
+					try {	
+						if ($("#captcha2_element").length) {
+							if($("#captcha2_element").html() == "") {
+								grecaptcha.render('captcha2_element', {'sitekey': SITEKEY ? SITEKEY : '6Lf-exUUAAAAAPW84uUxzhhEVBCxti6ReJ6PNNc6'});
+							} else {
+								grecaptcha.reset();	
+							}
+						}
+						if ($("#captcha3_element").length) {
+							if($("#captcha3_element").html() == "") {
+								grecaptcha.render('captcha3_element', {'sitekey': SITEKEY ? SITEKEY : '6Lf-exUUAAAAAPW84uUxzhhEVBCxti6ReJ6PNNc6'});						
+							} else {
+								grecaptcha.reset();	
+							}
+						}
+					} catch(err) {
+							grecaptcha.reset();
+					}
+				}
+			}
+
+			// Enable submit button
+			aeFormEnableSubmit();
+			// Has fieldsets
+			if (formResp.hasOwnProperty('fieldsets')) {
+				var fieldsets = formResp.fieldsets;
+				// Loop through all fieldsets
+				for (i = 0; i < fieldsets.length; i++) {
+					var fieldset = fieldsets[i];
+					// Show possible fieldset message
+					if (fieldset.hasOwnProperty('message')) {
+						aeFormMessage($('#' + fieldset.id), { title: fieldset.message.title, text: fieldset.message.text }, fieldset.success)
+					}
+					if (fieldset.success != false) {
+						aeForm.find('#' + fieldset.id + ' [data-hide-on-success]').addClass('hidden');
+					} else {
+						// Has fields
+						if (fieldset.hasOwnProperty('fields')) {
+							var fields = fieldset.fields;
+							// Loop through all fields
+							for (x = 0; x < fields.length; x++) {
+								var field = fields[x];
+								// Field was not a success
+								if (field.success == false) {
+									$('#' + field.id).parent().addClass('has-error');
+								}
+								// Field has error
+								if (field.hasOwnProperty('errors')) {
+									var combinedMsg = '';
+	
+									// Loop through all errors
+									for (h = 0; h < field.errors.length; h++) {
+										var error = field.errors[h].text;
+										combinedMsg += (h > 0 ? '<br>' : '') + error;
+									}
+									// Show message
+									aeFormErrorInput($('#' + field.id), combinedMsg);
+								}
+							}
+						}
+					}
+				}
+			}
+			// Has fields
+			if (formResp.hasOwnProperty('fields')) {
+				var fields = formResp.fields;
+				// Loop through all fields
+				for (x = 0; x < fields.length; x++) {
+					var field = fields[x];
+					// Field was not a success
+					if (field.success == false) {
+						$('#' + field.id).parent().addClass('has-error');
+					}
+					// Field has error
+					if (field.hasOwnProperty('errors')) {
+						var combinedMsg = '';
+	
+						// Loop through all errors
+						for (h = 0; h < field.errors.length; h++) {
+							var error = field.errors[h].text;
+							combinedMsg += (h > 0 ? '<br>' : '') + error;
+						}
+						// Show message
+						aeFormErrorInput($('#' + field.id), combinedMsg);
+					}
+				}
+			}
+		}
+		if (aeForm.attr('data-scroll') != "false") {
+			aeFormSlideToTop();
+		}
+	} catch (e) {
+		//console.log(e.message);
+		aeFormFail({ status: 200 });
+	}
+}
+
+function aeFormFail(msg) {
+	aeFormCleanUp();
+	aeFormEnableSubmit();
+	if (msg.status == 200) {
+		aeFormMessage(aeForm, {
+			title: 'Problem (Parse)',
+			text: 'We encountered a problem processing your request. Please contact customer service.'
+		}, false);
+	} else {
+		aeFormMessage(aeForm, {
+			title: 'Problem (Post - ' + msg.status + ')',
+			text: 'We encountered a problem processing your request - please try again. If the problem persists, contact customer service.'
+		}, false);
+	}
+	aeFormSlideToTop();
+}
+
+function aeFormCleanUp() {
+	if (typeof aeForm !== "undefined") {
+		aeForm.find('[data-hide-on-submit]').addClass('hidden');
+		aeForm.find('[data-inserted-via-ajax]').remove();
+		//aeForm.find('.form-group').removeClass('has-error');
+		aeForm.find('.has-error').removeClass('has-error');
+	}
+}
+
+function aeFormMessage(element, msg, success) {
+	if (msg != null && msg != '') {
+		var html = '<div class="alert' + (success ? ' alert-success' : ' alert-danger') + '" data-inserted-via-ajax>' + (msg.title != null ? '<h4>' + msg.title + '</h4>' : '') + '<p>' + msg.text + '</p></div>';
+		element.prepend(html);
+	}
+}
+
+function aeFormErrorInput(element, msg) {
+	var formGroup = element.parent();
+	if (msg != null && msg != '') {
+		element.after('<span class="help-block" data-inserted-via-ajax>' + msg + '</span>');
+	}
+}
+
+function aeFormEnableSubmit() {
+	// Enable submit button
+	var submitButton = aeForm.find('button[type="submit"]');
+	submitButton.removeAttr('disabled');
+	submitButton.html(submitButton.attr('data-original'));
+}
+
+function aeFormSlideToTop() {
+	$('html, body').animate({ scrollTop: '50px' }, 'slow');
+}
+
+function aeFormGetUrlVars() {
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+
+//Membership Selector READ COMMENTS BEFORE MAKING CHANGES!
+// this is used on New Joins. ( subscription/account/joinnow.django)
+// when current empire customers are joining, there is a seperate selectmembership due to the complexities of that page ( subscription/account/purchase.django )
+// when its a email redemption there is a seperate selectmembership due to the extra complexities of that page ( subscription/account/redeemEmailPromo.django )
+function selectmembership(id, Promo_Code, Promo_ID, priceMessage) {
+	var cur_mem_plan = $("#membershipplan").val();
+	//alert("cur_mem_plan = " + cur_mem_plan);
+	//alert("id = " + id);
+	//alert("Promo_Code = " + Promo_Code);
+	if (!($("#a_option" + cur_mem_plan).hasClass("active"))) {
+		$("#a_option" + cur_mem_plan).addClass("active");
+	}
+
+	if (id != cur_mem_plan) {
+		$("#a_option" + cur_mem_plan).removeClass("active");
+		$("#a_option" + id).addClass("active");
+		$("#membershipplan").val(id);
+		cur_mem_plan = id;
+		$("#postForm").attr("data-on-success", "/unlimited/account/activated?type=" + id);
+		if (Promo_Code != false) {
+			$("#promo_code").val(Promo_Code);
+			$("#promo_id").val(Promo_ID);
+		}
+		else {
+			$("#promo_code").val("");
+			$("#promo_id").val("0");
+		}
+
+		GetTaxInfo();
+	}
+}
+

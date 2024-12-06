@@ -1,0 +1,41 @@
+function hover(obj){
+  if(document.all){
+    UL = obj.getElementsByTagName('ul');
+    if(UL.length > 0){
+      sousMenu = UL[0].style;
+      if(sousMenu.display == 'none' || sousMenu.display == ''){
+        sousMenu.display = 'block';
+      }else{
+        sousMenu.display = 'none';
+      }
+    }
+  }
+}
+
+function setHover(){
+  LI = document.getElementById('menu2').getElementsByTagName('li');
+  nLI = LI.length;
+  for(i=0; i < nLI; i++){
+    LI[i].onmouseover = function(){
+      hover(this);
+    }
+    LI[i].onmouseout = function(){
+      hover(this);
+    }
+  }
+}
+
+function bonk(j) {
+   document.getElementById('d'+j.name).style.display = (j.checked)? 'block' : 'none';
+   document.getElementById('all').checked = false;
+}
+
+function bonkall(n) {
+   m = n.form;
+   for (l=0; 7;l++) {
+      if(m[l].type == 'checkbox' && m[l].name != 'all'){
+	  m[l].checked = n.checked;
+          document.getElementById('d'+m[l].name).style.display = (n.checked)? 'block' : 'none';
+	  }
+      }
+}

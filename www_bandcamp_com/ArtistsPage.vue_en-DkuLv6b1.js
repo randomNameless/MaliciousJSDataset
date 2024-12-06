@@ -1,0 +1,1 @@
+import{d as a,o as s,c as t,u as e,E as n,_ as r,m as o,t as c}from"../chunks/_plugin-vue_export-helper-zHYk6Mmj.js";const _=a({__name:"ArtistsPage",setup(m){return(p,u)=>(s(),t(e(n),{"is-recs-banner-visible":!0,variant:"maximal"}))}}),i=r(_,[["__scopeId","data-v-3226a559"]]);o(i,"ArtistsPage",c);

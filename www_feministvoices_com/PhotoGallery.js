@@ -1,0 +1,75 @@
+import {clamp, pmod} from '../math.js'
+
+/**
+ * @type {m.FactoryComponent<{
+ *  photos: {url: string; title: string; description: string}[]
+ *  startIndex?: number
+ * }>}
+ */
+export default function PhotoGallery() {
+	let index = 0
+	/** @type {{url: string; title: string; description: string}[]} */
+	let photos = []
+
+	function next() {
+		index = pmod(index + 1, photos.length)
+	}
+	function prev() {
+		index = pmod(index - 1, photos.length)
+	}
+
+	return {
+		oninit: v => {
+			photos = v.attrs.photos
+			// Did we get a starting index?
+			index = clamp(v.attrs.startIndex != null ? v.attrs.startIndex : 0, 0, photos.length - 1)
+		},
+		onbeforeupdate: v => {
+			photos = v.attrs.photos
+			index = clamp(index, 0, photos.length - 1)
+		},
+		view: () => m('div',
+			m('.modal-inner',
+				m('.contain',
+					m('p', `Image ${index+1} of ${photos.length}`)
+				),
+				m('.img-wrapper',
+					m('div',
+						m('button.btn-nav.prev',
+							{
+								onclick: prev,
+								disabled: !(index > 0)
+							},
+							m('span'),
+						),
+						m('button.btn-nav.next',
+							{
+								onclick: next,
+								disabled: !(index < photos.length - 1)
+							},
+							m('span'),
+						)
+					),
+					m('.contain',
+						m('img', {
+							src: photos[index].url,
+							alt: photos[index].title
+						}),
+						// <iframe width="560" height="315" src="https://www.youtube.com/embed/wZLLbwNfsrU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+						// m('.video-wrapper',
+						// 	m('iframe.iframe-video',
+						// 		{
+						// 			src: "https://www.youtube.com/embed/wZLLbwNfsrU"
+						// 		}
+						// 	)
+						// )
+					)
+				),
+				m('.contain',
+					m('h2.h4', photos[index].title),
+					m('p', photos[index].description)
+				)
+			)
+		)
+	}
+}

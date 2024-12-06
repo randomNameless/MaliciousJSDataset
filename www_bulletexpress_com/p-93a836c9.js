@@ -1,0 +1,1 @@
+const o=function(){var o,e;window.WebEmbedApps={version:"2444.0.0"};const n=window.location.search.match(/theme=([^&]*)/),t=n?n[1]:"light";null===(o=document.querySelector(".embed-loader"))||void 0===o||o.classList.add(t),null===(e=document.querySelector("embed-root"))||void 0===e||e.setAttribute("theme",t)};export{o as g}

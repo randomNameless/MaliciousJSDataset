@@ -1,0 +1,127 @@
+//$(document).ready(function() {
+    var $tabLoader     = $('.b-tab-loader'),
+        $meter         = $tabLoader.find('.meter'),
+        $miniLoader    = $('.loader'),
+        $songTable     = $('.b-table_song'),
+        $lines         = $songTable.find('.animated'),
+        $tabs          = $songTable.find('.line'),
+        $more          = $songTable.find('.btn-area'),
+        $filter        = $('.filter'),
+        $centerAd      = $('.center-add'),     
+        linesLength    = ($lines.length > 30) ? 30 : $lines.length,
+        animationDelay = 40,
+        filterDelay    = (linesLength - 5) * animationDelay + 1000,
+        $h1            = $('h1'),        
+        tab            = 'tab_' + $h1.find('[itemprop="name"]').text() + '_' + $h1.find('[itemprop="author"]').text();
+
+    if ($.cookie('old_user') != '1') {
+        $.cookie('old_user', '1', {
+            expires: 30*12,
+            path: '/'
+        });
+    }
+
+		$centerAd.height(0);
+        $miniLoader.fadeIn(400);
+        $meter.fadeIn(400, function() {
+            $('.progress')
+                .animate({ width: '20%' }, 1000, function() {
+                    $lines.each(function(index) {
+                        if (index < 31) {
+                            $(this).delay((index > 5) ? (animationDelay * (index - 5) + 1500) : (300 * index)).fadeIn(200);
+                            if ($(this).hasClass('center-add')) {
+                                $(this)
+                                    .animate({ height: 135 }, 400)
+                                    .find('.center-ad-inner')
+                                        .animate({opacity: 1}, 400);
+                            }
+                        }
+                    });
+                })
+                .delay(filterDelay / 15)
+                .animate({ width: '40%' }, filterDelay / 3)
+                .delay(filterDelay / 15)
+                .animate({ width: '80%' }, filterDelay / 2.5)
+                .delay(filterDelay / 15)
+                .animate({ width: '100%' }, filterDelay / 15, function() { 
+                    $tabLoader.add($miniLoader).slideUp(400);
+                    $more.delay(400).removeClass('dn');
+                });
+
+            $filter.delay(filterDelay + 1000).animate({opacity: 1}, 400);
+
+            $.cookie(tab, '1', {
+                expires: 1,
+                path: '/'
+            });
+            
+        });
+
+	var $loadMore = $('.load-more'),
+		$loadMoreParent = $loadMore.parent('.btn-area');
+	
+	$loadMore.on('click', function() {
+		$miniLoader.fadeIn(400)
+		$loadMoreParent.addClass('dn');
+		var page = $loadMore.attr('data-page');
+		$.ajax({
+			url: '/json/tabs/'+band_id+'/'+song_id+'/'+type_id+'/'+page+'.json',
+			dataType: 'json',
+			cache: 'false',
+			success: function(r) {
+				for(var p in r.tabs) {
+					var tab = r.tabs[p];
+					var $line = $('<div class="line animated"></div>')
+						.append($('<a class="ov-h" target="_blank" data-id="'+tab.id+'" data-url="'+tab.entities_url+'" data-tracking="Song,Click,Tab,'+tab.num+'"></a>').attr('href','/link/?'+tab.id)
+							.append($('<div class="num">'+tab.num+'</div>'))
+							.append($('<div class="description"></div>')
+								.append($('<div class="name"></div>')
+									.append($('<span>'+song_name+'</span>'))
+									.append($('<span class="greycolor"><span> '+tab.type_name+'</span></span>'))
+									)
+								.append($('<div class="site">'+tab.no_http_url+'</div>'))
+								)
+							.append($('<div class="type '+tab.class_type+'">'+tab.type_str+'</div>'))
+							.append($('<div class="rating"></div>')
+								.append(
+									function() {
+										var rating = $('<div class="small-rating"></div>');
+										for (var i = 1; i <= 5; i++) {
+											if(i <= tab.rtg_on) {
+												rating.append($('<i class="on"><b></b></i>'));
+											} else if(((i - tab.rtg_on) == 1) && tab.rtg_half) {
+												rating.append($('<i class="half on"><b></b></i>'));
+											} else rating.append($('<i><b></b></i>'));
+										}
+										return rating;
+									}
+								)
+								.append(
+									function() {
+										var count = $('<div class="count"></div>')
+										if(tab.votes > 0) count.append($('<span>('+tab.votes+')</span>'));
+										return count;
+									}
+								)
+							)
+						).insertAfter($('.b-table_song .line:last')).delay(animationDelay * p).fadeIn(400);
+				}
+				
+				$miniLoader.delay(animationDelay * r.tabs_count)
+						.fadeOut(0,function(){
+							if(r.more) {
+								$loadMore.attr('data-page',r.page);
+								$loadMoreParent.removeClass('dn');
+							}
+						});
+				
+			}
+		});
+	});
+
+	var ua = navigator.userAgent.toLowerCase();
+	var isAndroid = ua.indexOf("android") > -1;
+	
+	if(isAndroid) $loadMore.css('margin-bottom', 160 * $(window).width() / 1280);
+
+//});

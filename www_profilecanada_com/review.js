@@ -1,0 +1,200 @@
+function Confirmation(type, callBack){
+	var isAccepted = (type == 'accepted')?"accept":"reject";
+	var selChkBoxes = "";
+	var sep = "";
+	
+	$(".ss").each(function(){
+		if($(this).prop("checked")){
+			selChkBoxes = selChkBoxes + sep + $(this).val().toString() ;
+			sep = ",";
+		}
+	});
+	
+	if(selChkBoxes != "") {
+		if(confirm("Are you sure to "+isAccepted+" the selection?")) {
+			//acceptSelection(selChkBoxes,type);
+			callBack(selChkBoxes,type);
+		}
+	} else {
+		alert("Please select at least 1 Review!");
+	}
+		$(".ss").each(function(){
+			$(this).prop("checked", false);
+		});
+}
+
+function acceptSelection(selChkBoxes,isAccepted){
+	
+	$.ajax({
+		url: '../../admin/reviewApproval/reviewsNew.cfm', type: "POST", dataType: "html",
+		data: { selcomp: selChkBoxes, statusUpdate: isAccepted },
+		success: function (response) {
+				$("#sp_content").html(response);	
+			},
+		error: function(response){
+			var rr = response;
+			//$("#sp_error").get()[0].innerHTML =  response.responseText;
+			}
+	});	
+}
+
+function acceptResponse(selChkBoxes,isAccepted){
+	
+	$.ajax({
+		url: '../../admin/reviewApproval/reviewsResponse.cfm', type: "POST", dataType: "html",
+		data: { lstReviews: selChkBoxes, statusUpdate: isAccepted },
+		success: function (response) {
+				$("#sp_content").html(response);	
+			},
+		error: function(response){
+			var rr = response;
+			//$("#sp_error").get()[0].innerHTML =  response.responseText;
+			}
+	});	
+}
+
+	
+function submitVote(reviewid,votetype) {
+	$.ajax({
+		url: '../../com/review.cfc?method=addVotes', type: "POST", dataType: "json",
+		data: { id: reviewid, type: votetype },
+		success: function (response) {
+				$("#votemsg_"+reviewid).html(response.msg)
+			},
+		error: function(response){
+			var rr = response;
+		}
+		});		
+	//alert("ReviewID:"+id+" is Helpful? "+type);
+}
+
+function getReview(pos, id){
+	$.ajax({
+		url: '../Templates/includeReviewBlock.cfm', type: "POST", dataType: "html",
+		data: { CoNum: id, page: pos },
+		success: function (response) {
+				$("#sp_review_block").html(response);
+				window.scrollTo(0,350);
+			},
+		error: function(response){
+			var rr = response;
+		}
+		});		
+}
+
+function flagReview(id){
+	$.colorbox({href:"companyReviewFlagForm.cfm?id="+id,  
+		// onLoad: function() {
+			//	$("#cboxWrapper").css("marginTop", $(window).scrollTop()+ 10 + "px");	
+			//   } , 
+		onComplete : function(){ $("#flag_optons").focus(); }
+	});
+}
+
+function submitReviewFlag(reviewid){
+	var b_ret = true;
+	if(!$("#radio_1").is(":checked") && !$("#radio_2").is(":checked") && !$("#radio_3").is(":checked") && !$("#radio_4").is(":checked") ){
+		setImageValidator("img_radio", false, false); b_ret = false;
+	} else {setImageValidator("img_radio", true, true);}
+	
+	if( !onBlureValidateEmail($("#flag_email").get(0), true, 'img_email') ) b_ret = false;	
+	if( !onBlureValidateTextWithLen($("#comments").get()[0], true, "img_comments", 0, 2000)) { b_ret = false; setImageValidator("img_comments", false, true);}
+	else  setImageValidator("img_comments", true, true);	
+	if( !onBlureValidateText($("#captcha").get(0), true, 'img_captcha') ) b_ret = false;	
+	if(!b_ret){ $("#sp_error").html("Please correct mandatory fields"); return; }
+	
+	$.ajax({
+		url: '../../com/review.cfc?method=flagReview', type: "POST", dataType: "json",
+		data: $('#flag_form').serialize(), 
+		success: function (response) {
+				if(response.status == "ok"){
+					$.fn.colorbox.close();
+					$("#votemsg_"+reviewid).html(response.msg);
+				}
+				else
+					 $("#sp_error").html(response.msg);
+			},
+		error: function(response){
+			$.fn.colorbox.close();
+			var rr = response;
+		}
+		});	
+}
+
+function ConfirmFlag(type){
+	var selChkReviews = "";
+	var selChkFlags = "";
+	var sepR = "";
+	var sepF = "";
+	var curRevID = "";
+	
+	$(".ssR").each(function(){
+		curRevID = $(this).val().toString();							
+		if($(this).prop("checked")){
+			selChkReviews = selChkReviews + sepR + curRevID ;
+			sepR = ",";
+			$(".ssF_"+curRevID).each(function(){
+				if($(this).prop("checked")){
+					selChkFlags = selChkFlags + sepF + $(this).val().toString() ;
+					sepF = ",";
+				}
+			});
+			if(selChkFlags == "") {
+				alert("Please select at least 1 type of issue per Review!");
+				return false;
+			}
+		}
+	});
+	if(selChkReviews == "") {
+			alert("Please select at least 1 Review!");
+	} else {
+		if(selChkFlags != "") {
+			//if(confirm("Are you sure to "+type+" the selection (Reviews:"+selChkReviews+" and Flags:"+selChkFlags+")?")) {
+			if(confirm("Are you sure to "+type+" the selection?")) {
+				acceptFlagSelection(selChkReviews,selChkFlags,type);
+				$(".ssR").each(function(){
+					curRevID = $(this).val().toString();							
+					$(this).prop("checked", false);
+					$(".ssF_"+curRevID).each(function(){
+						$(this).prop("checked", false);
+						$(this).prop("disabled", true);
+					});
+				});
+			}
+		}
+	}
+}
+
+function enableChkFlags(reviewID) {
+	var curRevID = "";
+	$(".ssR").each(function(){
+		curRevID = $(this).val().toString();							
+		if($(this).prop("checked")) {
+				$(".ssF_"+curRevID).each(function(){
+					$(this).prop("disabled", false);
+				});
+		} else {
+				$(".ssF_"+curRevID).each(function(){
+					$(this).prop("checked", false);
+					$(this).prop("disabled", true);
+				});
+		}
+	});
+}        
+
+function acceptFlagSelection(selReviews,selFlags,status){
+	
+	$.ajax({
+		url: '../../admin/reviewApproval/reviewsFlags.cfm', type: "POST", dataType: "html",
+		data: { lstReviews: selReviews, lstFlags: selFlags, statusUpdate: status },
+		success: function (response) {
+				$("#sp_content").html(response);	
+			},
+		error: function(response){
+			var rr = response;
+			//$("#sp_error").get()[0].innerHTML =  response.responseText;
+			}
+	});	
+}
+
+

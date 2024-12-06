@@ -1,0 +1,182 @@
+//=====================================
+// スペックヘルプポップアップ表示
+//=====================================
+
+var isMSIE;
+var nowHelpId;
+var SpecBalloonObj;
+var SpecInboxObj;
+var BlMidObj;
+var IframeObj;
+
+function initBalloon(){
+  var uaidx;
+  var version;
+  this.SpecBalloonObj = document.getElementById('SpecBalloon');
+  this.BlMidObj = document.getElementById('BlMid');
+
+  uaidx = navigator.userAgent.indexOf('MSIE');
+
+  if(uaidx >= 0)
+  {
+     version = navigator.userAgent.substring(uaidx+5,uaidx+7);
+     version = version.replace(".","");
+  }
+
+  if(uaidx >= 0 &&
+     version <= 6 &&
+     navigator.userAgent.indexOf('Opera') < 0){
+    this.isMSIE = true;
+  }else{
+    this.isMSIE = false;
+  }
+
+  // IE6の場合にヘルプポップアップがプルダウンの裏側にならないようにIFRAMEの上に描画する
+  if(this.isMSIE){
+    this.IframeObj = document.createElement('IFRAME');
+    this.IframeObj.setAttribute('frameborder','no');
+    this.IframeObj.setAttribute('src','about:blank');
+    this.IframeObj.style.position = 'absolute';
+    this.IframeObj.style.left = '2px';
+    this.IframeObj.style.width = '316px';
+    this.IframeObj.style.height = '0px';
+    this.BlMidObj.appendChild(this.IframeObj);
+  }
+
+  this.SpecInboxObj = document.createElement('div');
+  this.SpecInboxObj.className = 'Inbox';
+  this.BlMidObj.appendChild(this.SpecInboxObj);
+
+  this.addEvent(this.SpecBalloonObj, 'click', function(){ hideHelp(); });
+}
+
+function showHelp(obj, helpId){
+  var posX;
+  var posY;
+
+  if(!SpecInboxObj){
+    initBalloon();
+  }
+
+  if(this.SpecBalloonObj.style.display == 'block' && this.nowHelpId == helpId) {
+    // 今表示しているポップアップなら閉じる
+    this.hideHelp();
+  } else {
+
+    if(window.SpecWBalloonObj != undefined && window.SpecWBalloonObj.style.display == 'block') {
+      // 横幅拡張版のポップアップが表示されていたら閉じる
+      if(typeof(window.hideWideHelp) == 'function') hideWideHelp();
+    }
+
+    this.nowHelpId = helpId;
+    this.SpecInboxObj.innerHTML = document.getElementById(helpId).innerHTML;
+    this.SpecBalloonObj.style.display = 'block';
+  
+    posX = getLocation(obj, 'X');
+    posY = getLocation(obj, 'Y');
+
+    document.getElementById('BlTop').style.display  = 'none';
+    document.getElementById('BlTopL').style.display = 'none';
+    document.getElementById('BlTopR').style.display = 'none';
+    document.getElementById('BlBtm').style.display  = 'none';
+    document.getElementById('BlBtmL').style.display = 'none';
+    document.getElementById('BlBtmR').style.display = 'none';
+
+    if(posX - SpecBalloonObj.offsetWidth > 0){
+      if(posY - SpecBalloonObj.offsetHeight - 27 - 49 - 220 > 0){
+        //右上
+        document.getElementById('BlTop').style.display  = 'block';
+        document.getElementById('BlBtmL').style.display = 'block';
+        this.SpecBalloonObj.style.top = posY - SpecBalloonObj.offsetHeight - 3 + 'px';
+      }else{
+        //右下
+        document.getElementById('BlTopL').style.display = 'block';
+        document.getElementById('BlBtm').style.display  = 'block';
+        this.SpecBalloonObj.style.top = posY + 15 + 'px';
+      }
+      this.SpecBalloonObj.style.left = posX - SpecBalloonObj.offsetWidth + 10 + 'px';
+    }else{
+      if(posY - SpecBalloonObj.offsetHeight - 27 - 49 - 220 > 0){
+        //左上
+        document.getElementById('BlTop').style.display  = 'block';
+        document.getElementById('BlBtmR').style.display = 'block';
+        this.SpecBalloonObj.style.top = posY - SpecBalloonObj.offsetHeight - 3 + 'px';
+      }else{
+        //左下
+        document.getElementById('BlTopR').style.display = 'block';
+        document.getElementById('BlBtm').style.display  = 'block';
+        this.SpecBalloonObj.style.top = posY + 13 + 'px';
+      }
+      this.SpecBalloonObj.style.left = posX + 10 + 'px';
+    }
+  
+    if(this.isMSIE){
+      this.IframeObj.style.height = SpecBalloonObj.offsetHeight - 33 + 'px';
+    }
+
+    // #itemlistのみmask表示_sm61
+    if (document.getElementById('itemList') != null) {
+      helpBalloonMask.maskOpen();
+    }
+
+  }
+}
+
+function hideHelp(){
+  this.SpecBalloonObj.style.display = 'none';
+	// #itemlistのみmask非表示_sm61
+	if (helpBalloonMask.flag) {
+		helpBalloonMask.maskClose();
+	}
+}
+
+function getLocation(elem, XorY){
+  var offset = (XorY.toUpperCase() == 'Y') ? 'offsetTop' : 'offsetLeft';
+  var ret = elem[offset];
+  var pa = elem.offsetParent;
+  while(pa){
+    if(pa[offset]) ret += pa[offset];
+    pa = pa.offsetParent;
+  }
+  return ret;
+}
+
+function addEvent(elm, eventType, functionName)
+{
+	if(elm.attachEvent){
+		elm['e'+eventType+functionName] = functionName;
+		elm[eventType+functionName] = function(){elm['e'+eventType+functionName]( window.event );}
+		elm.attachEvent( 'on'+eventType, elm[eventType+functionName] );
+	} else {
+		elm.addEventListener(eventType, functionName, false);
+	}
+}
+
+// mask表示_sm61
+const helpBalloonMask = {
+	maskOpen:function() {
+
+		helpBalloonMask.flag = true;
+
+		const target = document.getElementById('SpecBalloon');
+		const html = '<div class="p-itemListMask is-helpBalloonMask"></div>';
+
+		target.insertAdjacentHTML('beforebegin', html);
+		helpBalloonMask.mask = document.getElementsByClassName('is-helpBalloonMask')[0];
+		target.style.zIndex = '5000';
+
+		helpBalloonMask.mask.onclick = function() {
+			helpBalloonMask.maskClick();
+		}
+
+	},
+	maskClick:function() {
+		hideHelp();
+		helpBalloonMask.maskClose();
+		return false;	
+	},
+	maskClose:function() {
+		helpBalloonMask.mask.remove();
+		helpBalloonMask.flag = false;
+	}
+}

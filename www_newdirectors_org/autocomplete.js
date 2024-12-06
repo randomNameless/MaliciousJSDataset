@@ -1,0 +1,67 @@
+var client = algoliasearch( '0K5FQHMM20', '31f9c73cbf4203aa634382da414b2bd5' );
+
+var searchable_posts = client.initIndex( 'wp_searchable_posts' );
+var template = Hogan.compile('<div class="result"><p class="result__type">{{{ post_type }}}</p><p class="result__title">{{{ post_title }}}</p></div>');
+
+// autocomplete.js initialization
+// https://www.algolia.com/doc/guides/search/auto-complete
+var renderHit = function( hit ) {
+
+    var postType = hit.post_type_label;
+    switch ( postType ) {
+        case "Press":
+            postType = 'Press Releases';
+            break;
+
+        case "Films":
+            postType = "Films & Events";
+            break;
+
+        case "Pages":
+            postType = "Information";
+            break;
+
+        case "Series":
+            postType = "Festivals & Series";
+            break;
+
+        case "Events":
+            postType = "Films & Events";
+            break;
+
+        case "Festivals":
+            postType = "Festivals & Series";
+            break;
+    }
+
+    var snippet = null;
+    if ( hit._snippetResult ) {
+        snippet = hit._snippetResult.post_title.value;
+    }
+
+    var details = {
+        post_title: snippet || hit.post_title,
+        post_type: postType,
+        snippet: hit._snippetResult ? hit._snippetResult.post_title.value : null
+    }
+    return template.render( details );
+};
+
+autocomplete('#auto-search', {
+    hint: false
+}, [{
+    displayKey: 'name',
+    source: autocomplete.sources.hits(searchable_posts, {
+        hitsPerPage: 7
+    }),
+    templates: {
+        suggestion: renderHit
+    }
+}]).on( 'autocomplete:selected', function( event, suggestion, dataset ) {
+    // console.log(suggestion, dataset);
+    window.location.href = suggestion.permalink;
+});
+
+$( '.header-search i' ).on( 'click', function() {
+    $( '#auto-search' ).focus();
+});

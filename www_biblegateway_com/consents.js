@@ -1,0 +1,1 @@
+BG.Consents.runConsents();

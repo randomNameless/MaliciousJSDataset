@@ -1,0 +1,1 @@
+!function(){var i=!0,n={fbPixelId:"278428291008855",domain:".mitzvahmarket.com",appId:3049,ping_activity:!0,snowplow_src:"//cdn.keywee.co/dist/sp-2.9.1.js",bt:!1,in_eu:!1,eid:!1};window&&window.kwa&&i&&window.kwa("loadConfig",n)}();

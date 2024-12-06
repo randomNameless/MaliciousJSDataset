@@ -1,0 +1,360 @@
+// UDMv4.42 //
+/***************************************************************/
+var um={'menuClasses':[],'itemClasses':[],'menuCode':[]};
+/***************************************************************\
+
+  ULTIMATE DROP DOWN MENU Version 4.42 by Brothercake
+  http://www.udm4.com/
+  
+  This script may not be used or distributed without license
+
+\***************************************************************/
+
+
+/***************************************************************\
+ * CORE CONFIGURATION
+\***************************************************************/
+
+
+//path to images folder 
+um.baseSRC = "udm-resources/";
+
+
+//navbar orientation
+um.orientation = [
+	"horizontal",	// alignment ["vertical"|"horizontal"|"popup"|"expanding"]
+	"left",		// h align ["left"|"right"]
+	"top",		// v align ["top"|"bottom"]
+	"relative",	// positioning ["relative"|"absolute"|"fixed"|"allfixed"]
+	"0.5em",		// x position ["em"|"ex"|"px"|"0"]
+	"0em",		// y position ["em"|"ex"|"px"|"0"]
+	"1000",		// z order ["0" to "10000"] (menu takes 20000 headroom)
+	];
+	
+
+//navbar list output
+um.list = [
+	"flexible",	// horizontal overflow ["rigid"|"flexible"]
+	"yes",		// -SPARE-
+	"no", 		// -SPARE-
+	];
+
+
+//menu behaviors	
+um.behaviors = [
+	"100",		// open timer ["milliseconds"|"0"]
+	"200",		// close timer ["milliseconds"|"never"|"0"]
+	"no",		// reposition menus to stay inside the viewport ["yes"|"no"]
+	"default",	// manage windowed controls for win/ie ["default","hide","iframe","none"]
+	];
+
+
+//reset behaviors
+um.reset = [
+	"yes",		// reset from document mouse click ["yes"|"no"]
+	"yes",		// reset from window resize ["yes"|"no"]
+	"yes",		// reset from text resize ["yes"|"no"]
+	"no",		// reset after following link ["yes"|"no"]
+	];
+
+
+//horizontal continuation strip
+um.hstrip = [
+	"none",		// background ["color"|"#hex"|"rgb()"|"image.gif"|"none"]
+	"yes",		// copy navbar item margin-right to margin-bottom ["yes"|"no"]
+	];
+	
+	
+/***************************************************************\
+ * MODULE SETTING
+\***************************************************************/
+
+
+//keyboard navigation [comment out or remove if not using]
+um.keys = [
+	"38",		// up ["n"] ("38" = up arrow key)
+	"39",		// right ["n"] ("39" = right arrow key)
+	"40",		// down ["n"] ("40" = down arrow key)
+	"37",		// left ["n"] ("37" = left arrow key)
+	"123",		// hotkey ["n"] ("38" = F12]
+	"none",		// hotkey modifier ["none"|"shiftKey"|"ctrlKey"|"altKey"|"metaKey"]
+	"27",		// escape ["n"|"none"] ("27" = escape key)
+	"document.getElementsByTagName('a')[0]", // exit focus ["js-expression"]
+	];
+
+
+/***************************************************************\
+ * NAVBAR DEFAULT STYLES
+\***************************************************************/
+
+
+//styles which apply to the navbar
+um.navbar = [
+	"0",		// nav -> menu x-offset (+-)["n" pixels]
+	"1",		// nav -> menu y-offset (+-)["n" pixels]
+	"7.5em",	// width ["em"|"ex"|"px"] (vertical navbar only - horizontal navbar items have "auto" width) ("%" doesn't work right) 
+	];
+
+
+//styles which apply to each navbar item
+um.items = [
+	"1",		// margin between items ["n" pixels]
+	"1",		// border size ["n" pixels] (single value only)
+	"collapse",	// border collapse ["collapse"|"separate"] (only applies when margin = "0")
+	"#ead4a4 #edbb85 #edbb85 #ead4a4",// border colors ["color"|"#hex"|"rgb()"] (single, double or four values)
+	"none",	// border styles ["solid"|"double"|"dotted"|"dashed"|"groove"|"ridge"|"inset"|"outset"] (single, double or four values; be careful with using "none")
+	"#5074B0 #5074B0 #5074B0 #5074B0",// hover/focus border colors ["color"|"#hex"|"rgb()"] (single, double or four values)
+	"none",	// hover/focus border styles ["solid"|"double"|"dotted"|"dashed"|"groove"|"ridge"|"inset"|"outset"] (single, double or four values; be careful with using "none")
+	"#5074B0 #5074B0 #5074B0 #5074B0",// visited border colors ["color"|"#hex"|"rgb()"] (single, double or four values)
+	"solid dashed solid solid",// visited border styles ["solid"|"double"|"dotted"|"dashed"|"groove"|"ridge"|"inset"|"outset"] (single, double or four values; be careful with using "none")
+	"15",		// left/right padding ["n" pixels] (single value only)
+	"10",		// top/bottom padding ["n" pixels] (single value only)
+	"#5074B0",		// background ["color"|"#hex"|"rgb()"|"image.gif"]
+	"#ebedde",		// hover/focus background ["color"|"#hex"|"rgb()"|"image.gif"]
+	"#5074B0",		// visited background ["color"|"#hex"|"rgb()"|"image.gif"]
+	"12px",		// font size ["em"|"ex"|"%"|"px"|"pt"|"absolute-size"|"relative-size"]
+	"verdana, arial, helvetica",// font family ["font1,font2,font3"] (always end with a generic family name)
+	"bold",		// font weight ["normal"|"bold"|"bolder"|"lighter|"100" to "900"]
+	"none",		// text decoration ["none"|"underline"|"overline"|"line-through"]
+	"left",		// text-align ["left"|"right"|"center"]
+	"#FFFFFF",	// color ["color"|"#hex"|"rgb()"]
+	"#27408B",	// hover/focus color ["color"|"#hex"|"rgb()"]
+	"#FFFFFF",	// visited color ["color"|"#hex"|"rgb()"]
+	"normal",	// font-style ["normal"|"italic"|"oblique"]
+	"normal",	// hover/focus font-style ["normal"|"italic"|"oblique"]
+	"normal",	// visited font-style ["normal"|"italic"|"oblique"]
+	"letter-spacing:1px !important;",// additional link CSS (careful!)
+	"",		// additional hover/focus CSS (careful!)
+	"",		// additional visited CSS (careful!)
+	"none",// menu indicator character/image ["text"|"image.gif"|"none"] 
+	"none",// menu indicator rollover character/image ["text"|"image.gif"|"none"] (must be same type)
+	"7",		// clipping width of indicator image ["n" pixels] (only when using image arrows)
+	"..",		// alt text of indicator image ["text"] (only when using image arrows)
+	];
+
+
+/***************************************************************\
+ * MENU DEFAULT STYLES
+\***************************************************************/
+
+
+//styles which apply to each menu
+um.menus = [
+	"-70",		// menu -> menu x-offset (+-)["n" pixels]
+	"-12",		// menu -> menu y-offset (+-)["n" pixels]
+	"1",		// border size ["n" pixels] (single value only) 
+	"#5074B0",// border colors ["color"|"#hex"|"rgb()"] (single, double or four values)
+	"double",	// border styles ["solid"|"double"|"dotted"|"dashed"|"groove"|"ridge"|"inset"|"outset"] (single, double or four values; be careful with using "none")
+	"12em",	// width ["em"|"ex"|"px"]  9.8em
+	"2",		// padding ["n" pixels] (single value only) 
+	"#ebedde",	// background ["color"|"#hex"|"rgb()"|"image.gif"]
+	"",		// additional menu CSS (careful!) (you can use a transition here but *not* a static filter)
+	"none",// shadow background ["color"|"#hex"|"rgb()"|"image.gif"|"none"]
+	"2px",		// shadow offset (+-) ["em"|"px"|"pt"|"%"|"0"]
+	"filter:progid:DXImageTransform.Microsoft.Shadow(color=#bbddbb,direction=135,strength=2);",// additional shadow layer CSS (if you use a Microsoft.Shadow filter here then Win/IE5.5+ will do that *instead* of default shadow)
+	];
+
+
+//styles which apply to each menu item
+um.menuItems = [
+	"0",		// margin around items ["n" pixels] (single value only; margins are like table cellspacing)
+	"1",		// border size ["n" pixels] (single value only)
+	"separate",	// border collapse ["collapse"|"separate"] (only applies when margin = "0")
+	"#5074B0",	// border colors ["color"|"#hex"|"rgb()"] (single, double or four values)
+	"none none solid none",	// border styles ["solid"|"double"|"dotted"|"dashed"|"groove"|"ridge"|"inset"|"outset"] (single, double or four values; be careful with using "none")
+	"#aca",		// hover/focus border colors ["color"|"#hex"|"rgb()"] (single, double or four values)
+	"none none solid none",	// hover/focus border styles ["solid"|"double"|"dotted"|"dashed"|"groove"|"ridge"|"inset"|"outset"] (single, double or four values; be careful with using "none")
+	"#5074B0",	// visited border colors ["color"|"#hex"|"rgb()"] (single, double or four values)
+	"none none solid none",	// visited border styles ["solid"|"double"|"dotted"|"dashed"|"groove"|"ridge"|"inset"|"outset"] (single, double or four values; be careful with using "none")
+	"5",		// left/right padding ["n" pixels] (single value only) 
+	"2",		// top/bottom padding ["n" pixels] (single value only) 
+	"transparent",	// background ["color"|"#hex"|"rgb()"|"image.gif"]
+	"#003399",	// hover/focus background ["color"|"#hex"|"rgb()"|"image.gif"]
+	"transparent",	// visited background ["color"|"#hex"|"rgb()"|"image.gif"]
+	"70%",		// font size ["em"|"ex"|"%"|"px"|"pt"|"absolute-size"|"relative-size"]
+	"verdana,arial,helvetica,san-serif",// font family ["font1,font2,font3"] (always end with a generic family name)
+	"normal",	// font weight ["normal"|"bold"|"bolder"|"lighter|"100" to "900"]
+	"none",		// text decoration ["none"|"underline"|"overline"|"line-through"]
+	"left",		// text-align ["left"|"right"|"center"]
+	"#27408B",		// color ["color"|"#hex"|"rgb()"]
+	"#FFFFFF",		// hover/focus color ["color"|"#hex"|"rgb()"]
+	"#27408B",		// visited color ["color"|"#hex"|"rgb()"]
+	"normal",	// font-style ["normal"|"italic"|"oblique"]
+	"normal",	// hover/focus font-style ["normal"|"italic"|"oblique"]
+	"normal",	// visited font-style ["normal"|"italic"|"oblique"]
+	"",		// additional link CSS (careful!)
+	"",		// additional hover/focus CSS (careful!)
+	"",		// additional visited CSS (careful!)
+	"none",// submenu indicator character/image ["text"|"image.gif"|"none"] 
+	"none",// submenu indicator rollover character/image ["text"|"image.gif"|"none"] (must be the same type)
+	"3",		// clipping width of indicator image ["n" pixels] (only when using image arrows)
+	"..",		// alt text of indicator image ["text"] (only when using image arrows)
+	];
+
+
+/***************************************************************\
+ * MENU CLASSES [comment out or remove if not using]
+\***************************************************************/
+
+
+//classes which apply to menus [optional]
+um.menuClasses["orangeMenu"] = [
+	"#fdcb95 #a97742 #a97742 #fdcb95",// border colors ["color"|"#hex"|"rgb()"]
+	"solid",	// border styles ["solid"|"double"|"dotted"|"dashed"|"groove"|"ridge"|"inset"|"outset"] (single, double or four values; be careful with using "none")
+	"8em",		// width ["em"|"ex"|"px"]
+	"#fec",		// background ["color"|"#hex"|"rgb()"|"image.gif"]
+	"",		// additional menu CSS (careful!) (you can use a transition here but *not* a static filter)
+	"none",// shadow background ["color"|"#hex"|"rgb()"|"image.gif"|"none"] 
+	"2px",		// shadow offset (+-) ["em"|"px"|"pt"|"%"|"0"]
+	"filter:progid:DXImageTransform.Microsoft.Shadow(color=#ddbbaa,direction=135,strength=2);", // additional shadow layer CSS (if you use a Microsoft.Shadow filter here then Win/IE5.5+ will do that *instead* of default shadow)
+	];
+
+
+//classes which apply to menu items [optional]
+um.itemClasses["orangeMenuItem"] = [
+	"#fec",		// border colors ["color"|"#hex"|"rgb()"] (single, double or four values)
+	"solid",	// border styles ["solid"|"double"|"dotted"|"dashed"|"groove"|"ridge"|"inset"|"outset"] (single, double or four values; be careful with using "none")
+	"#edbb85",	// hover/focus border colors ["color"|"#hex"|"rgb()"] (single, double or four values)
+	"solid",	// hover/focus border styles ["solid"|"double"|"dotted"|"dashed"|"groove"|"ridge"|"inset"|"outset"] (single, double or four values; be careful with using "none")
+	"#fec",		// visited border colors ["color"|"#hex"|"rgb()"] (single, double or four values)
+	"solid",	// visited border styles ["solid"|"double"|"dotted"|"dashed"|"groove"|"ridge"|"inset"|"outset"] (single, double or four values; be careful with using "none")
+	"#fec",		// background ["color"|"#hex"|"rgb()"|"image.gif"]
+	"#f8fbd0",	// hover/focus background ["color"|"#hex"|"rgb()"|"image.gif"]
+	"#fec",		// visited background ["color"|"#hex"|"rgb()"|"image.gif"]
+	"70%",		// font size ["em"|"ex"|"%"|"px"|"pt"|"absolute-size"|"relative-size"]
+	"tahoma,sans-serif",// font family ["font1,font2,font3"] (always end with a generic family name)
+	"normal",	// font weight ["normal"|"bold"|"bolder"|"lighter|"100" to "900"]
+	"none",		// text decoration ["none"|"underline"|"overline"|"line-through"]
+	"left",		// text-align ["left"|"right"|"center"]
+	"#803090",	// color ["color"|"#hex"|"rgb()"]
+	"#5656bd",	// hover/focus color ["color"|"#hex"|"rgb()"]
+	"#803090",	// visited color ["color"|"#hex"|"rgb()"]
+	"normal",	// font-style ["normal"|"italic"|"oblique"]
+	"normal",	// hover/focus font-style ["normal"|"italic"|"oblique"]
+	"normal",	// visited font-style ["normal"|"italic"|"oblique"]
+	"",		// additional link CSS (careful!)
+	"",		// additional hover/focus CSS (careful!)
+	"",		// additional visited CSS (careful!)
+	"none",// submenu indicator character/image ["text"|"image.gif"|"none"] (must be the same type as default submenu indicator)
+	"none",// submenu indicator rollover character/image ["text"|"image.gif"|"none"] (must be the same type)
+	"..",		// alt text of indicator image  ["text"] (only when using image arrow)
+	];
+
+
+/***************************************************************\
+ * DYNAMIC MENUS
+\***************************************************************/
+um.menuCode["about"] = ''
++ '<ul>'
+	+ '<li><a href="/menu/" tabindex="10">About UDM</a></li>'
+	+ '<li><a href="/menu/benefits/" tabindex="10">The Benefits of UDM 4</a></li>'
+	+ '<li><a href="/menu/browsers/" tabindex="10">Browser support</a></li>'
+	+ '<li><a href="/menu/accessibility/" tabindex="10">Accessibility tests</a></li>'
+	+ '<li><a href="/menu/disadvantages/" tabindex="10">Any disadvantages?</a></li>'
+	+ '<li><a href="/menu/faq/" tabindex="10">General FAQ</a></li>'
+	+ '<li class="dividerAbove"><a href="/menu/modules/" tabindex="10">Modules &amp; Extensions</a></li>'
+	+ '<li><a href="/menu/updates/" tabindex="10">Script updates</a></li>'
+	+ '<li class="dividerAbove"><a href="/menu/author/" tabindex="10">About the author</a></li>'
+	+ '<li><a href="/menu/credits/" tabindex="10">Credits and thanks</a></li>'
+	+ '<li><a href="/licensing/linkback/" title="Link-back to Ultimate Drop Down Menu" tabindex="10"> Link-back to UDM</a></li>'
++ '</ul>';
+
+um.menuCode["new"] = ''
++ '<ul>'
+	+ '<li><a href="http://www.boxofficeprophets.com/recent.cfm" tabindex="10">Recent Updates</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/tickermaster/movienews.cfm" tabindex="10">Movie News</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/movieoftheday.cfm" tabindex="10">Movie of the Day</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/tdifh" tabindex="10">This Day in Film History</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=53" tabindex="10">Big Board - Michael Bentley</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=62" tabindex="10">Big Board - Max Braden</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=71" tabindex="10">Big Board - Sean Collier</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=18" tabindex="10">Big Board - Kim Hollis</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=64" tabindex="10">Big Board - Shane Jenkins</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=55" tabindex="10">Big Board - Amanda Jones</a></li>'	
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=16" tabindex="10">Big Board - Dan Krovich</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=72" tabindex="10">Big Board - Jason Lee</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=10" tabindex="10">Big Board - David Mumpower</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=15" tabindex="10">Big Board - John Seal</a></li>'		
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=19" tabindex="10">Big Board - Reagen Sulewski</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bigboard/index.cfm?bigboardID=12" tabindex="10">Big Board - Les Winan</a></li>'
++ '</ul>';
+
+um.menuCode["research"] = ''
++ '<ul>'
+	+ '<li><a href="http://www.boxofficeprophets.com/tickermaster" tabindex="10">Release Schedule</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bigpicture" tabindex="10">The Big Picture</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/database" tabindex="10">Box Office Database</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/awards" tabindex="10">Oscar Tracking</a></li>'			
++ '</ul>';
+
+um.menuCode["columns"] = ''
++ '<ul>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=32">A-List</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=51">Amazing Race Recaps</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=78">Big Brother Recaps</a></li>'	
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=49">Book vs. Movie</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=64">Comics Weekly</a></li>'	
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=75">Daily Numbers Analysis</a></li>'		
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=43">Friday Numbers Analysis</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=74">Hindsight</a></li>'	
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=26">How to Spend $20</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=57">Monday Morning Quarterback</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=77">Prophecy</a></li>'	
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=47">Shiny Things</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=67">Steal Entertainment</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=34">Survivor Recaps</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=1">TiVoPlex</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=24">Trailer Hitch</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=73">Watch What We Say</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=8">Weekend Forecast</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=9">Weekend Wrap-up</a></li>'
++ '</ul>';	
+
+
+	
+um.menuCode["box"] = ''
++ '<ul>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=9" tabindex="10">Analysis</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=8" tabindex="10">Forecasts</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/studios/" tabindex="10">Business By Studio</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=46" tabindex="10">Box Office Fallacies</a></li>'
++ '</ul>';	
+	
+
+um.menuCode["blogs"] = ''
++ '<ul>'
+	+ '<li><a href="http://www.boxofficeprophets.com/group/blog" tabindex="10">BOP Staff</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/bentley/blog" tabindex="10">Michael Bentley</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/hollis/blog" tabindex="10">Kim Hollis</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/kilmer/blog" tabindex="10">Pete Kilmer</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/indie/blog" tabindex="10">Indie Films</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/mumpower/blog" tabindex="10">David Mumpower</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/sulewski/blog" tabindex="10">Reagen Sulewski</a></li>'					
++ '</ul>';
+	
+	
+um.menuCode["site"] = ''
++ '<ul>'
+	+ '<li><a href="http://www.boxofficeprophets.com/faq/index.cfm" tabindex="10">BOP FAQ</a></li>'	
+	+ '<li><a href="http://www.boxofficeprophets.com/faq/faqfeedback.cfm" tabindex="10">Media Relations</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/feedback" tabindex="10">BOP Feedback</a></li>'
+	+ '<li><a href="http://www.boxofficeprophets.com/notify" tabindex="10">BOP Notify</a></li>'
++ '</ul>';
+
+
+um.menuCode["misc"] = ''
++ '<ul>'
+	+ '<li><a href="http://www.boxofficeprophets.com/column/index.cfm?indexID=42" tabindex="10">BOP Lists</a></li>'	
+	+ '<li><a href="http://www.boxofficeprophets.com/calvins/" tabindex="10">Calvin Awards</a></li>'	
+	+ '<li><a href="http://www.boxofficeprophets.com/column/columnindex.cfm?indexID=11" tabindex="10">Movie Reviews</a></li>'	
+	+ '<li><a href="http://www.boxofficeprophets.com/trailers" tabindex="10">Movie Trailers</a></li>'	
+	+ '<li><a href="http://www.boxofficeprophets.com/soapbox" tabindex="10">Soapbox</a></li>'						
++ '</ul>';
+
+
+
+	
+	
+/***************************************************************\
+\***************************************************************/
+

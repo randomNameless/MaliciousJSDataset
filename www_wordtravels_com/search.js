@@ -1,0 +1,143 @@
+const apiKey = '8e0012addb64daa29f9e1a722a3006f9'
+const apiBaseUrl = 'https://data.wordtravels.com'
+
+const cities = []
+const countries = []
+
+const entities = {
+  // airports: {
+  //   file: 'airports.json',
+  //   entities: [],
+  // },
+  // attractions: {
+  //   file: 'attractions.json',
+  //   entities: [],
+  // },
+  cities: {
+    file: 'cities-detailed.json',
+    entities: [],
+  },
+  countries: {
+    file: 'countries-detailed.json',
+    entities: [],
+  },
+  // events: {
+  //   file: 'events.json',
+  //   entities: [],
+  // },
+  provinces: {
+    file: 'provinces-detailed.json',
+    entities: [],
+  },
+  resorts: {
+    file: 'resorts-detailed.json',
+    entities: [],
+  },
+}
+const paths = {
+  // 'airport':    'airports',
+  // 'attraction': 'attractions',
+  'city':       'cities',
+  'country':    'countries',
+  // 'event':      'events',
+  'province':   'provinces',
+  'resort':     'resorts',
+}
+
+const ssLink = document.getElementById('ss-link')
+
+setup()
+
+async function setup() {
+  await fetchData()
+  setupAutocomplete()
+}
+
+function fetchData() {
+  const promises = []
+  for (type in entities) {
+    // console.log('fetchData(), type:', type)
+    const url = `/data/` + entities[type].file;
+
+    ((type) => {
+      const promise = fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          // console.log('fetchData() then, type:', type)
+          return entities[type].entities.push(...data)
+        })
+      promises.push(promise)
+    })(type)
+  }
+
+  return Promise.all(promises)
+}
+
+// function fetchSearchResults(cityName) {
+//   const url = apiBaseUrl + `/cities/${cityName}?apikey=${apiKey}`
+//   fetch(url)
+//     .then(response => response.json())
+//     .then(data => console.log(data));
+// }
+
+function getEntityUrl(entity) {
+  // console.log('entity:', entity)
+  return `/${entity.type}/${entity.rawName}`;
+}
+
+// function goToEntity(entity) {
+//   window.location.href = url;
+// }
+
+function getAllData() {
+  const allData = []
+  for (type in entities) {
+    allData.push(...entities[type].entities.map(entity => entity.name))
+  }
+  allData.sort()
+  // console.log('allData:', allData)
+  return allData
+}
+
+function findEntityByName(name) {
+  for (type in entities) {
+    const entityFound = entities[type].entities.filter(entity => entity.name === name)
+    if (entityFound.length) {
+      // console.log(`${type} entityFound:`, entityFound[0])
+      entityFound[0].type = type
+      return entityFound[0]
+    }
+  }
+
+  return null
+}
+
+function getEntityOptionMarkup(name) {
+  const entity = findEntityByName(name)
+  return `<span class="type">${entity.type}</span> <span classname>${entity.name}</span>`
+}
+
+function searchOptionSelected(valSelected) {
+  // console.log('valSelected:', valSelected)
+  if (typeof valSelected !== 'undefined') {
+    const url = getEntityUrl(findEntityByName(valSelected))
+    // goToEntity(url)
+    ssLink.setAttribute('href', url)
+    ssLink.removeAttribute('hidden')
+  }
+}
+
+function setupAutocomplete() {
+  accessibleAutocomplete({
+    element: document.querySelector('#autocomplete-container'),
+    id: 'autocomplete', // To match it to the existing <label>.
+    placeholder: 'Country, city, resort, etc.',
+    displayMenu: 'overlay',
+    source: getAllData(),
+    templates: {
+      // inputValue: Function, // @todo Use ids for search, and make this a function returning the name
+      suggestion: getEntityOptionMarkup
+    },
+    onConfirm: searchOptionSelected,
+  })
+}

@@ -1,0 +1,2 @@
+/*! updated; 12-04-2024 12:02 PM **/
+!function(FNC,$){$(document).ready(function(){$(window).scrollTop(0)}),$(window).scrollTop(0),FNC.Loader&&FNC.Loader.load(["/static/orion/scripts/core/pages/misc/ag.app.js"])}(window.FNC||{},window.jQuery);

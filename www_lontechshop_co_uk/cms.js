@@ -1,0 +1,678 @@
+/* global _ */
+(function () {
+    'use strict';
+
+    $.widget('pagebuilderSlider', {
+        component: 'Magento_PageBuilder/js/content-type/slider/appearance/default/widget',
+        options: {
+            autoplay: false,
+            autoplaySpeed: 5000,
+            infinite: false,
+            arrows: true,
+            dots: false,
+            templates: {
+                arrow: [
+                    '<button class="<%- css %> slick-arrow" aria-label="<%- label %>" type="button">',
+                        '<%- label %>',
+                    '</button>'
+                ].join(''),
+                dots: [
+                    '<ul class="slick-dots" role="tablist">',
+                        '<% _.each(dots, function(dot) { %>',
+                            '<li class="<%- dot.css %>" role="tab">',
+                                // eslint-disable-next-line max-len
+                                '<button type="button" aria-label="<%- dot.ariaLabel %>" tabindex="-1">',
+                                    '<%- dot.label %>',
+                                '</button>',
+                            '</li>',
+                        '<% }) %>',
+                    '</ul>'
+                ].join('')
+            }
+        },
+
+        /** [create description] */
+        create: function () {
+            this.page = 0;
+            this.slide = 0;
+
+            $.each({
+                autoplay: 'autoplay',
+                autoplaySpeed: 'autoplay-speed',
+                infinite: 'infinite-loop',
+                arrows: 'show-arrows',
+                dots: 'show-dots'
+            }, (key, domKey) => {
+                var value = this.element.data(domKey);
+
+                if (value !== undefined) {
+                    this.options[key] = value;
+                }
+            });
+
+            this.prepareMarkup();
+            this.addEventListeners();
+            this.element.addClass('slick-initialized');
+
+            if (this.options.autoplay) {
+                this.start();
+            }
+        },
+
+        /** [prepareMarkup description] */
+        prepareMarkup: function () {
+            var arrowTpl = _.template(this.options.templates.arrow);
+
+            if (this.options.slider) {
+                this.options.slider.addClass('slick-list');
+            } else if (!this.element.find('.slick-list').length) {
+                this.element.wrapInner('<div class="slick-list">');
+            }
+
+            if (this.options.arrows && !this.element.find('.slick-next').length) {
+                this.element.prepend(arrowTpl({
+                    css: 'slick-prev',
+                    label: $.__('Previous')
+                }));
+                this.element.append(arrowTpl({
+                    css: 'slick-next',
+                    label: $.__('Next')
+                }));
+            }
+
+            this.slider = this.element.find('.slick-list');
+            this.slides = this.slider.children();
+            this.nextEl = this.element.find('.slick-next');
+            this.prevEl = this.element.find('.slick-prev');
+        },
+
+        /** [addEventListeners description] */
+        addEventListeners: function () {
+            var self = this;
+
+            if (!this.slider.length) {
+                return;
+            }
+
+            this.element
+                .on('click', this.stop.bind(this))
+                .on('click', '.slick-next, .slick-prev', function () {
+                    event.preventDefault();
+                    self[$(this).hasClass('slick-prev') ? 'prev' : 'next']();
+                })
+                .on('click', '.slick-dots li', function (event) {
+                    event.preventDefault();
+                    self.scrollToPage($(this).index());
+                })
+                .hover(this.pause.bind(this), this.start.bind(this));
+
+            this.slider.on('scroll', _.debounce(this.updateCurrentPage.bind(this), 40));
+
+            new ResizeObserver(this.update.bind(this)).observe(this.slider.get(0));
+        },
+
+        /** [buildPagination description] */
+        buildPagination: function () {
+            var self = this,
+                pageNumTmp = 0,
+                pageWidthTmp = 0,
+                sliderWidth = this.slider.outerWidth(),
+                sliderLeft = this.slider.get(0).scrollLeft,
+                dotsTpl = _.template(this.options.templates.dots),
+                dots = [];
+
+            this.pages = [];
+
+            this.slides.each(function (index) {
+                if (index && pageWidthTmp + this.clientWidth > sliderWidth) {
+                    pageWidthTmp = 0;
+                    pageNumTmp++;
+                }
+
+                if (!self.pages[pageNumTmp]) {
+                    self.pages[pageNumTmp] = {
+                        slides: [],
+                        start: Math.floor($(this).position().left + sliderLeft),
+                        end: Math.ceil($(this).position().left + sliderLeft)
+                    };
+                }
+
+                pageWidthTmp += this.clientWidth;
+                self.pages[pageNumTmp].slides.push(index);
+                self.pages[pageNumTmp].end += this.clientWidth;
+
+                // keep active slide in the viewport
+                if (index === self.slide) {
+                    self.page = pageNumTmp;
+                }
+            });
+
+            if (this.options.dots) {
+                this.element.find('.slick-dots').remove();
+
+                if (this.pages.length > 1) {
+                    $.each(this.pages, function (i) {
+                        dots.push({
+                            css: i === self.page ? 'slick-active' : '',
+                            label: i + 1,
+                            ariaLabel: i + 1 + '/' + self.pages.length
+                        });
+                    });
+                    this.element.append(dotsTpl({
+                        dots: dots
+                    }));
+                }
+            }
+
+            this.dots = this.element.find('.slick-dots').children();
+
+            this.updateArrows();
+        },
+
+        /** [updateCurrentPage description] */
+        updateCurrentPage: function () {
+            var pageNum = this.page,
+                page = this.pages[pageNum],
+                offset = this.slider.get(0).scrollLeft,
+                delta = 2,
+                width = this.slider.outerWidth(),
+                diffStart = Math.abs(page.start - offset),
+                pageUpdated = false;
+
+            if (diffStart > delta) { // rounding issues
+                $.each(this.pages, function (i) {
+                    var diffTmp = Math.abs(this.start - offset);
+
+                    // if whole page is visible (last page with less slides per view)
+                    if (this.start >= offset && this.end <= offset + width + delta) {
+                        pageNum = i;
+
+                        return false;
+                    }
+
+                    if (diffTmp < diffStart) {
+                        pageNum = i;
+                        diffStart = diffTmp;
+                    }
+                });
+
+                if (this.page !== pageNum) {
+                    pageUpdated = true;
+                }
+
+                this.page = pageNum;
+            }
+
+            this.dots.removeClass('slick-active')
+                .eq(this.page)
+                .addClass('slick-active');
+
+            this.updateArrows();
+
+            if (pageUpdated) {
+                this._trigger('slideChange');
+            }
+        },
+
+        /** [updateArrows description] */
+        updateArrows: function () {
+            var arrows = this.nextEl.add(this.prevEl);
+
+            if (this.pages.length < 2) {
+                return arrows.hide();
+            }
+
+            arrows.show();
+
+            if (this.options.infinite) {
+                return;
+            }
+
+            arrows.prop('disabled', false)
+                .attr('aria-disabled', false)
+                .removeClass('slick-disabled');
+
+            if (this.page === 0) {
+                this.prevEl
+                    .prop('disabled', true)
+                    .attr('aria-disabled', true)
+                    .addClass('slick-disabled');
+            } else if (this.page === this.pages.length - 1) {
+                this.nextEl
+                    .prop('disabled', true)
+                    .attr('aria-disabled', true)
+                    .addClass('slick-disabled');
+            }
+        },
+
+        /** [next description] */
+        next: function () {
+            var page = this.page + 1;
+
+            if (page >= this.pages.length) {
+                if (!this.options.infinite) {
+                    return false;
+                }
+
+                page = 0;
+            }
+
+            this.scrollToPage(page);
+        },
+
+        /** [prev description] */
+        prev: function () {
+            var page = this.page - 1;
+
+            if (page < 0) {
+                if (!this.options.infinite) {
+                    return false;
+                }
+
+                page = this.pages.length - 1;
+            }
+
+            this.scrollToPage(page);
+        },
+
+        /** [scrollToPage description] */
+        scrollToPage: function (page, instant) {
+            var slider = this.slider.get(0),
+                slide = this.slides.eq(this.pages[page].slides[0]),
+                pageUpdated = false;
+
+            this.dots.removeClass('slick-active')
+                .eq(page)
+                .addClass('slick-active');
+            slider.scrollTo({
+                left: slider.scrollLeft
+                    - parseFloat(getComputedStyle(slider).getPropertyValue('padding-left'))
+                    + slide.position().left,
+                behavior: instant ? 'instant' : 'auto'
+            });
+
+            if (this.page !== page) {
+                pageUpdated = true;
+            }
+
+            this.page = page;
+            this.slide = slide.index();
+
+            if (pageUpdated) {
+                this._trigger('slideChange');
+            }
+        },
+
+        /** [start description] */
+        start: function () {
+            if (!this.options.autoplay) {
+                return;
+            }
+
+            this.timer = setTimeout(function () {
+                var next = this.reverse ? this.prev : this.next,
+                    prev = this.reverse ? this.next : this.prev;
+
+                if (next.bind(this)() === false) {
+                    this.reverse = !this.reverse;
+                    prev.bind(this)();
+                }
+
+                this.start();
+            }.bind(this), this.options.autoplaySpeed || 5000);
+        },
+
+        /** [stop description] */
+        stop: function () {
+            this.pause();
+            this.options.autoplay = false;
+        },
+
+        /** [stop description] */
+        pause: function () {
+            clearTimeout(this.timer);
+        },
+
+        update: function () {
+            this.slides = this.slider.children();
+            this.buildPagination();
+        },
+
+        addSlide: function (index, slides) {
+            this.slides.eq(index).before(slides);
+            this.update();
+        },
+
+        removeSlide: function (index) {
+            this.slides.eq(index).remove();
+            this.update();
+        }
+    });
+})();
+(function () {
+    'use strict';
+
+    $.widget('pagebuilderCarousel', {
+        component: 'Magento_PageBuilder/js/content-type/products/appearance/carousel/widget',
+
+        /** [create description] */
+        create: function () {
+            var slider = this.element.find('.slick-list'),
+                timer;
+
+            this.element.pagebuilderSlider($.extend({}, this.options, {
+                slider: slider.length ? slider : this.element.children()
+            }));
+
+            this._on({
+                'mouseenter .product-item': () => {
+                    this.element.addClass('slide-item-hovered');
+                },
+                'mouseleave .product-item': () => {
+                    this.element.removeClass('slide-item-hovered');
+                }
+            });
+
+            // prevent laggy scrolling when using touchpad and scrolling a lot
+            this._on(this.slider().slider, {
+                scroll: () => {
+                    this.element.addClass('scrolling');
+
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+
+                    timer = setTimeout(() => {
+                        this.element.removeClass('scrolling');
+                    }, 200);
+                }
+            });
+        },
+
+        /** [slider description] */
+        slider: function () {
+            return this.element.pagebuilderSlider('instance');
+        }
+    });
+})();
+(function () {
+    'use strict';
+
+    $.widget('pagebuilderTabs', {
+        component: 'Magento_PageBuilder/js/content-type/tabs/appearance/default/widget',
+
+        /** [create description] */
+        create: function () {
+            this.element.tabs({
+                collapsibleElement: '[role=tab]',
+                header: '[data-role=tab]',
+                content: '[data-content-type="tab-item"]',
+                trigger: '[data-role=tab]'
+            });
+        }
+    });
+})();
+/* global google */
+(function () {
+    'use strict';
+
+    var loading = false,
+
+        /**
+         * Generates a google map usable latitude and longitude object
+         *
+         * @param {Object} position
+         * @return {google.maps.LatLng}
+         */
+        getGoogleLatitudeLongitude = function (position) {
+            return new google.maps.LatLng(position.latitude, position.longitude);
+        },
+        gmAuthFailure = false;
+
+    // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+    window.gm_authFailure = function () {
+        gmAuthFailure = true;
+    };
+    // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
+
+    window.GoogleMap = function (element, markers, additionalOptions) {
+        var options,
+            style;
+
+        if (gmAuthFailure) {
+            return;
+        }
+
+        try {
+            style = googleMapsConfig.style ? JSON.parse(googleMapsConfig.style) : [];
+        } catch (error) {
+            style = [];
+        }
+
+        options = _.extend({
+            zoom: 8,
+            center: getGoogleLatitudeLongitude({
+                latitude: 30.2672,
+                longitude: -97.7431
+            }),
+            scrollwheel: false,
+            disableDoubleClickZoom: false,
+            disableDefaultUI: false,
+            mapTypeControl: true,
+            mapTypeControlOptions: {
+                style: google.maps.MapTypeControlStyle.DEFAULT
+            },
+            styles: style
+        }, additionalOptions);
+
+        /* Create the map */
+        this.map = new google.maps.Map(element, options);
+        this.markers = [];
+
+        /**
+         * Callback function on map config update
+         * @param {Array} newMarkers
+         * @param {Object} updateOptions
+         */
+        this.onUpdate = function (newMarkers, updateOptions) {
+            this.map.setOptions(updateOptions);
+            this.setMarkers(newMarkers);
+        };
+
+        /**
+         * Sets the markers to selected map
+         * @param {Object} newMarkers
+         */
+        this.setMarkers = function (newMarkers) {
+            var activeInfoWindow,
+                latitudeLongitudeBounds = new google.maps.LatLngBounds();
+
+            this.markers.forEach(function (marker) {
+                marker.setMap(null);
+            }, this);
+
+            this.markers = [];
+            this.bounds = [];
+
+            /**
+             * Creates and set listener for markers
+             */
+            if (newMarkers && newMarkers.length) {
+                newMarkers.forEach(function (newMarker) {
+                    var location = _.escape(newMarker['location_name']) || '',
+                    comment = newMarker.comment ?
+                        '<p>' + _.escape(newMarker.comment).replace(/(?:\r\n|\r|\n)/g, '<br/>') + '</p>'
+                        : '',
+                    phone = newMarker.phone ? '<p>Phone: ' + _.escape(newMarker.phone) + '</p>' : '',
+                    address = newMarker.address ? _.escape(newMarker.address) + '<br/>' : '',
+                    city = _.escape(newMarker.city) || '',
+                    country = newMarker.country ? _.escape(newMarker.country) : '',
+                    state = newMarker.state ? _.escape(newMarker.state) + ' ' : '',
+                    zipCode = newMarker.zipcode ? _.escape(newMarker.zipcode) : '',
+                    cityComma = city !== '' && (zipCode !== '' || state !== '') ? ', ' : '',
+                    lineBreak = city !== '' || zipCode !== '' ? '<br/>' : '',
+                    contentString =
+                        '<div>' +
+                        '<h3><b>' + location + '</b></h3>' +
+                        comment +
+                        phone +
+                        '<p><span>' + address +
+                        city + cityComma + state + zipCode + lineBreak +
+                        country + '</span></p>' +
+                        '</div>',
+                    infowindow = new google.maps.InfoWindow({
+                        content: contentString,
+                        maxWidth: 350
+                    }),
+                    newCreatedMarker = new google.maps.Marker({
+                        map: this.map,
+                        position: getGoogleLatitudeLongitude(newMarker.position),
+                        title: location
+                    });
+
+                    if (location) {
+                        newCreatedMarker.addListener('click', function () {
+                            if (activeInfoWindow) {
+                                activeInfoWindow.close();
+                            }
+
+                            infowindow.open(this.map, newCreatedMarker);
+                            activeInfoWindow = infowindow;
+                        }, this);
+                    }
+
+                    this.markers.push(newCreatedMarker);
+                    this.bounds.push(getGoogleLatitudeLongitude(newMarker.position));
+                }, this);
+            }
+
+            /**
+             * This sets the bounds of the map for multiple locations
+             */
+            if (this.bounds.length > 1) {
+                this.bounds.forEach(function (bound) {
+                    latitudeLongitudeBounds.extend(bound);
+                });
+                this.map.fitBounds(latitudeLongitudeBounds);
+            }
+
+            /**
+             * Zoom to 8 if there is only a single location
+             */
+            if (this.bounds.length === 1) {
+                this.map.setCenter(this.bounds[0]);
+                this.map.setZoom(8);
+            }
+        };
+
+        this.setMarkers(markers);
+    };
+
+    window.pagebuilderMapsLoad = function () {
+        if (loading) {
+            return;
+        }
+
+        loading = true;
+
+        $.loadScript(googleMapsConfig.src + '&callback=pagebuilderMapsLoaded');
+    };
+
+    window.pagebuilderMapsLoaded = function () {
+        var maps = $.registry.get('pagebuilderMap');
+
+        if (!maps) {
+            return;
+        }
+
+        $.each(maps, function () {
+            this.initMap();
+        });
+    };
+
+    $.widget('pagebuilderMap', {
+        component: 'Magento_PageBuilder/js/content-type/map/appearance/default/widget',
+
+        /** [create description] */
+        create: function () {
+            var locations = this.element.attr('data-locations'),
+                controls,
+                mapOptions = {};
+
+            if (!locations || locations === '[]') {
+                return $(element).hide();
+            }
+
+            locations = JSON.parse(locations);
+            locations.forEach(function (location) {
+                location.position.latitude = parseFloat(location.position.latitude);
+                location.position.longitude = parseFloat(location.position.longitude);
+            });
+            this.locations = locations;
+
+            controls = this.element.attr('data-show-controls');
+            mapOptions.disableDefaultUI = controls !== 'true';
+            mapOptions.mapTypeControl = controls === 'true';
+            this.mapOptions = mapOptions;
+
+            if (typeof google === 'undefined') {
+                pagebuilderMapsLoad();
+            } else {
+                this.initMap();
+            }
+        },
+
+        initMap: function () {
+            if (!this.locations) {
+                return;
+            }
+
+            new GoogleMap(this.element[0], this.locations, this.mapOptions);
+        }
+    });
+})();
+(function () {
+    'use strict';
+
+    /**
+     * @param {HTMLElement} el
+     * @param {Array} data
+     * @param {Object} breakpoints
+     * @param {Object} currentViewport
+     */
+    function initializeWidget(el, data, breakpoints, currentViewport) {
+        $.each(data, function (component, config) {
+            if (typeof config === 'string') {
+                config = {};
+            }
+
+            config = config || {};
+            config.breakpoints = breakpoints;
+            config.currentViewport = currentViewport;
+            $.breeze.mount(component, {
+                el: el,
+                settings: config
+            });
+        });
+    }
+
+    $(document).on('breeze:mount:Magento_PageBuilder/js/widget-initializer', function (event, data) {
+        $.each(data.settings.config, function (selector, config) {
+            // eslint-disable-next-line max-nested-callbacks
+            $.async(selector, function (element) {
+                element = $(element);
+
+                if (data.el) {
+                    // eslint-disable-next-line max-nested-callbacks
+                    element = element.filter(function () {
+                        return $(this).parents().has(this).length > 0;
+                    });
+                }
+
+                if (element.length) {
+                    initializeWidget(element, config, data.settings.breakpoints, data.settings.currentViewport);
+                }
+            });
+        });
+    });
+})();

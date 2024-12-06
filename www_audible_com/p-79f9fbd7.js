@@ -1,0 +1,1 @@
+import{a}from"./p-515523aa.js";import{g as o}from"./p-8a2bf84b.js";const s=async()=>{a(import.meta.url),o()};export{s as g}

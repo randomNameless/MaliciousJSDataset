@@ -1,0 +1,138 @@
+// by default, personalized ads are turned off
+var CCM_showPersonalizedAds = false;
+// increase this number when your cookie policy has changed, this will show the popup to all users again
+var CCM_versionNumber = 0;
+var CCM_popup;
+
+
+
+// helper function to get the value of a cookie
+function CCM_getCookie( name )
+{
+	var name = name+"=";
+	var decodedCookie = decodeURIComponent( document.cookie );
+	var cookies = decodedCookie.split( ';' );
+	for( var i = 0 ; i < cookies.length ; ++i )
+	{
+		var c = cookies[i];
+		while ( c.charAt(0) == ' ' )
+		{
+			c = c.substring(1);
+		}
+		if ( c.indexOf(name) == 0 )
+		{
+			return c.substring( name.length , c.length );
+		}
+	}
+	return "";
+}
+
+
+
+function CCM_getCookieConsent( forceShow )
+{
+	var consent = CCM_getCookie( "ccm_accepted_v"+CCM_versionNumber );
+	if ( consent != "yes" || forceShow )
+	{
+		// if the consent form hasn't been shown to the user, show it
+		CCM_showPopup();
+	}
+	else 
+	{
+		var personalizedAds = CCM_getCookie( "ccm_personalizedAds" );
+		if ( personalizedAds == "yes" ) CCM_showPersonalizedAds = true;
+		// renew the cookies so frequent users don't get the popup all the time
+		CCM_setCookies( CCM_showPersonalizedAds );
+	}
+}
+
+
+
+function CCM_showPopup()
+{
+    CCM_popup = document.createElement( "div" );
+	CCM_popup.id = "CCM_popup";
+    CCM_popup.style.cssText = "position:fixed;width:90%;bottom:5%;left:5%;padding:10px;background-color:#f8f8f8;border:3px solid #1abc9c;z-index:9999;";
+    CCM_popup.innerHTML = `
+	<h4 style="font-family:sans-serif;text-align:center;">AllStays Cookie Policy</h4>
+	To be consistent with data protection laws, we need your permission to store cookies.
+Per our <a target=_blank href="https:/Services/privacypolicy.htm">Privacy Policy</a>, AllStays does not collect personal data from website or apps like most sites but we do count visitor statistics.<br>
+	<label><input type="checkbox" id="requiredCookies" checked disabled><span>&nbsp;Required (for this setting, Pro login and internal stats)</span></label><br>
+	<label><input type="checkbox" id="personalizedAds" checked><span>&nbsp;Personalized Ads (like Google Ads) </span></label><br>
+	<button class="button" onclick="CCM_RejectAll()" style="width:100px;height:20px;padding:0px;font-size:10pt;">Reject All</button>&emsp;<button onclick="CCM_AcceptAll()" class="button" style="width:100px;height:20px;padding:0px;font-size:10pt;">Accept All</button><br><br>
+	By hitting the <i>Accept Settings</i> button, you consent to the use of these methods. You can change your preferences anytime by visiting our Cookie Settings (in footer). This annoying box may reappear if you clear site cookies or we make any changes.<br><br>
+	<span style="display:inline-block;width:100%;text-align:center;"><button onclick="CCM_confirmSelection()" class="button">Accept Settings</button></span>
+	`;
+    document.body.appendChild( CCM_popup );
+	// check if a personalized ad cookie exists and if so use its value
+	var personalizedAds = CCM_getCookie( "ccm_personalizedAds" );
+	if ( personalizedAds == "yes" ) document.getElementById("personalizedAds").checked = true;
+	else document.getElementById("personalizedAds").checked = false;
+}
+
+
+
+function CCM_RejectAll()
+{
+	document.getElementById("personalizedAds").checked = false;
+}
+
+
+
+function CCM_AcceptAll()
+{
+	document.getElementById("personalizedAds").checked = true;
+}
+
+
+
+function CCM_confirmSelection()
+{
+	var personalizedAds = document.getElementById("personalizedAds").checked;
+	
+	CCM_setCookies( personalizedAds );
+	
+	// remove the popup
+	CCM_popup.parentElement.removeChild( CCM_popup );
+}
+
+
+
+function CCM_setCookies( personalizedAds )
+{
+	if ( personalizedAds )
+	{
+		var expires = new Date();
+		expires.setMonth( expires.getMonth() + 1 );
+		document.cookie = "ccm_personalizedAds=yes; path=/; expires="+expires.toGMTString()+"; Secure";
+		CCM_showPersonalizedAds = true;
+	}
+	else 
+	{
+		var expires = new Date();
+		expires.setMonth( expires.getMonth() + 1 );
+		document.cookie = "ccm_personalizedAds=no; path=/; expires="+expires.toGMTString()+"; Secure";
+		CCM_showPersonalizedAds = false;
+	}
+	// save that the popup has been seen and accepted
+	var expires = new Date();
+	expires.setMonth( expires.getMonth() + 1 );
+	document.cookie = "ccm_accepted_v"+CCM_versionNumber+"=yes; path=/; expires="+expires.toGMTString()+"; Secure";
+}
+
+// Google tag (gtag.js)
+var googleTag = document.createElement('script');
+googleTag.setAttribute('src','https://www.googletagmanager.com/gtag/js?id=G-3FYTR5MEYJ');
+document.head.appendChild(googleTag);
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);} gtag('js', new Date());
+gtag('config', 'G-3FYTR5MEYJ');
+
+// Google Tag Manager
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-M2PC55N');
+<!-- End Google Tag Manager -->

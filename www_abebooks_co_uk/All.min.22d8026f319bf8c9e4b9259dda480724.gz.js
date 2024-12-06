@@ -1,0 +1,10036 @@
+/******/ (function() { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 9713:
+/***/ (function(module) {
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+module.exports = _defineProperty;
+
+/***/ }),
+
+/***/ 9741:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+ * matchesSelector v2.0.2
+ * matchesSelector( element, '.selector' )
+ * MIT license
+ */
+
+/*jshint browser: true, strict: true, undef: true, unused: true */
+
+( function( window, factory ) {
+  /*global define: false, module: false */
+  'use strict';
+  // universal module definition
+  if ( true ) {
+    // AMD
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+		__WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+
+}( window, function factory() {
+  'use strict';
+
+  var matchesMethod = ( function() {
+    var ElemProto = window.Element.prototype;
+    // check for the standard method name first
+    if ( ElemProto.matches ) {
+      return 'matches';
+    }
+    // check un-prefixed
+    if ( ElemProto.matchesSelector ) {
+      return 'matchesSelector';
+    }
+    // check vendor prefixes
+    var prefixes = [ 'webkit', 'moz', 'ms', 'o' ];
+
+    for ( var i=0; i < prefixes.length; i++ ) {
+      var prefix = prefixes[i];
+      var method = prefix + 'MatchesSelector';
+      if ( ElemProto[ method ] ) {
+        return method;
+      }
+    }
+  })();
+
+  return function matchesSelector( elem, selector ) {
+    return elem[ matchesMethod ]( selector );
+  };
+
+}));
+
+
+/***/ }),
+
+/***/ 7158:
+/***/ (function(module) {
+
+/**
+ * EvEmitter v2.1.1
+ * Lil' event emitter
+ * MIT License
+ */
+
+( function( global, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS - Browserify, Webpack
+    module.exports = factory();
+  } else {
+    // Browser globals
+    global.EvEmitter = factory();
+  }
+
+}( typeof window != 'undefined' ? window : this, function() {
+
+function EvEmitter() {}
+
+let proto = EvEmitter.prototype;
+
+proto.on = function( eventName, listener ) {
+  if ( !eventName || !listener ) return this;
+
+  // set events hash
+  let events = this._events = this._events || {};
+  // set listeners array
+  let listeners = events[ eventName ] = events[ eventName ] || [];
+  // only add once
+  if ( !listeners.includes( listener ) ) {
+    listeners.push( listener );
+  }
+
+  return this;
+};
+
+proto.once = function( eventName, listener ) {
+  if ( !eventName || !listener ) return this;
+
+  // add event
+  this.on( eventName, listener );
+  // set once flag
+  // set onceEvents hash
+  let onceEvents = this._onceEvents = this._onceEvents || {};
+  // set onceListeners object
+  let onceListeners = onceEvents[ eventName ] = onceEvents[ eventName ] || {};
+  // set flag
+  onceListeners[ listener ] = true;
+
+  return this;
+};
+
+proto.off = function( eventName, listener ) {
+  let listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) return this;
+
+  let index = listeners.indexOf( listener );
+  if ( index != -1 ) {
+    listeners.splice( index, 1 );
+  }
+
+  return this;
+};
+
+proto.emitEvent = function( eventName, args ) {
+  let listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) return this;
+
+  // copy over to avoid interference if .off() in listener
+  listeners = listeners.slice( 0 );
+  args = args || [];
+  // once stuff
+  let onceListeners = this._onceEvents && this._onceEvents[ eventName ];
+
+  for ( let listener of listeners ) {
+    let isOnce = onceListeners && onceListeners[ listener ];
+    if ( isOnce ) {
+      // remove listener
+      // remove before trigger to prevent recursion
+      this.off( eventName, listener );
+      // unset once flag
+      delete onceListeners[ listener ];
+    }
+    // trigger listener
+    listener.apply( this, args );
+  }
+
+  return this;
+};
+
+proto.allOff = function() {
+  delete this._events;
+  delete this._onceEvents;
+  return this;
+};
+
+return EvEmitter;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 9047:
+/***/ (function(module) {
+
+/**
+ * Fizzy UI utils v3.0.0
+ * MIT license
+ */
+
+( function( global, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory( global );
+  } else {
+    // browser global
+    global.fizzyUIUtils = factory( global );
+  }
+
+}( this, function factory( global ) {
+
+let utils = {};
+
+// ----- extend ----- //
+
+// extends objects
+utils.extend = function( a, b ) {
+  return Object.assign( a, b );
+};
+
+// ----- modulo ----- //
+
+utils.modulo = function( num, div ) {
+  return ( ( num % div ) + div ) % div;
+};
+
+// ----- makeArray ----- //
+
+// turn element or nodeList into an array
+utils.makeArray = function( obj ) {
+  // use object if already an array
+  if ( Array.isArray( obj ) ) return obj;
+
+  // return empty array if undefined or null. #6
+  if ( obj === null || obj === undefined ) return [];
+
+  let isArrayLike = typeof obj == 'object' && typeof obj.length == 'number';
+  // convert nodeList to array
+  if ( isArrayLike ) return [ ...obj ];
+
+  // array of single index
+  return [ obj ];
+};
+
+// ----- removeFrom ----- //
+
+utils.removeFrom = function( ary, obj ) {
+  let index = ary.indexOf( obj );
+  if ( index != -1 ) {
+    ary.splice( index, 1 );
+  }
+};
+
+// ----- getParent ----- //
+
+utils.getParent = function( elem, selector ) {
+  while ( elem.parentNode && elem != document.body ) {
+    elem = elem.parentNode;
+    if ( elem.matches( selector ) ) return elem;
+  }
+};
+
+// ----- getQueryElement ----- //
+
+// use element as selector string
+utils.getQueryElement = function( elem ) {
+  if ( typeof elem == 'string' ) {
+    return document.querySelector( elem );
+  }
+  return elem;
+};
+
+// ----- handleEvent ----- //
+
+// enable .ontype to trigger from .addEventListener( elem, 'type' )
+utils.handleEvent = function( event ) {
+  let method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+// ----- filterFindElements ----- //
+
+utils.filterFindElements = function( elems, selector ) {
+  // make array of elems
+  elems = utils.makeArray( elems );
+
+  return elems
+    // check that elem is an actual element
+    .filter( ( elem ) => elem instanceof HTMLElement )
+    .reduce( ( ffElems, elem ) => {
+      // add elem if no selector
+      if ( !selector ) {
+        ffElems.push( elem );
+        return ffElems;
+      }
+      // filter & find items if we have a selector
+      // filter
+      if ( elem.matches( selector ) ) {
+        ffElems.push( elem );
+      }
+      // find children
+      let childElems = elem.querySelectorAll( selector );
+      // concat childElems to filterFound array
+      ffElems = ffElems.concat( ...childElems );
+      return ffElems;
+    }, [] );
+};
+
+// ----- debounceMethod ----- //
+
+utils.debounceMethod = function( _class, methodName, threshold ) {
+  threshold = threshold || 100;
+  // original method
+  let method = _class.prototype[ methodName ];
+  let timeoutName = methodName + 'Timeout';
+
+  _class.prototype[ methodName ] = function() {
+    clearTimeout( this[ timeoutName ] );
+
+    let args = arguments;
+    this[ timeoutName ] = setTimeout( () => {
+      method.apply( this, args );
+      delete this[ timeoutName ];
+    }, threshold );
+  };
+};
+
+// ----- docReady ----- //
+
+utils.docReady = function( onDocReady ) {
+  let readyState = document.readyState;
+  if ( readyState == 'complete' || readyState == 'interactive' ) {
+    // do async to allow for other scripts to run. metafizzy/flickity#441
+    setTimeout( onDocReady );
+  } else {
+    document.addEventListener( 'DOMContentLoaded', onDocReady );
+  }
+};
+
+// ----- htmlInit ----- //
+
+// http://bit.ly/3oYLusc
+utils.toDashed = function( str ) {
+  return str.replace( /(.)([A-Z])/g, function( match, $1, $2 ) {
+    return $1 + '-' + $2;
+  } ).toLowerCase();
+};
+
+let console = global.console;
+
+// allow user to initialize classes via [data-namespace] or .js-namespace class
+// htmlInit( Widget, 'widgetName' )
+// options are parsed from data-namespace-options
+utils.htmlInit = function( WidgetClass, namespace ) {
+  utils.docReady( function() {
+    let dashedNamespace = utils.toDashed( namespace );
+    let dataAttr = 'data-' + dashedNamespace;
+    let dataAttrElems = document.querySelectorAll( `[${dataAttr}]` );
+    let jQuery = global.jQuery;
+
+    [ ...dataAttrElems ].forEach( ( elem ) => {
+      let attr = elem.getAttribute( dataAttr );
+      let options;
+      try {
+        options = attr && JSON.parse( attr );
+      } catch ( error ) {
+        // log error, do not initialize
+        if ( console ) {
+          console.error( `Error parsing ${dataAttr} on ${elem.className}: ${error}` );
+        }
+        return;
+      }
+      // initialize
+      let instance = new WidgetClass( elem, options );
+      // make available via $().data('namespace')
+      if ( jQuery ) {
+        jQuery.data( elem, namespace, instance );
+      }
+    } );
+
+  } );
+};
+
+// -----  ----- //
+
+return utils;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 102:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/*!
+ * Flickity hash v2.0.1
+ * Enable hash navigation for Flickity
+ */
+
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory( __webpack_require__(2442) );
+  } else {
+    // browser global
+    factory( window.Flickity );
+  }
+
+}( typeof window != 'undefined' ? window : this, function factory( Flickity ) {
+
+Flickity.create.hash = function() {
+  if ( !this.options.hash ) return;
+
+  this.connectedHashLinks = [];
+  // hash link listener
+  // use HTML5 history pushState to prevent page scroll jump
+  this.onHashLinkClick = ( event ) => {
+    event.preventDefault();
+    this.selectCell( event.currentTarget.hash );
+    history.replaceState( history.state, '', event.currentTarget.hash );
+  };
+
+  // events
+  this.on( 'activate', this.activateHash );
+  this.on( 'deactivate', this.deactivateHash );
+};
+
+let proto = Flickity.prototype;
+
+proto.activateHash = function() {
+  this.on( 'change', this.onChangeHash );
+
+  // overwrite initialIndex
+  if ( this.options.initialIndex === undefined && location.hash ) {
+    let cell = this.queryCell( location.hash );
+    if ( cell ) {
+      this.options.initialIndex = this.getCellSlideIndex( cell );
+    }
+  }
+
+  this.connectHashLinks();
+};
+
+proto.deactivateHash = function() {
+  this.off( 'change', this.onChangeHash );
+  this.disconnectHashLinks();
+};
+
+proto.onChangeHash = function() {
+  let id = this.selectedElement.id;
+  if ( id ) history.replaceState( history.state, '', `#${id}` );
+};
+
+proto.connectHashLinks = function() {
+  let links = document.querySelectorAll('a');
+  for ( let link of links ) {
+    this.connectHashLink( link );
+  }
+};
+
+// used to test if link is on same page
+let proxyLink = document.createElement('a');
+
+proto.connectHashLink = function( link ) {
+  if ( !link.hash ) return;
+
+  // check that link is for the same page
+  proxyLink.href = link.href;
+  if ( proxyLink.pathname !== location.pathname ) return;
+
+  let cell = this.queryCell( link.hash );
+  if ( !cell ) return;
+
+  link.addEventListener( 'click', this.onHashLinkClick );
+  this.connectedHashLinks.push( link );
+};
+
+proto.disconnectHashLinks = function() {
+  this.connectedHashLinks.forEach( ( link ) => {
+    link.removeEventListener( 'click', this.onHashLinkClick );
+  } );
+  this.connectedHashLinks = [];
+};
+
+// -----  ----- //
+
+return Flickity;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 3597:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// add, remove cell
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        __webpack_require__(6680),
+        __webpack_require__(9047),
+    );
+  } else {
+    // browser global
+    factory(
+        window.Flickity,
+        window.fizzyUIUtils,
+    );
+  }
+
+}( typeof window != 'undefined' ? window : this, function factory( Flickity, utils ) {
+
+// append cells to a document fragment
+function getCellsFragment( cells ) {
+  let fragment = document.createDocumentFragment();
+  cells.forEach( ( cell ) => fragment.appendChild( cell.element ) );
+  return fragment;
+}
+
+// -------------------------- add/remove cell prototype -------------------------- //
+
+let proto = Flickity.prototype;
+
+/**
+ * Insert, prepend, or append cells
+ * @param {[Element, Array, NodeList]} elems - Elements to insert
+ * @param {Integer} index - Zero-based number to insert
+ */
+proto.insert = function( elems, index ) {
+  let cells = this._makeCells( elems );
+  if ( !cells || !cells.length ) return;
+
+  let len = this.cells.length;
+  // default to append
+  index = index === undefined ? len : index;
+  // add cells with document fragment
+  let fragment = getCellsFragment( cells );
+  // append to slider
+  let isAppend = index === len;
+  if ( isAppend ) {
+    this.slider.appendChild( fragment );
+  } else {
+    let insertCellElement = this.cells[ index ].element;
+    this.slider.insertBefore( fragment, insertCellElement );
+  }
+  // add to this.cells
+  if ( index === 0 ) {
+    // prepend, add to start
+    this.cells = cells.concat( this.cells );
+  } else if ( isAppend ) {
+    // append, add to end
+    this.cells = this.cells.concat( cells );
+  } else {
+    // insert in this.cells
+    let endCells = this.cells.splice( index, len - index );
+    this.cells = this.cells.concat( cells ).concat( endCells );
+  }
+
+  this._sizeCells( cells );
+  this.cellChange( index );
+  this.positionSliderAtSelected();
+};
+
+proto.append = function( elems ) {
+  this.insert( elems, this.cells.length );
+};
+
+proto.prepend = function( elems ) {
+  this.insert( elems, 0 );
+};
+
+/**
+ * Remove cells
+ * @param {[Element, Array, NodeList]} elems - ELements to remove
+ */
+proto.remove = function( elems ) {
+  let cells = this.getCells( elems );
+  if ( !cells || !cells.length ) return;
+
+  let minCellIndex = this.cells.length - 1;
+  // remove cells from collection & DOM
+  cells.forEach( ( cell ) => {
+    cell.remove();
+    let index = this.cells.indexOf( cell );
+    minCellIndex = Math.min( index, minCellIndex );
+    utils.removeFrom( this.cells, cell );
+  } );
+
+  this.cellChange( minCellIndex );
+  this.positionSliderAtSelected();
+};
+
+/**
+ * logic to be run after a cell's size changes
+ * @param {Element} elem - cell's element
+ */
+proto.cellSizeChange = function( elem ) {
+  let cell = this.getCell( elem );
+  if ( !cell ) return;
+
+  cell.getSize();
+
+  let index = this.cells.indexOf( cell );
+  this.cellChange( index );
+  // do not position slider after lazy load
+};
+
+/**
+ * logic any time a cell is changed: added, removed, or size changed
+ * @param {Integer} changedCellIndex - index of the changed cell, optional
+ */
+proto.cellChange = function( changedCellIndex ) {
+  let prevSelectedElem = this.selectedElement;
+  this._positionCells( changedCellIndex );
+  this._updateWrapShiftCells();
+  this.setGallerySize();
+  // update selectedIndex, try to maintain position & select previous selected element
+  let cell = this.getCell( prevSelectedElem );
+  if ( cell ) this.selectedIndex = this.getCellSlideIndex( cell );
+  this.selectedIndex = Math.min( this.slides.length - 1, this.selectedIndex );
+
+  this.emitEvent( 'cellChange', [ changedCellIndex ] );
+  // position slider
+  this.select( this.selectedIndex );
+};
+
+// -----  ----- //
+
+return Flickity;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 7880:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// animate
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory( __webpack_require__(9047) );
+  } else {
+    // browser global
+    window.Flickity = window.Flickity || {};
+    window.Flickity.animatePrototype = factory( window.fizzyUIUtils );
+  }
+
+}( typeof window != 'undefined' ? window : this, function factory( utils ) {
+
+// -------------------------- animate -------------------------- //
+
+let proto = {};
+
+proto.startAnimation = function() {
+  if ( this.isAnimating ) return;
+
+  this.isAnimating = true;
+  this.restingFrames = 0;
+  this.animate();
+};
+
+proto.animate = function() {
+  this.applyDragForce();
+  this.applySelectedAttraction();
+
+  let previousX = this.x;
+
+  this.integratePhysics();
+  this.positionSlider();
+  this.settle( previousX );
+  // animate next frame
+  if ( this.isAnimating ) requestAnimationFrame( () => this.animate() );
+};
+
+proto.positionSlider = function() {
+  let x = this.x;
+  // wrap position around
+  if ( this.isWrapping ) {
+    x = utils.modulo( x, this.slideableWidth ) - this.slideableWidth;
+    this.shiftWrapCells( x );
+  }
+
+  this.setTranslateX( x, this.isAnimating );
+  this.dispatchScrollEvent();
+};
+
+proto.setTranslateX = function( x, is3d ) {
+  x += this.cursorPosition;
+  // reverse if right-to-left and using transform
+  if ( this.options.rightToLeft ) x = -x;
+  let translateX = this.getPositionValue( x );
+  // use 3D transforms for hardware acceleration on iOS
+  // but use 2D when settled, for better font-rendering
+  this.slider.style.transform = is3d ?
+    `translate3d(${translateX},0,0)` : `translateX(${translateX})`;
+};
+
+proto.dispatchScrollEvent = function() {
+  let firstSlide = this.slides[0];
+  if ( !firstSlide ) return;
+
+  let positionX = -this.x - firstSlide.target;
+  let progress = positionX / this.slidesWidth;
+  this.dispatchEvent( 'scroll', null, [ progress, positionX ] );
+};
+
+proto.positionSliderAtSelected = function() {
+  if ( !this.cells.length ) return;
+
+  this.x = -this.selectedSlide.target;
+  this.velocity = 0; // stop wobble
+  this.positionSlider();
+};
+
+proto.getPositionValue = function( position ) {
+  if ( this.options.percentPosition ) {
+    // percent position, round to 2 digits, like 12.34%
+    return ( Math.round( ( position / this.size.innerWidth ) * 10000 ) * 0.01 ) + '%';
+  } else {
+    // pixel positioning
+    return Math.round( position ) + 'px';
+  }
+};
+
+proto.settle = function( previousX ) {
+  // keep track of frames where x hasn't moved
+  let isResting = !this.isPointerDown &&
+      Math.round( this.x * 100 ) === Math.round( previousX * 100 );
+  if ( isResting ) this.restingFrames++;
+  // stop animating if resting for 3 or more frames
+  if ( this.restingFrames > 2 ) {
+    this.isAnimating = false;
+    delete this.isFreeScrolling;
+    // render position with translateX when settled
+    this.positionSlider();
+    this.dispatchEvent( 'settle', null, [ this.selectedIndex ] );
+  }
+};
+
+proto.shiftWrapCells = function( x ) {
+  // shift before cells
+  let beforeGap = this.cursorPosition + x;
+  this._shiftCells( this.beforeShiftCells, beforeGap, -1 );
+  // shift after cells
+  let afterGap = this.size.innerWidth - ( x + this.slideableWidth + this.cursorPosition );
+  this._shiftCells( this.afterShiftCells, afterGap, 1 );
+};
+
+proto._shiftCells = function( cells, gap, shift ) {
+  cells.forEach( ( cell ) => {
+    let cellShift = gap > 0 ? shift : 0;
+    this._wrapShiftCell( cell, cellShift );
+    gap -= cell.size.outerWidth;
+  } );
+};
+
+proto._unshiftCells = function( cells ) {
+  if ( !cells || !cells.length ) return;
+
+  cells.forEach( ( cell ) => this._wrapShiftCell( cell, 0 ) );
+};
+
+// @param {Integer} shift - 0, 1, or -1
+proto._wrapShiftCell = function( cell, shift ) {
+  this._renderCellPosition( cell, cell.x + this.slideableWidth * shift );
+};
+
+// -------------------------- physics -------------------------- //
+
+proto.integratePhysics = function() {
+  this.x += this.velocity;
+  this.velocity *= this.getFrictionFactor();
+};
+
+proto.applyForce = function( force ) {
+  this.velocity += force;
+};
+
+proto.getFrictionFactor = function() {
+  return 1 - this.options[ this.isFreeScrolling ? 'freeScrollFriction' : 'friction' ];
+};
+
+proto.getRestingPosition = function() {
+  // my thanks to Steven Wittens, who simplified this math greatly
+  return this.x + this.velocity / ( 1 - this.getFrictionFactor() );
+};
+
+proto.applyDragForce = function() {
+  if ( !this.isDraggable || !this.isPointerDown ) return;
+
+  // change the position to drag position by applying force
+  let dragVelocity = this.dragX - this.x;
+  let dragForce = dragVelocity - this.velocity;
+  this.applyForce( dragForce );
+};
+
+proto.applySelectedAttraction = function() {
+  // do not attract if pointer down or no slides
+  let dragDown = this.isDraggable && this.isPointerDown;
+  if ( dragDown || this.isFreeScrolling || !this.slides.length ) return;
+
+  let distance = this.selectedSlide.target * -1 - this.x;
+  let force = distance * this.options.selectedAttraction;
+  this.applyForce( force );
+};
+
+return proto;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 7229:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// Flickity.Cell
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory( __webpack_require__(137) );
+  } else {
+    // browser global
+    window.Flickity = window.Flickity || {};
+    window.Flickity.Cell = factory( window.getSize );
+  }
+
+}( typeof window != 'undefined' ? window : this, function factory( getSize ) {
+
+const cellClassName = 'flickity-cell';
+
+function Cell( elem ) {
+  this.element = elem;
+  this.element.classList.add( cellClassName );
+
+  this.x = 0;
+  this.unselect();
+}
+
+let proto = Cell.prototype;
+
+proto.destroy = function() {
+  // reset style
+  this.unselect();
+  this.element.classList.remove( cellClassName );
+  this.element.style.transform = '';
+  this.element.removeAttribute('aria-hidden');
+};
+
+proto.getSize = function() {
+  this.size = getSize( this.element );
+};
+
+proto.select = function() {
+  this.element.classList.add('is-selected');
+  this.element.removeAttribute('aria-hidden');
+};
+
+proto.unselect = function() {
+  this.element.classList.remove('is-selected');
+  this.element.setAttribute( 'aria-hidden', 'true' );
+};
+
+proto.remove = function() {
+  this.element.remove();
+};
+
+return Cell;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 6680:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// Flickity main
+/* eslint-disable max-params */
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        window,
+        __webpack_require__(7158),
+        __webpack_require__(137),
+        __webpack_require__(9047),
+        __webpack_require__(7229),
+        __webpack_require__(9714),
+        __webpack_require__(7880),
+    );
+  } else {
+    // browser global
+    let _Flickity = window.Flickity;
+
+    window.Flickity = factory(
+        window,
+        window.EvEmitter,
+        window.getSize,
+        window.fizzyUIUtils,
+        _Flickity.Cell,
+        _Flickity.Slide,
+        _Flickity.animatePrototype,
+    );
+  }
+
+}( typeof window != 'undefined' ? window : this,
+    function factory( window, EvEmitter, getSize, utils, Cell, Slide, animatePrototype ) {
+/* eslint-enable max-params */
+
+// vars
+const { getComputedStyle, console } = window;
+let { jQuery } = window;
+
+// -------------------------- Flickity -------------------------- //
+
+// globally unique identifiers
+let GUID = 0;
+// internal store of all Flickity intances
+let instances = {};
+
+function Flickity( element, options ) {
+  let queryElement = utils.getQueryElement( element );
+  if ( !queryElement ) {
+    if ( console ) console.error(`Bad element for Flickity: ${queryElement || element}`);
+    return;
+  }
+  this.element = queryElement;
+  // do not initialize twice on same element
+  if ( this.element.flickityGUID ) {
+    let instance = instances[ this.element.flickityGUID ];
+    if ( instance ) instance.option( options );
+    return instance;
+  }
+
+  // add jQuery
+  if ( jQuery ) {
+    this.$element = jQuery( this.element );
+  }
+  // options
+  this.options = { ...this.constructor.defaults };
+  this.option( options );
+
+  // kick things off
+  this._create();
+}
+
+Flickity.defaults = {
+  accessibility: true,
+  // adaptiveHeight: false,
+  cellAlign: 'center',
+  // cellSelector: undefined,
+  // contain: false,
+  freeScrollFriction: 0.075, // friction when free-scrolling
+  friction: 0.28, // friction when selecting
+  namespaceJQueryEvents: true,
+  // initialIndex: 0,
+  percentPosition: true,
+  resize: true,
+  selectedAttraction: 0.025,
+  setGallerySize: true,
+  // watchCSS: false,
+  // wrapAround: false
+};
+
+// hash of methods triggered on _create()
+Flickity.create = {};
+
+let proto = Flickity.prototype;
+// inherit EventEmitter
+Object.assign( proto, EvEmitter.prototype );
+
+proto._create = function() {
+  let { resize, watchCSS, rightToLeft } = this.options;
+  // add id for Flickity.data
+  let id = this.guid = ++GUID;
+  this.element.flickityGUID = id; // expando
+  instances[ id ] = this; // associate via id
+  // initial properties
+  this.selectedIndex = 0;
+  // how many frames slider has been in same position
+  this.restingFrames = 0;
+  // initial physics properties
+  this.x = 0;
+  this.velocity = 0;
+  this.beginMargin = rightToLeft ? 'marginRight' : 'marginLeft';
+  this.endMargin = rightToLeft ? 'marginLeft' : 'marginRight';
+  // create viewport & slider
+  this.viewport = document.createElement('div');
+  this.viewport.className = 'flickity-viewport';
+  this._createSlider();
+  // used for keyboard navigation
+  this.focusableElems = [ this.element ];
+
+  if ( resize || watchCSS ) {
+    window.addEventListener( 'resize', this );
+  }
+
+  // add listeners from on option
+  for ( let eventName in this.options.on ) {
+    let listener = this.options.on[ eventName ];
+    this.on( eventName, listener );
+  }
+
+  for ( let method in Flickity.create ) {
+    Flickity.create[ method ].call( this );
+  }
+
+  if ( watchCSS ) {
+    this.watchCSS();
+  } else {
+    this.activate();
+  }
+};
+
+/**
+ * set options
+ * @param {Object} opts - options to extend
+ */
+proto.option = function( opts ) {
+  Object.assign( this.options, opts );
+};
+
+proto.activate = function() {
+  if ( this.isActive ) return;
+
+  this.isActive = true;
+  this.element.classList.add('flickity-enabled');
+  if ( this.options.rightToLeft ) {
+    this.element.classList.add('flickity-rtl');
+  }
+
+  this.getSize();
+  // move initial cell elements so they can be loaded as cells
+  let cellElems = this._filterFindCellElements( this.element.children );
+  this.slider.append( ...cellElems );
+  this.viewport.append( this.slider );
+  this.element.append( this.viewport );
+  // get cells from children
+  this.reloadCells();
+
+  if ( this.options.accessibility ) {
+    // allow element to focusable
+    this.element.tabIndex = 0;
+    // listen for key presses
+    this.element.addEventListener( 'keydown', this );
+  }
+
+  this.emitEvent('activate');
+  this.selectInitialIndex();
+  // flag for initial activation, for using initialIndex
+  this.isInitActivated = true;
+  // ready event. #493
+  this.dispatchEvent('ready');
+};
+
+// slider positions the cells
+proto._createSlider = function() {
+  // slider element does all the positioning
+  let slider = document.createElement('div');
+  slider.className = 'flickity-slider';
+  this.slider = slider;
+};
+
+proto._filterFindCellElements = function( elems ) {
+  return utils.filterFindElements( elems, this.options.cellSelector );
+};
+
+// goes through all children
+proto.reloadCells = function() {
+  // collection of item elements
+  this.cells = this._makeCells( this.slider.children );
+  this.positionCells();
+  this._updateWrapShiftCells();
+  this.setGallerySize();
+};
+
+/**
+ * turn elements into Flickity.Cells
+ * @param {[Array, NodeList, HTMLElement]} elems - elements to make into cells
+ * @returns {Array} items - collection of new Flickity Cells
+ */
+proto._makeCells = function( elems ) {
+  let cellElems = this._filterFindCellElements( elems );
+
+  // create new Cells for collection
+  return cellElems.map( ( cellElem ) => new Cell( cellElem ) );
+};
+
+proto.getLastCell = function() {
+  return this.cells[ this.cells.length - 1 ];
+};
+
+proto.getLastSlide = function() {
+  return this.slides[ this.slides.length - 1 ];
+};
+
+// positions all cells
+proto.positionCells = function() {
+  // size all cells
+  this._sizeCells( this.cells );
+  // position all cells
+  this._positionCells( 0 );
+};
+
+/**
+ * position certain cells
+ * @param {Integer} index - which cell to start with
+ */
+proto._positionCells = function( index ) {
+  index = index || 0;
+  // also measure maxCellHeight
+  // start 0 if positioning all cells
+  this.maxCellHeight = index ? this.maxCellHeight || 0 : 0;
+  let cellX = 0;
+  // get cellX
+  if ( index > 0 ) {
+    let startCell = this.cells[ index - 1 ];
+    cellX = startCell.x + startCell.size.outerWidth;
+  }
+
+  this.cells.slice( index ).forEach( ( cell ) => {
+    cell.x = cellX;
+    this._renderCellPosition( cell, cellX );
+    cellX += cell.size.outerWidth;
+    this.maxCellHeight = Math.max( cell.size.outerHeight, this.maxCellHeight );
+  } );
+  // keep track of cellX for wrap-around
+  this.slideableWidth = cellX;
+  // slides
+  this.updateSlides();
+  // contain slides target
+  this._containSlides();
+  // update slidesWidth
+  this.slidesWidth = this.cells.length ?
+    this.getLastSlide().target - this.slides[0].target : 0;
+};
+
+proto._renderCellPosition = function( cell, x ) {
+  // render position of cell with in slider
+  let sideOffset = this.options.rightToLeft ? -1 : 1;
+  let renderX = x * sideOffset;
+  if ( this.options.percentPosition ) renderX *= this.size.innerWidth / cell.size.width;
+  let positionValue = this.getPositionValue( renderX );
+  cell.element.style.transform = `translateX( ${positionValue} )`;
+};
+
+/**
+ * cell.getSize() on multiple cells
+ * @param {Array} cells - cells to size
+ */
+proto._sizeCells = function( cells ) {
+  cells.forEach( ( cell ) => cell.getSize() );
+};
+
+// --------------------------  -------------------------- //
+
+proto.updateSlides = function() {
+  this.slides = [];
+  if ( !this.cells.length ) return;
+
+  let { beginMargin, endMargin } = this;
+  let slide = new Slide( beginMargin, endMargin, this.cellAlign );
+  this.slides.push( slide );
+
+  let canCellFit = this._getCanCellFit();
+
+  this.cells.forEach( ( cell, i ) => {
+    // just add cell if first cell in slide
+    if ( !slide.cells.length ) {
+      slide.addCell( cell );
+      return;
+    }
+
+    let slideWidth = ( slide.outerWidth - slide.firstMargin ) +
+      ( cell.size.outerWidth - cell.size[ endMargin ] );
+
+    if ( canCellFit( i, slideWidth ) ) {
+      slide.addCell( cell );
+    } else {
+      // doesn't fit, new slide
+      slide.updateTarget();
+
+      slide = new Slide( beginMargin, endMargin, this.cellAlign );
+      this.slides.push( slide );
+      slide.addCell( cell );
+    }
+  } );
+  // last slide
+  slide.updateTarget();
+  // update .selectedSlide
+  this.updateSelectedSlide();
+};
+
+proto._getCanCellFit = function() {
+  let { groupCells } = this.options;
+  if ( !groupCells ) return () => false;
+
+  if ( typeof groupCells == 'number' ) {
+    // group by number. 3 -> [0,1,2], [3,4,5], ...
+    let number = parseInt( groupCells, 10 );
+    return ( i ) => ( i % number ) !== 0;
+  }
+  // default, group by width of slide
+  let percent = 1;
+  // parse '75%
+  let percentMatch = typeof groupCells == 'string' && groupCells.match( /^(\d+)%$/ );
+  if ( percentMatch ) percent = parseInt( percentMatch[1], 10 ) / 100;
+  let groupWidth = ( this.size.innerWidth + 1 ) * percent;
+  return ( i, slideWidth ) => slideWidth <= groupWidth;
+};
+
+// alias _init for jQuery plugin .flickity()
+proto._init =
+proto.reposition = function() {
+  this.positionCells();
+  this.positionSliderAtSelected();
+};
+
+proto.getSize = function() {
+  this.size = getSize( this.element );
+  this.setCellAlign();
+  this.cursorPosition = this.size.innerWidth * this.cellAlign;
+};
+
+let cellAlignShorthands = {
+  left: 0,
+  center: 0.5,
+  right: 1,
+};
+
+proto.setCellAlign = function() {
+  let { cellAlign, rightToLeft } = this.options;
+  let shorthand = cellAlignShorthands[ cellAlign ];
+  this.cellAlign = shorthand !== undefined ? shorthand : cellAlign;
+  if ( rightToLeft ) this.cellAlign = 1 - this.cellAlign;
+};
+
+proto.setGallerySize = function() {
+  if ( !this.options.setGallerySize ) return;
+
+  let height = this.options.adaptiveHeight && this.selectedSlide ?
+    this.selectedSlide.height : this.maxCellHeight;
+  this.viewport.style.height = `${height}px`;
+};
+
+proto._updateWrapShiftCells = function() {
+  // update isWrapping
+  this.isWrapping = this.getIsWrapping();
+  // only for wrap-around
+  if ( !this.isWrapping ) return;
+
+  // unshift previous cells
+  this._unshiftCells( this.beforeShiftCells );
+  this._unshiftCells( this.afterShiftCells );
+  // get before cells
+  // initial gap
+  let beforeGapX = this.cursorPosition;
+  let lastIndex = this.cells.length - 1;
+  this.beforeShiftCells = this._getGapCells( beforeGapX, lastIndex, -1 );
+  // get after cells
+  // ending gap between last cell and end of gallery viewport
+  let afterGapX = this.size.innerWidth - this.cursorPosition;
+  // start cloning at first cell, working forwards
+  this.afterShiftCells = this._getGapCells( afterGapX, 0, 1 );
+};
+
+proto.getIsWrapping = function() {
+  let { wrapAround } = this.options;
+  if ( !wrapAround || this.slides.length < 2 ) return false;
+
+  if ( wrapAround !== 'fill' ) return true;
+  // check that slides can fit
+
+  let gapWidth = this.slideableWidth - this.size.innerWidth;
+  if ( gapWidth > this.size.innerWidth ) return true; // gap * 2x big, all good
+  // check that content width - shifting cell is bigger than viewport width
+  for ( let cell of this.cells ) {
+    if ( cell.size.outerWidth > gapWidth ) return false;
+  }
+  return true;
+};
+
+proto._getGapCells = function( gapX, cellIndex, increment ) {
+  // keep adding cells until the cover the initial gap
+  let cells = [];
+  while ( gapX > 0 ) {
+    let cell = this.cells[ cellIndex ];
+    if ( !cell ) break;
+
+    cells.push( cell );
+    cellIndex += increment;
+    gapX -= cell.size.outerWidth;
+  }
+  return cells;
+};
+
+// ----- contain & wrap ----- //
+
+// contain cell targets so no excess sliding
+proto._containSlides = function() {
+  let isContaining = this.options.contain && !this.isWrapping &&
+      this.cells.length;
+  if ( !isContaining ) return;
+
+  let contentWidth = this.slideableWidth - this.getLastCell().size[ this.endMargin ];
+  // content is less than gallery size
+  let isContentSmaller = contentWidth < this.size.innerWidth;
+  if ( isContentSmaller ) {
+    // all cells fit inside gallery
+    this.slides.forEach( ( slide ) => {
+      slide.target = contentWidth * this.cellAlign;
+    } );
+  } else {
+    // contain to bounds
+    let beginBound = this.cursorPosition + this.cells[0].size[ this.beginMargin ];
+    let endBound = contentWidth - this.size.innerWidth * ( 1 - this.cellAlign );
+    this.slides.forEach( ( slide ) => {
+      slide.target = Math.max( slide.target, beginBound );
+      slide.target = Math.min( slide.target, endBound );
+    } );
+  }
+};
+
+// ----- events ----- //
+
+/**
+ * emits events via eventEmitter and jQuery events
+ * @param {String} type - name of event
+ * @param {Event} event - original event
+ * @param {Array} args - extra arguments
+ */
+proto.dispatchEvent = function( type, event, args ) {
+  let emitArgs = event ? [ event ].concat( args ) : args;
+  this.emitEvent( type, emitArgs );
+
+  if ( jQuery && this.$element ) {
+    // default trigger with type if no event
+    type += this.options.namespaceJQueryEvents ? '.flickity' : '';
+    let $event = type;
+    if ( event ) {
+      // create jQuery event
+      let jQEvent = new jQuery.Event( event );
+      jQEvent.type = type;
+      $event = jQEvent;
+    }
+    this.$element.trigger( $event, args );
+  }
+};
+
+const unidraggerEvents = [
+  'dragStart',
+  'dragMove',
+  'dragEnd',
+  'pointerDown',
+  'pointerMove',
+  'pointerEnd',
+  'staticClick',
+];
+
+let _emitEvent = proto.emitEvent;
+proto.emitEvent = function( eventName, args ) {
+  if ( eventName === 'staticClick' ) {
+    // add cellElem and cellIndex args to staticClick
+    let clickedCell = this.getParentCell( args[0].target );
+    let cellElem = clickedCell && clickedCell.element;
+    let cellIndex = clickedCell && this.cells.indexOf( clickedCell );
+    args = args.concat( cellElem, cellIndex );
+  }
+  // do regular thing
+  _emitEvent.call( this, eventName, args );
+  // duck-punch in jQuery events for Unidragger events
+  let isUnidraggerEvent = unidraggerEvents.includes( eventName );
+  if ( !isUnidraggerEvent || !jQuery || !this.$element ) return;
+
+  eventName += this.options.namespaceJQueryEvents ? '.flickity' : '';
+  let event = args.shift( 0 );
+  let jQEvent = new jQuery.Event( event );
+  jQEvent.type = eventName;
+  this.$element.trigger( jQEvent, args );
+};
+
+// -------------------------- select -------------------------- //
+
+/**
+ * @param {Integer} index - index of the slide
+ * @param {Boolean} isWrap - will wrap-around to last/first if at the end
+ * @param {Boolean} isInstant - will immediately set position at selected cell
+ */
+proto.select = function( index, isWrap, isInstant ) {
+  if ( !this.isActive ) return;
+
+  index = parseInt( index, 10 );
+  this._wrapSelect( index );
+
+  if ( this.isWrapping || isWrap ) {
+    index = utils.modulo( index, this.slides.length );
+  }
+  // bail if invalid index
+  if ( !this.slides[ index ] ) return;
+
+  let prevIndex = this.selectedIndex;
+  this.selectedIndex = index;
+  this.updateSelectedSlide();
+  if ( isInstant ) {
+    this.positionSliderAtSelected();
+  } else {
+    this.startAnimation();
+  }
+  if ( this.options.adaptiveHeight ) {
+    this.setGallerySize();
+  }
+  // events
+  this.dispatchEvent( 'select', null, [ index ] );
+  // change event if new index
+  if ( index !== prevIndex ) {
+    this.dispatchEvent( 'change', null, [ index ] );
+  }
+};
+
+// wraps position for wrapAround, to move to closest slide. #113
+proto._wrapSelect = function( index ) {
+  if ( !this.isWrapping ) return;
+
+  const { selectedIndex, slideableWidth, slides: { length } } = this;
+  // shift index for wrap, do not wrap dragSelect
+  if ( !this.isDragSelect ) {
+    let wrapIndex = utils.modulo( index, length );
+    // go to shortest
+    let delta = Math.abs( wrapIndex - selectedIndex );
+    let backWrapDelta = Math.abs( ( wrapIndex + length ) - selectedIndex );
+    let forewardWrapDelta = Math.abs( ( wrapIndex - length ) - selectedIndex );
+    if ( backWrapDelta < delta ) {
+      index += length;
+    } else if ( forewardWrapDelta < delta ) {
+      index -= length;
+    }
+  }
+
+  // wrap position so slider is within normal area
+  if ( index < 0 ) {
+    this.x -= slideableWidth;
+  } else if ( index >= length ) {
+    this.x += slideableWidth;
+  }
+};
+
+proto.previous = function( isWrap, isInstant ) {
+  this.select( this.selectedIndex - 1, isWrap, isInstant );
+};
+
+proto.next = function( isWrap, isInstant ) {
+  this.select( this.selectedIndex + 1, isWrap, isInstant );
+};
+
+proto.updateSelectedSlide = function() {
+  let slide = this.slides[ this.selectedIndex ];
+  // selectedIndex could be outside of slides, if triggered before resize()
+  if ( !slide ) return;
+
+  // unselect previous selected slide
+  this.unselectSelectedSlide();
+  // update new selected slide
+  this.selectedSlide = slide;
+  slide.select();
+  this.selectedCells = slide.cells;
+  this.selectedElements = slide.getCellElements();
+  // HACK: selectedCell & selectedElement is first cell in slide, backwards compatibility
+  this.selectedCell = slide.cells[0];
+  this.selectedElement = this.selectedElements[0];
+};
+
+proto.unselectSelectedSlide = function() {
+  if ( this.selectedSlide ) this.selectedSlide.unselect();
+};
+
+proto.selectInitialIndex = function() {
+  let initialIndex = this.options.initialIndex;
+  // already activated, select previous selectedIndex
+  if ( this.isInitActivated ) {
+    this.select( this.selectedIndex, false, true );
+    return;
+  }
+  // select with selector string
+  if ( initialIndex && typeof initialIndex == 'string' ) {
+    let cell = this.queryCell( initialIndex );
+    if ( cell ) {
+      this.selectCell( initialIndex, false, true );
+      return;
+    }
+  }
+
+  let index = 0;
+  // select with number
+  if ( initialIndex && this.slides[ initialIndex ] ) {
+    index = initialIndex;
+  }
+  // select instantly
+  this.select( index, false, true );
+};
+
+/**
+ * select slide from number or cell element
+ * @param {[Element, Number]} value - zero-based index or element to select
+ * @param {Boolean} isWrap - enables wrapping around for extra index
+ * @param {Boolean} isInstant - disables slide animation
+ */
+proto.selectCell = function( value, isWrap, isInstant ) {
+  // get cell
+  let cell = this.queryCell( value );
+  if ( !cell ) return;
+
+  let index = this.getCellSlideIndex( cell );
+  this.select( index, isWrap, isInstant );
+};
+
+proto.getCellSlideIndex = function( cell ) {
+  // get index of slide that has cell
+  let cellSlide = this.slides.find( ( slide ) => slide.cells.includes( cell ) );
+  return this.slides.indexOf( cellSlide );
+};
+
+// -------------------------- get cells -------------------------- //
+
+/**
+ * get Flickity.Cell, given an Element
+ * @param {Element} elem - matching cell element
+ * @returns {Flickity.Cell} cell - matching cell
+ */
+proto.getCell = function( elem ) {
+  // loop through cells to get the one that matches
+  for ( let cell of this.cells ) {
+    if ( cell.element === elem ) return cell;
+  }
+};
+
+/**
+ * get collection of Flickity.Cells, given Elements
+ * @param {[Element, Array, NodeList]} elems - multiple elements
+ * @returns {Array} cells - Flickity.Cells
+ */
+proto.getCells = function( elems ) {
+  elems = utils.makeArray( elems );
+  return elems.map( ( elem ) => this.getCell( elem ) ).filter( Boolean );
+};
+
+/**
+ * get cell elements
+ * @returns {Array} cellElems
+ */
+proto.getCellElements = function() {
+  return this.cells.map( ( cell ) => cell.element );
+};
+
+/**
+ * get parent cell from an element
+ * @param {Element} elem - child element
+ * @returns {Flickit.Cell} cell - parent cell
+ */
+proto.getParentCell = function( elem ) {
+  // first check if elem is cell
+  let cell = this.getCell( elem );
+  if ( cell ) return cell;
+
+  // try to get parent cell elem
+  let closest = elem.closest('.flickity-slider > *');
+  return this.getCell( closest );
+};
+
+/**
+ * get cells adjacent to a slide
+ * @param {Integer} adjCount - number of adjacent slides
+ * @param {Integer} index - index of slide to start
+ * @returns {Array} cells - array of Flickity.Cells
+ */
+proto.getAdjacentCellElements = function( adjCount, index ) {
+  if ( !adjCount ) return this.selectedSlide.getCellElements();
+
+  index = index === undefined ? this.selectedIndex : index;
+
+  let len = this.slides.length;
+  if ( 1 + ( adjCount * 2 ) >= len ) {
+    return this.getCellElements(); // get all
+  }
+
+  let cellElems = [];
+  for ( let i = index - adjCount; i <= index + adjCount; i++ ) {
+    let slideIndex = this.isWrapping ? utils.modulo( i, len ) : i;
+    let slide = this.slides[ slideIndex ];
+    if ( slide ) {
+      cellElems = cellElems.concat( slide.getCellElements() );
+    }
+  }
+  return cellElems;
+};
+
+/**
+ * select slide from number or cell element
+ * @param {[Element, String, Number]} selector - element, selector string, or index
+ * @returns {Flickity.Cell} - matching cell
+ */
+proto.queryCell = function( selector ) {
+  if ( typeof selector == 'number' ) {
+    // use number as index
+    return this.cells[ selector ];
+  }
+  // do not select invalid selectors from hash: #123, #/. #791
+  let isSelectorString = typeof selector == 'string' && !selector.match( /^[#.]?[\d/]/ );
+  if ( isSelectorString ) {
+    // use string as selector, get element
+    selector = this.element.querySelector( selector );
+  }
+  // get cell from element
+  return this.getCell( selector );
+};
+
+// -------------------------- events -------------------------- //
+
+proto.uiChange = function() {
+  this.emitEvent('uiChange');
+};
+
+// ----- resize ----- //
+
+proto.onresize = function() {
+  this.watchCSS();
+  this.resize();
+};
+
+utils.debounceMethod( Flickity, 'onresize', 150 );
+
+proto.resize = function() {
+  // #1177 disable resize behavior when animating or dragging for iOS 15
+  if ( !this.isActive || this.isAnimating || this.isDragging ) return;
+  this.getSize();
+  // wrap values
+  if ( this.isWrapping ) {
+    this.x = utils.modulo( this.x, this.slideableWidth );
+  }
+  this.positionCells();
+  this._updateWrapShiftCells();
+  this.setGallerySize();
+  this.emitEvent('resize');
+  // update selected index for group slides, instant
+  // TODO: position can be lost between groups of various numbers
+  let selectedElement = this.selectedElements && this.selectedElements[0];
+  this.selectCell( selectedElement, false, true );
+};
+
+// watches the :after property, activates/deactivates
+proto.watchCSS = function() {
+  if ( !this.options.watchCSS ) return;
+
+  let afterContent = getComputedStyle( this.element, ':after' ).content;
+  // activate if :after { content: 'flickity' }
+  if ( afterContent.includes('flickity') ) {
+    this.activate();
+  } else {
+    this.deactivate();
+  }
+};
+
+// ----- keydown ----- //
+
+// go previous/next if left/right keys pressed
+proto.onkeydown = function( event ) {
+  let { activeElement } = document;
+  let handler = Flickity.keyboardHandlers[ event.key ];
+  // only work if element is in focus
+  if ( !this.options.accessibility || !activeElement || !handler ) return;
+
+  let isFocused = this.focusableElems.some( ( elem ) => activeElement === elem );
+  if ( isFocused ) handler.call( this );
+};
+
+Flickity.keyboardHandlers = {
+  ArrowLeft: function() {
+    this.uiChange();
+    let leftMethod = this.options.rightToLeft ? 'next' : 'previous';
+    this[ leftMethod ]();
+  },
+  ArrowRight: function() {
+    this.uiChange();
+    let rightMethod = this.options.rightToLeft ? 'previous' : 'next';
+    this[ rightMethod ]();
+  },
+};
+
+// ----- focus ----- //
+
+proto.focus = function() {
+  this.element.focus({ preventScroll: true });
+};
+
+// -------------------------- destroy -------------------------- //
+
+// deactivate all Flickity functionality, but keep stuff available
+proto.deactivate = function() {
+  if ( !this.isActive ) return;
+
+  this.element.classList.remove('flickity-enabled');
+  this.element.classList.remove('flickity-rtl');
+  this.unselectSelectedSlide();
+  // destroy cells
+  this.cells.forEach( ( cell ) => cell.destroy() );
+  this.viewport.remove();
+  // move child elements back into element
+  this.element.append( ...this.slider.children );
+  if ( this.options.accessibility ) {
+    this.element.removeAttribute('tabIndex');
+    this.element.removeEventListener( 'keydown', this );
+  }
+  // set flags
+  this.isActive = false;
+  this.emitEvent('deactivate');
+};
+
+proto.destroy = function() {
+  this.deactivate();
+  window.removeEventListener( 'resize', this );
+  this.allOff();
+  this.emitEvent('destroy');
+  if ( jQuery && this.$element ) {
+    jQuery.removeData( this.element, 'flickity' );
+  }
+  delete this.element.flickityGUID;
+  delete instances[ this.guid ];
+};
+
+// -------------------------- prototype -------------------------- //
+
+Object.assign( proto, animatePrototype );
+
+// -------------------------- extras -------------------------- //
+
+/**
+ * get Flickity instance from element
+ * @param {[Element, String]} elem - element or selector string
+ * @returns {Flickity} - Flickity instance
+ */
+Flickity.data = function( elem ) {
+  elem = utils.getQueryElement( elem );
+  if ( elem ) return instances[ elem.flickityGUID ];
+};
+
+utils.htmlInit( Flickity, 'flickity' );
+
+let { jQueryBridget } = window;
+if ( jQuery && jQueryBridget ) {
+  jQueryBridget( 'flickity', Flickity, jQuery );
+}
+
+// set internal jQuery, for Webpack + jQuery v3, #478
+Flickity.setJQuery = function( jq ) {
+  jQuery = jq;
+};
+
+Flickity.Cell = Cell;
+Flickity.Slide = Slide;
+
+return Flickity;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 9690:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// drag
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        window,
+        __webpack_require__(6680),
+        __webpack_require__(4842),
+        __webpack_require__(9047),
+    );
+  } else {
+    // browser global
+    window.Flickity = factory(
+        window,
+        window.Flickity,
+        window.Unidragger,
+        window.fizzyUIUtils,
+    );
+  }
+
+}( typeof window != 'undefined' ? window : this,
+    function factory( window, Flickity, Unidragger, utils ) {
+
+// ----- defaults ----- //
+
+Object.assign( Flickity.defaults, {
+  draggable: '>1',
+  dragThreshold: 3,
+} );
+
+// -------------------------- drag prototype -------------------------- //
+
+let proto = Flickity.prototype;
+Object.assign( proto, Unidragger.prototype ); // inherit Unidragger
+proto.touchActionValue = '';
+
+// --------------------------  -------------------------- //
+
+Flickity.create.drag = function() {
+  this.on( 'activate', this.onActivateDrag );
+  this.on( 'uiChange', this._uiChangeDrag );
+  this.on( 'deactivate', this.onDeactivateDrag );
+  this.on( 'cellChange', this.updateDraggable );
+  this.on( 'pointerDown', this.handlePointerDown );
+  this.on( 'pointerUp', this.handlePointerUp );
+  this.on( 'pointerDown', this.handlePointerDone );
+  this.on( 'dragStart', this.handleDragStart );
+  this.on( 'dragMove', this.handleDragMove );
+  this.on( 'dragEnd', this.handleDragEnd );
+  this.on( 'staticClick', this.handleStaticClick );
+  // TODO updateDraggable on resize? if groupCells & slides change
+};
+
+proto.onActivateDrag = function() {
+  this.handles = [ this.viewport ];
+  this.bindHandles();
+  this.updateDraggable();
+};
+
+proto.onDeactivateDrag = function() {
+  this.unbindHandles();
+  this.element.classList.remove('is-draggable');
+};
+
+proto.updateDraggable = function() {
+  // disable dragging if less than 2 slides. #278
+  if ( this.options.draggable === '>1' ) {
+    this.isDraggable = this.slides.length > 1;
+  } else {
+    this.isDraggable = this.options.draggable;
+  }
+  this.element.classList.toggle( 'is-draggable', this.isDraggable );
+};
+
+proto._uiChangeDrag = function() {
+  delete this.isFreeScrolling;
+};
+
+// -------------------------- pointer events -------------------------- //
+
+proto.handlePointerDown = function( event ) {
+  if ( !this.isDraggable ) {
+    // proceed for staticClick
+    this.bindActivePointerEvents( event );
+    return;
+  }
+
+  let isTouchStart = event.type === 'touchstart';
+  let isTouchPointer = event.pointerType === 'touch';
+  let isFocusNode = event.target.matches('input, textarea, select');
+  if ( !isTouchStart && !isTouchPointer && !isFocusNode ) event.preventDefault();
+  if ( !isFocusNode ) this.focus();
+  // blur
+  if ( document.activeElement !== this.element ) document.activeElement.blur();
+  // stop if it was moving
+  this.dragX = this.x;
+  this.viewport.classList.add('is-pointer-down');
+  // track scrolling
+  this.pointerDownScroll = getScrollPosition();
+  window.addEventListener( 'scroll', this );
+  this.bindActivePointerEvents( event );
+};
+
+// ----- move ----- //
+
+proto.hasDragStarted = function( moveVector ) {
+  return Math.abs( moveVector.x ) > this.options.dragThreshold;
+};
+
+// ----- up ----- //
+
+proto.handlePointerUp = function() {
+  delete this.isTouchScrolling;
+  this.viewport.classList.remove('is-pointer-down');
+};
+
+proto.handlePointerDone = function() {
+  window.removeEventListener( 'scroll', this );
+  delete this.pointerDownScroll;
+};
+
+// -------------------------- dragging -------------------------- //
+
+proto.handleDragStart = function() {
+  if ( !this.isDraggable ) return;
+
+  this.dragStartPosition = this.x;
+  this.startAnimation();
+  window.removeEventListener( 'scroll', this );
+};
+
+proto.handleDragMove = function( event, pointer, moveVector ) {
+  if ( !this.isDraggable ) return;
+
+  event.preventDefault();
+
+  this.previousDragX = this.dragX;
+  // reverse if right-to-left
+  let direction = this.options.rightToLeft ? -1 : 1;
+  // wrap around move. #589
+  if ( this.isWrapping ) moveVector.x %= this.slideableWidth;
+  let dragX = this.dragStartPosition + moveVector.x * direction;
+
+  if ( !this.isWrapping ) {
+    // slow drag
+    let originBound = Math.max( -this.slides[0].target, this.dragStartPosition );
+    dragX = dragX > originBound ? ( dragX + originBound ) * 0.5 : dragX;
+    let endBound = Math.min( -this.getLastSlide().target, this.dragStartPosition );
+    dragX = dragX < endBound ? ( dragX + endBound ) * 0.5 : dragX;
+  }
+
+  this.dragX = dragX;
+  this.dragMoveTime = new Date();
+};
+
+proto.handleDragEnd = function() {
+  if ( !this.isDraggable ) return;
+
+  let { freeScroll } = this.options;
+  if ( freeScroll ) this.isFreeScrolling = true;
+  // set selectedIndex based on where flick will end up
+  let index = this.dragEndRestingSelect();
+
+  if ( freeScroll && !this.isWrapping ) {
+    // if free-scroll & not wrap around
+    // do not free-scroll if going outside of bounding slides
+    // so bounding slides can attract slider, and keep it in bounds
+    let restingX = this.getRestingPosition();
+    this.isFreeScrolling = -restingX > this.slides[0].target &&
+      -restingX < this.getLastSlide().target;
+  } else if ( !freeScroll && index === this.selectedIndex ) {
+    // boost selection if selected index has not changed
+    index += this.dragEndBoostSelect();
+  }
+  delete this.previousDragX;
+  // apply selection
+  // HACK, set flag so dragging stays in correct direction
+  this.isDragSelect = this.isWrapping;
+  this.select( index );
+  delete this.isDragSelect;
+};
+
+proto.dragEndRestingSelect = function() {
+  let restingX = this.getRestingPosition();
+  // how far away from selected slide
+  let distance = Math.abs( this.getSlideDistance( -restingX, this.selectedIndex ) );
+  // get closet resting going up and going down
+  let positiveResting = this._getClosestResting( restingX, distance, 1 );
+  let negativeResting = this._getClosestResting( restingX, distance, -1 );
+  // use closer resting for wrap-around
+  return positiveResting.distance < negativeResting.distance ?
+    positiveResting.index : negativeResting.index;
+};
+
+/**
+ * given resting X and distance to selected cell
+ * get the distance and index of the closest cell
+ * @param {Number} restingX - estimated post-flick resting position
+ * @param {Number} distance - distance to selected cell
+ * @param {Integer} increment - +1 or -1, going up or down
+ * @returns {Object} - { distance: {Number}, index: {Integer} }
+ */
+proto._getClosestResting = function( restingX, distance, increment ) {
+  let index = this.selectedIndex;
+  let minDistance = Infinity;
+  let condition = this.options.contain && !this.isWrapping ?
+    // if containing, keep going if distance is equal to minDistance
+    ( dist, minDist ) => dist <= minDist :
+    ( dist, minDist ) => dist < minDist;
+
+  while ( condition( distance, minDistance ) ) {
+    // measure distance to next cell
+    index += increment;
+    minDistance = distance;
+    distance = this.getSlideDistance( -restingX, index );
+    if ( distance === null ) break;
+
+    distance = Math.abs( distance );
+  }
+  return {
+    distance: minDistance,
+    // selected was previous index
+    index: index - increment,
+  };
+};
+
+/**
+ * measure distance between x and a slide target
+ * @param {Number} x - horizontal position
+ * @param {Integer} index - slide index
+ * @returns {Number} - slide distance
+ */
+proto.getSlideDistance = function( x, index ) {
+  let len = this.slides.length;
+  // wrap around if at least 2 slides
+  let isWrapAround = this.options.wrapAround && len > 1;
+  let slideIndex = isWrapAround ? utils.modulo( index, len ) : index;
+  let slide = this.slides[ slideIndex ];
+  if ( !slide ) return null;
+
+  // add distance for wrap-around slides
+  let wrap = isWrapAround ? this.slideableWidth * Math.floor( index/len ) : 0;
+  return x - ( slide.target + wrap );
+};
+
+proto.dragEndBoostSelect = function() {
+  // do not boost if no previousDragX or dragMoveTime
+  if ( this.previousDragX === undefined || !this.dragMoveTime ||
+    // or if drag was held for 100 ms
+    new Date() - this.dragMoveTime > 100 ) {
+    return 0;
+  }
+
+  let distance = this.getSlideDistance( -this.dragX, this.selectedIndex );
+  let delta = this.previousDragX - this.dragX;
+  if ( distance > 0 && delta > 0 ) {
+    // boost to next if moving towards the right, and positive velocity
+    return 1;
+  } else if ( distance < 0 && delta < 0 ) {
+    // boost to previous if moving towards the left, and negative velocity
+    return -1;
+  }
+  return 0;
+};
+
+// ----- scroll ----- //
+
+proto.onscroll = function() {
+  let scroll = getScrollPosition();
+  let scrollMoveX = this.pointerDownScroll.x - scroll.x;
+  let scrollMoveY = this.pointerDownScroll.y - scroll.y;
+  // cancel click/tap if scroll is too much
+  if ( Math.abs( scrollMoveX ) > 3 || Math.abs( scrollMoveY ) > 3 ) {
+    this.pointerDone();
+  }
+};
+
+// ----- utils ----- //
+
+function getScrollPosition() {
+  return {
+    x: window.pageXOffset,
+    y: window.pageYOffset,
+  };
+}
+
+// -----  ----- //
+
+return Flickity;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 2835:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// imagesloaded
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        __webpack_require__(6680),
+        __webpack_require__(7564),
+    );
+  } else {
+    // browser global
+    factory(
+        window.Flickity,
+        window.imagesLoaded,
+    );
+  }
+
+}( typeof window != 'undefined' ? window : this,
+    function factory( Flickity, imagesLoaded ) {
+
+Flickity.create.imagesLoaded = function() {
+  this.on( 'activate', this.imagesLoaded );
+};
+
+Flickity.prototype.imagesLoaded = function() {
+  if ( !this.options.imagesLoaded ) return;
+
+  let onImagesLoadedProgress = ( instance, image ) => {
+    let cell = this.getParentCell( image.img );
+    this.cellSizeChange( cell && cell.element );
+    if ( !this.options.freeScroll ) this.positionSliderAtSelected();
+  };
+  imagesLoaded( this.slider ).on( 'progress', onImagesLoadedProgress );
+};
+
+return Flickity;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 2442:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/*!
+ * Flickity v3.0.0
+ * Touch, responsive, flickable carousels
+ *
+ * Licensed GPLv3 for open source use
+ * or Flickity Commercial License for commercial use
+ *
+ * https://flickity.metafizzy.co
+ * Copyright 2015-2022 Metafizzy
+ */
+
+if (  true && module.exports ) {
+  const Flickity = __webpack_require__(6680);
+  __webpack_require__(9690);
+  __webpack_require__(2410);
+  __webpack_require__(7573);
+  __webpack_require__(8516);
+  __webpack_require__(3597);
+  __webpack_require__(7227);
+  __webpack_require__(2835);
+
+  module.exports = Flickity;
+}
+
+
+/***/ }),
+
+/***/ 7227:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// lazyload
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        __webpack_require__(6680),
+        __webpack_require__(9047),
+    );
+  } else {
+    // browser global
+    factory(
+        window.Flickity,
+        window.fizzyUIUtils,
+    );
+  }
+
+}( typeof window != 'undefined' ? window : this, function factory( Flickity, utils ) {
+
+const lazyAttr = 'data-flickity-lazyload';
+const lazySrcAttr = `${lazyAttr}-src`;
+const lazySrcsetAttr = `${lazyAttr}-srcset`;
+const imgSelector = `img[${lazyAttr}], img[${lazySrcAttr}], ` +
+  `img[${lazySrcsetAttr}], source[${lazySrcsetAttr}]`;
+
+Flickity.create.lazyLoad = function() {
+  this.on( 'select', this.lazyLoad );
+
+  this.handleLazyLoadComplete = this.onLazyLoadComplete.bind( this );
+};
+
+let proto = Flickity.prototype;
+
+proto.lazyLoad = function() {
+  let { lazyLoad } = this.options;
+  if ( !lazyLoad ) return;
+
+  // get adjacent cells, use lazyLoad option for adjacent count
+  let adjCount = typeof lazyLoad == 'number' ? lazyLoad : 0;
+  // lazy load images
+  this.getAdjacentCellElements( adjCount )
+    .map( getCellLazyImages )
+    .flat()
+    .forEach( ( img ) => new LazyLoader( img, this.handleLazyLoadComplete ) );
+};
+
+function getCellLazyImages( cellElem ) {
+  // check if cell element is lazy image
+  if ( cellElem.matches('img') ) {
+    let cellAttr = cellElem.getAttribute( lazyAttr );
+    let cellSrcAttr = cellElem.getAttribute( lazySrcAttr );
+    let cellSrcsetAttr = cellElem.getAttribute( lazySrcsetAttr );
+    if ( cellAttr || cellSrcAttr || cellSrcsetAttr ) {
+      return cellElem;
+    }
+  }
+  // select lazy images in cell
+  return [ ...cellElem.querySelectorAll( imgSelector ) ];
+}
+
+proto.onLazyLoadComplete = function( img, event ) {
+  let cell = this.getParentCell( img );
+  let cellElem = cell && cell.element;
+  this.cellSizeChange( cellElem );
+
+  this.dispatchEvent( 'lazyLoad', event, cellElem );
+};
+
+// -------------------------- LazyLoader -------------------------- //
+
+/**
+ * class to handle loading images
+ * @param {Image} img - Image element
+ * @param {Function} onComplete - callback function
+ */
+function LazyLoader( img, onComplete ) {
+  this.img = img;
+  this.onComplete = onComplete;
+  this.load();
+}
+
+LazyLoader.prototype.handleEvent = utils.handleEvent;
+
+LazyLoader.prototype.load = function() {
+  this.img.addEventListener( 'load', this );
+  this.img.addEventListener( 'error', this );
+  // get src & srcset
+  let src = this.img.getAttribute( lazyAttr ) ||
+    this.img.getAttribute( lazySrcAttr );
+  let srcset = this.img.getAttribute( lazySrcsetAttr );
+  // set src & serset
+  this.img.src = src;
+  if ( srcset ) this.img.setAttribute( 'srcset', srcset );
+  // remove attr
+  this.img.removeAttribute( lazyAttr );
+  this.img.removeAttribute( lazySrcAttr );
+  this.img.removeAttribute( lazySrcsetAttr );
+};
+
+LazyLoader.prototype.onload = function( event ) {
+  this.complete( event, 'flickity-lazyloaded' );
+};
+
+LazyLoader.prototype.onerror = function( event ) {
+  this.complete( event, 'flickity-lazyerror' );
+};
+
+LazyLoader.prototype.complete = function( event, className ) {
+  // unbind events
+  this.img.removeEventListener( 'load', this );
+  this.img.removeEventListener( 'error', this );
+  let mediaElem = this.img.parentNode.matches('picture') ? this.img.parentNode : this.img;
+  mediaElem.classList.add( className );
+
+  this.onComplete( this.img, event );
+};
+
+// -----  ----- //
+
+Flickity.LazyLoader = LazyLoader;
+
+return Flickity;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 7573:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// page dots
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        __webpack_require__(6680),
+        __webpack_require__(9047),
+    );
+  } else {
+    // browser global
+    factory(
+        window.Flickity,
+        window.fizzyUIUtils,
+    );
+  }
+
+}( typeof window != 'undefined' ? window : this, function factory( Flickity, utils ) {
+
+// -------------------------- PageDots -------------------------- //
+
+function PageDots() {
+  // create holder element
+  this.holder = document.createElement('div');
+  this.holder.className = 'flickity-page-dots';
+  // create dots, array of elements
+  this.dots = [];
+}
+
+PageDots.prototype.setDots = function( slidesLength ) {
+  // get difference between number of slides and number of dots
+  let delta = slidesLength - this.dots.length;
+  if ( delta > 0 ) {
+    this.addDots( delta );
+  } else if ( delta < 0 ) {
+    this.removeDots( -delta );
+  }
+};
+
+PageDots.prototype.addDots = function( count ) {
+  let newDots = new Array( count ).fill()
+    .map( ( item, i ) => {
+      let dot = document.createElement('button');
+      dot.setAttribute( 'type', 'button' );
+      let num = i + 1 + this.dots.length;
+      dot.className = 'flickity-page-dot';
+      dot.textContent = `View slide ${num}`;
+      return dot;
+    } );
+
+  this.holder.append( ...newDots );
+  this.dots = this.dots.concat( newDots );
+};
+
+PageDots.prototype.removeDots = function( count ) {
+  // remove from this.dots collection
+  let removeDots = this.dots.splice( this.dots.length - count, count );
+  // remove from DOM
+  removeDots.forEach( ( dot ) => dot.remove() );
+};
+
+PageDots.prototype.updateSelected = function( index ) {
+  // remove selected class on previous
+  if ( this.selectedDot ) {
+    this.selectedDot.classList.remove('is-selected');
+    this.selectedDot.removeAttribute('aria-current');
+  }
+  // don't proceed if no dots
+  if ( !this.dots.length ) return;
+
+  this.selectedDot = this.dots[ index ];
+  this.selectedDot.classList.add('is-selected');
+  this.selectedDot.setAttribute( 'aria-current', 'step' );
+};
+
+Flickity.PageDots = PageDots;
+
+// -------------------------- Flickity -------------------------- //
+
+Object.assign( Flickity.defaults, {
+  pageDots: true,
+} );
+
+Flickity.create.pageDots = function() {
+  if ( !this.options.pageDots ) return;
+
+  this.pageDots = new PageDots();
+  this.handlePageDotsClick = this.onPageDotsClick.bind( this );
+  // events
+  this.on( 'activate', this.activatePageDots );
+  this.on( 'select', this.updateSelectedPageDots );
+  this.on( 'cellChange', this.updatePageDots );
+  this.on( 'resize', this.updatePageDots );
+  this.on( 'deactivate', this.deactivatePageDots );
+};
+
+let proto = Flickity.prototype;
+
+proto.activatePageDots = function() {
+  this.pageDots.setDots( this.slides.length );
+  this.focusableElems.push( ...this.pageDots.dots );
+  this.pageDots.holder.addEventListener( 'click', this.handlePageDotsClick );
+  this.element.append( this.pageDots.holder );
+};
+
+proto.onPageDotsClick = function( event ) {
+  let index = this.pageDots.dots.indexOf( event.target );
+  if ( index === -1 ) return; // only dot clicks
+
+  this.uiChange();
+  this.select( index );
+};
+
+proto.updateSelectedPageDots = function() {
+  this.pageDots.updateSelected( this.selectedIndex );
+};
+
+proto.updatePageDots = function() {
+  this.pageDots.dots.forEach( ( dot ) => {
+    utils.removeFrom( this.focusableElems, dot );
+  } );
+  this.pageDots.setDots( this.slides.length );
+  this.focusableElems.push( ...this.pageDots.dots );
+};
+
+proto.deactivatePageDots = function() {
+  this.pageDots.holder.remove();
+  this.pageDots.holder.removeEventListener( 'click', this.handlePageDotsClick );
+};
+
+// -----  ----- //
+
+Flickity.PageDots = PageDots;
+
+return Flickity;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 8516:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// player & autoPlay
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory( __webpack_require__(6680) );
+  } else {
+    // browser global
+    factory( window.Flickity );
+  }
+
+}( typeof window != 'undefined' ? window : this, function factory( Flickity ) {
+
+// -------------------------- Player -------------------------- //
+
+function Player( autoPlay, onTick ) {
+  this.autoPlay = autoPlay;
+  this.onTick = onTick;
+  this.state = 'stopped';
+  // visibility change event handler
+  this.onVisibilityChange = this.visibilityChange.bind( this );
+  this.onVisibilityPlay = this.visibilityPlay.bind( this );
+}
+
+// start play
+Player.prototype.play = function() {
+  if ( this.state === 'playing' ) return;
+
+  // do not play if page is hidden, start playing when page is visible
+  let isPageHidden = document.hidden;
+  if ( isPageHidden ) {
+    document.addEventListener( 'visibilitychange', this.onVisibilityPlay );
+    return;
+  }
+
+  this.state = 'playing';
+  // listen to visibility change
+  document.addEventListener( 'visibilitychange', this.onVisibilityChange );
+  // start ticking
+  this.tick();
+};
+
+Player.prototype.tick = function() {
+  // do not tick if not playing
+  if ( this.state !== 'playing' ) return;
+
+  // default to 3 seconds
+  let time = typeof this.autoPlay == 'number' ? this.autoPlay : 3000;
+  // HACK: reset ticks if stopped and started within interval
+  this.clear();
+  this.timeout = setTimeout( () => {
+    this.onTick();
+    this.tick();
+  }, time );
+};
+
+Player.prototype.stop = function() {
+  this.state = 'stopped';
+  this.clear();
+  // remove visibility change event
+  document.removeEventListener( 'visibilitychange', this.onVisibilityChange );
+};
+
+Player.prototype.clear = function() {
+  clearTimeout( this.timeout );
+};
+
+Player.prototype.pause = function() {
+  if ( this.state === 'playing' ) {
+    this.state = 'paused';
+    this.clear();
+  }
+};
+
+Player.prototype.unpause = function() {
+  // re-start play if paused
+  if ( this.state === 'paused' ) this.play();
+};
+
+// pause if page visibility is hidden, unpause if visible
+Player.prototype.visibilityChange = function() {
+  let isPageHidden = document.hidden;
+  this[ isPageHidden ? 'pause' : 'unpause' ]();
+};
+
+Player.prototype.visibilityPlay = function() {
+  this.play();
+  document.removeEventListener( 'visibilitychange', this.onVisibilityPlay );
+};
+
+// -------------------------- Flickity -------------------------- //
+
+Object.assign( Flickity.defaults, {
+  pauseAutoPlayOnHover: true,
+} );
+
+Flickity.create.player = function() {
+  this.player = new Player( this.options.autoPlay, () => {
+    this.next( true );
+  } );
+
+  this.on( 'activate', this.activatePlayer );
+  this.on( 'uiChange', this.stopPlayer );
+  this.on( 'pointerDown', this.stopPlayer );
+  this.on( 'deactivate', this.deactivatePlayer );
+};
+
+let proto = Flickity.prototype;
+
+proto.activatePlayer = function() {
+  if ( !this.options.autoPlay ) return;
+
+  this.player.play();
+  this.element.addEventListener( 'mouseenter', this );
+};
+
+// Player API, don't hate the ... thanks I know where the door is
+
+proto.playPlayer = function() {
+  this.player.play();
+};
+
+proto.stopPlayer = function() {
+  this.player.stop();
+};
+
+proto.pausePlayer = function() {
+  this.player.pause();
+};
+
+proto.unpausePlayer = function() {
+  this.player.unpause();
+};
+
+proto.deactivatePlayer = function() {
+  this.player.stop();
+  this.element.removeEventListener( 'mouseenter', this );
+};
+
+// ----- mouseenter/leave ----- //
+
+// pause auto-play on hover
+proto.onmouseenter = function() {
+  if ( !this.options.pauseAutoPlayOnHover ) return;
+
+  this.player.pause();
+  this.element.addEventListener( 'mouseleave', this );
+};
+
+// resume auto-play on hover off
+proto.onmouseleave = function() {
+  this.player.unpause();
+  this.element.removeEventListener( 'mouseleave', this );
+};
+
+// -----  ----- //
+
+Flickity.Player = Player;
+
+return Flickity;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 2410:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// prev/next buttons
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory( __webpack_require__(6680) );
+  } else {
+    // browser global
+    factory( window.Flickity );
+  }
+
+}( typeof window != 'undefined' ? window : this, function factory( Flickity ) {
+
+const svgURI = 'http://www.w3.org/2000/svg';
+
+// -------------------------- PrevNextButton -------------------------- //
+
+function PrevNextButton( increment, direction, arrowShape ) {
+  this.increment = increment;
+  this.direction = direction;
+  this.isPrevious = increment === 'previous';
+  this.isLeft = direction === 'left';
+  this._create( arrowShape );
+}
+
+PrevNextButton.prototype._create = function( arrowShape ) {
+  // properties
+  let element = this.element = document.createElement('button');
+  element.className = `flickity-button flickity-prev-next-button ${this.increment}`;
+  let label = this.isPrevious ? 'Previous' : 'Next';
+  // prevent button from submitting form https://stackoverflow.com/a/10836076/182183
+  element.setAttribute( 'type', 'button' );
+  element.setAttribute( 'aria-label', label );
+  // init as disabled
+  this.disable();
+  // create arrow
+  let svg = this.createSVG( label, arrowShape );
+  element.append( svg );
+};
+
+PrevNextButton.prototype.createSVG = function( label, arrowShape ) {
+  let svg = document.createElementNS( svgURI, 'svg' );
+  svg.setAttribute( 'class', 'flickity-button-icon' );
+  svg.setAttribute( 'viewBox', '0 0 100 100' );
+  // add title #1189
+  let title = document.createElementNS( svgURI, 'title' );
+  title.append( label );
+  // add path
+  let path = document.createElementNS( svgURI, 'path' );
+  let pathMovements = getArrowMovements( arrowShape );
+  path.setAttribute( 'd', pathMovements );
+  path.setAttribute( 'class', 'arrow' );
+  // rotate arrow
+  if ( !this.isLeft ) {
+    path.setAttribute( 'transform', 'translate(100, 100) rotate(180)' );
+  }
+  svg.append( title, path );
+  return svg;
+};
+
+// get SVG path movmement
+function getArrowMovements( shape ) {
+  // use shape as movement if string
+  if ( typeof shape == 'string' ) return shape;
+
+  let { x0, x1, x2, x3, y1, y2 } = shape;
+
+  // create movement string
+  return `M ${x0}, 50
+    L ${x1}, ${y1 + 50}
+    L ${x2}, ${y2 + 50}
+    L ${x3}, 50
+    L ${x2}, ${50 - y2}
+    L ${x1}, ${50 - y1}
+    Z`;
+}
+
+// -----  ----- //
+
+PrevNextButton.prototype.enable = function() {
+  this.element.removeAttribute('disabled');
+};
+
+PrevNextButton.prototype.disable = function() {
+  this.element.setAttribute( 'disabled', true );
+};
+
+// -------------------------- Flickity prototype -------------------------- //
+
+Object.assign( Flickity.defaults, {
+  prevNextButtons: true,
+  arrowShape: {
+    x0: 10,
+    x1: 60, y1: 50,
+    x2: 70, y2: 40,
+    x3: 30,
+  },
+} );
+
+Flickity.create.prevNextButtons = function() {
+  if ( !this.options.prevNextButtons ) return;
+
+  let { rightToLeft, arrowShape } = this.options;
+  let prevDirection = rightToLeft ? 'right' : 'left';
+  let nextDirection = rightToLeft ? 'left' : 'right';
+  this.prevButton = new PrevNextButton( 'previous', prevDirection, arrowShape );
+  this.nextButton = new PrevNextButton( 'next', nextDirection, arrowShape );
+  this.focusableElems.push( this.prevButton.element );
+  this.focusableElems.push( this.nextButton.element );
+
+  this.handlePrevButtonClick = () => {
+    this.uiChange();
+    this.previous();
+  };
+
+  this.handleNextButtonClick = () => {
+    this.uiChange();
+    this.next();
+  };
+
+  this.on( 'activate', this.activatePrevNextButtons );
+  this.on( 'select', this.updatePrevNextButtons );
+};
+
+let proto = Flickity.prototype;
+
+proto.updatePrevNextButtons = function() {
+  let lastIndex = this.slides.length ? this.slides.length - 1 : 0;
+  this.updatePrevNextButton( this.prevButton, 0 );
+  this.updatePrevNextButton( this.nextButton, lastIndex );
+};
+
+proto.updatePrevNextButton = function( button, disabledIndex ) {
+  // enable is wrapAround and at least 2 slides
+  if ( this.isWrapping && this.slides.length > 1 ) {
+    button.enable();
+    return;
+  }
+
+  let isEnabled = this.selectedIndex !== disabledIndex;
+  button[ isEnabled ? 'enable' : 'disable' ]();
+  // if disabling button that is focused,
+  // shift focus to element to maintain keyboard accessibility
+  let isDisabledFocused = !isEnabled && document.activeElement === button.element;
+  if ( isDisabledFocused ) this.focus();
+};
+
+proto.activatePrevNextButtons = function() {
+  this.prevButton.element.addEventListener( 'click', this.handlePrevButtonClick );
+  this.nextButton.element.addEventListener( 'click', this.handleNextButtonClick );
+  this.element.append( this.prevButton.element, this.nextButton.element );
+  this.on( 'deactivate', this.deactivatePrevNextButtons );
+};
+
+proto.deactivatePrevNextButtons = function() {
+  this.prevButton.element.remove();
+  this.nextButton.element.remove();
+  this.prevButton.element.removeEventListener( 'click', this.handlePrevButtonClick );
+  this.nextButton.element.removeEventListener( 'click', this.handleNextButtonClick );
+  this.off( 'deactivate', this.deactivatePrevNextButtons );
+};
+
+// --------------------------  -------------------------- //
+
+Flickity.PrevNextButton = PrevNextButton;
+
+return Flickity;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 9714:
+/***/ (function(module) {
+
+// slide
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory();
+  } else {
+    // browser global
+    window.Flickity = window.Flickity || {};
+    window.Flickity.Slide = factory();
+  }
+
+}( typeof window != 'undefined' ? window : this, function factory() {
+
+function Slide( beginMargin, endMargin, cellAlign ) {
+  this.beginMargin = beginMargin;
+  this.endMargin = endMargin;
+  this.cellAlign = cellAlign;
+  this.cells = [];
+  this.outerWidth = 0;
+  this.height = 0;
+}
+
+let proto = Slide.prototype;
+
+proto.addCell = function( cell ) {
+  this.cells.push( cell );
+  this.outerWidth += cell.size.outerWidth;
+  this.height = Math.max( cell.size.outerHeight, this.height );
+  // first cell stuff
+  if ( this.cells.length === 1 ) {
+    this.x = cell.x; // x comes from first cell
+    this.firstMargin = cell.size[ this.beginMargin ];
+  }
+};
+
+proto.updateTarget = function() {
+  let lastCell = this.getLastCell();
+  let lastMargin = lastCell ? lastCell.size[ this.endMargin ] : 0;
+  let slideWidth = this.outerWidth - ( this.firstMargin + lastMargin );
+  this.target = this.x + this.firstMargin + slideWidth * this.cellAlign;
+};
+
+proto.getLastCell = function() {
+  return this.cells[ this.cells.length - 1 ];
+};
+
+proto.select = function() {
+  this.cells.forEach( ( cell ) => cell.select() );
+};
+
+proto.unselect = function() {
+  this.cells.forEach( ( cell ) => cell.unselect() );
+};
+
+proto.getCellElements = function() {
+  return this.cells.map( ( cell ) => cell.element );
+};
+
+return Slide;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 137:
+/***/ (function(module) {
+
+/*!
+ * Infinite Scroll v2.0.4
+ * measure size of elements
+ * MIT license
+ */
+
+( function( window, factory ) {
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory();
+  } else {
+    // browser global
+    window.getSize = factory();
+  }
+
+} )( window, function factory() {
+
+// -------------------------- helpers -------------------------- //
+
+// get a number from a string, not a percentage
+function getStyleSize( value ) {
+  let num = parseFloat( value );
+  // not a percent like '100%', and a number
+  let isValid = value.indexOf('%') == -1 && !isNaN( num );
+  return isValid && num;
+}
+
+// -------------------------- measurements -------------------------- //
+
+let measurements = [
+  'paddingLeft',
+  'paddingRight',
+  'paddingTop',
+  'paddingBottom',
+  'marginLeft',
+  'marginRight',
+  'marginTop',
+  'marginBottom',
+  'borderLeftWidth',
+  'borderRightWidth',
+  'borderTopWidth',
+  'borderBottomWidth',
+];
+
+let measurementsLength = measurements.length;
+
+function getZeroSize() {
+  let size = {
+    width: 0,
+    height: 0,
+    innerWidth: 0,
+    innerHeight: 0,
+    outerWidth: 0,
+    outerHeight: 0,
+  };
+  measurements.forEach( ( measurement ) => {
+    size[ measurement ] = 0;
+  } );
+  return size;
+}
+
+// -------------------------- getSize -------------------------- //
+
+function getSize( elem ) {
+  // use querySeletor if elem is string
+  if ( typeof elem == 'string' ) elem = document.querySelector( elem );
+
+  // do not proceed on non-objects
+  let isElement = elem && typeof elem == 'object' && elem.nodeType;
+  if ( !isElement ) return;
+
+  let style = getComputedStyle( elem );
+
+  // if hidden, everything is 0
+  if ( style.display == 'none' ) return getZeroSize();
+
+  let size = {};
+  size.width = elem.offsetWidth;
+  size.height = elem.offsetHeight;
+
+  let isBorderBox = size.isBorderBox = style.boxSizing == 'border-box';
+
+  // get all measurements
+  measurements.forEach( ( measurement ) => {
+    let value = style[ measurement ];
+    let num = parseFloat( value );
+    // any 'auto', 'medium' value will be 0
+    size[ measurement ] = !isNaN( num ) ? num : 0;
+  } );
+
+  let paddingWidth = size.paddingLeft + size.paddingRight;
+  let paddingHeight = size.paddingTop + size.paddingBottom;
+  let marginWidth = size.marginLeft + size.marginRight;
+  let marginHeight = size.marginTop + size.marginBottom;
+  let borderWidth = size.borderLeftWidth + size.borderRightWidth;
+  let borderHeight = size.borderTopWidth + size.borderBottomWidth;
+
+  // overwrite width and height if we can get it from style
+  let styleWidth = getStyleSize( style.width );
+  if ( styleWidth !== false ) {
+    size.width = styleWidth +
+      // add padding and border unless it's already including it
+      ( isBorderBox ? 0 : paddingWidth + borderWidth );
+  }
+
+  let styleHeight = getStyleSize( style.height );
+  if ( styleHeight !== false ) {
+    size.height = styleHeight +
+      // add padding and border unless it's already including it
+      ( isBorderBox ? 0 : paddingHeight + borderHeight );
+  }
+
+  size.innerWidth = size.width - ( paddingWidth + borderWidth );
+  size.innerHeight = size.height - ( paddingHeight + borderHeight );
+
+  size.outerWidth = size.width + marginWidth;
+  size.outerHeight = size.height + marginHeight;
+
+  return size;
+}
+
+return getSize;
+
+} );
+
+
+/***/ }),
+
+/***/ 6131:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * getSize v2.0.3
+ * measure size of elements
+ * MIT license
+ */
+
+/* jshint browser: true, strict: true, undef: true, unused: true */
+/* globals console: false */
+
+( function( window, factory ) {
+  /* jshint strict: false */ /* globals define, module */
+  if ( true ) {
+    // AMD
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+		__WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+
+})( window, function factory() {
+'use strict';
+
+// -------------------------- helpers -------------------------- //
+
+// get a number from a string, not a percentage
+function getStyleSize( value ) {
+  var num = parseFloat( value );
+  // not a percent like '100%', and a number
+  var isValid = value.indexOf('%') == -1 && !isNaN( num );
+  return isValid && num;
+}
+
+function noop() {}
+
+var logError = typeof console == 'undefined' ? noop :
+  function( message ) {
+    console.error( message );
+  };
+
+// -------------------------- measurements -------------------------- //
+
+var measurements = [
+  'paddingLeft',
+  'paddingRight',
+  'paddingTop',
+  'paddingBottom',
+  'marginLeft',
+  'marginRight',
+  'marginTop',
+  'marginBottom',
+  'borderLeftWidth',
+  'borderRightWidth',
+  'borderTopWidth',
+  'borderBottomWidth'
+];
+
+var measurementsLength = measurements.length;
+
+function getZeroSize() {
+  var size = {
+    width: 0,
+    height: 0,
+    innerWidth: 0,
+    innerHeight: 0,
+    outerWidth: 0,
+    outerHeight: 0
+  };
+  for ( var i=0; i < measurementsLength; i++ ) {
+    var measurement = measurements[i];
+    size[ measurement ] = 0;
+  }
+  return size;
+}
+
+// -------------------------- getStyle -------------------------- //
+
+/**
+ * getStyle, get style of element, check for Firefox bug
+ * https://bugzilla.mozilla.org/show_bug.cgi?id=548397
+ */
+function getStyle( elem ) {
+  var style = getComputedStyle( elem );
+  if ( !style ) {
+    logError( 'Style returned ' + style +
+      '. Are you running this code in a hidden iframe on Firefox? ' +
+      'See https://bit.ly/getsizebug1' );
+  }
+  return style;
+}
+
+// -------------------------- setup -------------------------- //
+
+var isSetup = false;
+
+var isBoxSizeOuter;
+
+/**
+ * setup
+ * check isBoxSizerOuter
+ * do on first getSize() rather than on page load for Firefox bug
+ */
+function setup() {
+  // setup once
+  if ( isSetup ) {
+    return;
+  }
+  isSetup = true;
+
+  // -------------------------- box sizing -------------------------- //
+
+  /**
+   * Chrome & Safari measure the outer-width on style.width on border-box elems
+   * IE11 & Firefox<29 measures the inner-width
+   */
+  var div = document.createElement('div');
+  div.style.width = '200px';
+  div.style.padding = '1px 2px 3px 4px';
+  div.style.borderStyle = 'solid';
+  div.style.borderWidth = '1px 2px 3px 4px';
+  div.style.boxSizing = 'border-box';
+
+  var body = document.body || document.documentElement;
+  body.appendChild( div );
+  var style = getStyle( div );
+  // round value for browser zoom. desandro/masonry#928
+  isBoxSizeOuter = Math.round( getStyleSize( style.width ) ) == 200;
+  getSize.isBoxSizeOuter = isBoxSizeOuter;
+
+  body.removeChild( div );
+}
+
+// -------------------------- getSize -------------------------- //
+
+function getSize( elem ) {
+  setup();
+
+  // use querySeletor if elem is string
+  if ( typeof elem == 'string' ) {
+    elem = document.querySelector( elem );
+  }
+
+  // do not proceed on non-objects
+  if ( !elem || typeof elem != 'object' || !elem.nodeType ) {
+    return;
+  }
+
+  var style = getStyle( elem );
+
+  // if hidden, everything is 0
+  if ( style.display == 'none' ) {
+    return getZeroSize();
+  }
+
+  var size = {};
+  size.width = elem.offsetWidth;
+  size.height = elem.offsetHeight;
+
+  var isBorderBox = size.isBorderBox = style.boxSizing == 'border-box';
+
+  // get all measurements
+  for ( var i=0; i < measurementsLength; i++ ) {
+    var measurement = measurements[i];
+    var value = style[ measurement ];
+    var num = parseFloat( value );
+    // any 'auto', 'medium' value will be 0
+    size[ measurement ] = !isNaN( num ) ? num : 0;
+  }
+
+  var paddingWidth = size.paddingLeft + size.paddingRight;
+  var paddingHeight = size.paddingTop + size.paddingBottom;
+  var marginWidth = size.marginLeft + size.marginRight;
+  var marginHeight = size.marginTop + size.marginBottom;
+  var borderWidth = size.borderLeftWidth + size.borderRightWidth;
+  var borderHeight = size.borderTopWidth + size.borderBottomWidth;
+
+  var isBorderBoxSizeOuter = isBorderBox && isBoxSizeOuter;
+
+  // overwrite width and height if we can get it from style
+  var styleWidth = getStyleSize( style.width );
+  if ( styleWidth !== false ) {
+    size.width = styleWidth +
+      // add padding and border unless it's already including it
+      ( isBorderBoxSizeOuter ? 0 : paddingWidth + borderWidth );
+  }
+
+  var styleHeight = getStyleSize( style.height );
+  if ( styleHeight !== false ) {
+    size.height = styleHeight +
+      // add padding and border unless it's already including it
+      ( isBorderBoxSizeOuter ? 0 : paddingHeight + borderHeight );
+  }
+
+  size.innerWidth = size.width - ( paddingWidth + borderWidth );
+  size.innerHeight = size.height - ( paddingHeight + borderHeight );
+
+  size.outerWidth = size.width + marginWidth;
+  size.outerHeight = size.height + marginHeight;
+
+  return size;
+}
+
+return getSize;
+
+});
+
+
+/***/ }),
+
+/***/ 3876:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+;(function(global) {
+'use strict';
+
+var extend = __webpack_require__(7529);
+
+var hoverintent = function(el, over, out) {
+  var x, y, pX, pY;
+  var h = {},
+    state = 0,
+    timer = 0;
+
+  var options = {
+    sensitivity: 7,
+    interval: 100,
+    timeout: 0
+  };
+
+  function delay(el, outEvent, e) {
+    if (timer) timer = clearTimeout(timer);
+    state = 0;
+    return outEvent.call(el, e);
+  }
+
+  function dispatch(e, event, over) {
+    var tracker = function(e) {
+      x = e.clientX;
+      y = e.clientY;
+    };
+
+    if (timer) timer = clearTimeout(timer);
+    if (over) {
+      pX = e.clientX;
+      pY = e.clientY;
+      el.addEventListener('mousemove', tracker, false);
+
+      if (state !== 1) {
+        timer = setTimeout(function() {
+          compare(el, event, e);
+        }, options.interval);
+      }
+    } else {
+      el.removeEventListener('mousemove', tracker, false);
+
+      if (state === 1) {
+        timer = setTimeout(function() {
+          delay(el, event, e);
+        }, options.timeout);
+      }
+    }
+    return this;
+  }
+
+  function compare(el, overEvent, e) {
+    if (timer) timer = clearTimeout(timer);
+    if ((Math.abs(pX - x) + Math.abs(pY - y)) < options.sensitivity) {
+      state = 1;
+      return overEvent.call(el, e);
+    } else {
+      pX = x;
+      pY = y;
+      timer = setTimeout(function() {
+        compare(el, overEvent, e);
+      }, options.interval);
+    }
+  }
+
+  // Public methods
+  h.options = function(opt) {
+    options = extend({}, options, opt);
+  };
+
+  function dispatchOver(e) {
+    dispatch(e, over, true);
+  }
+
+  function dispatchOut(e) {
+    dispatch(e, out);
+  }
+
+  h.remove = function() {
+    if (!el) return;
+    el.removeEventListener('mouseover', dispatchOver, false);
+    el.removeEventListener('mouseout', dispatchOut, false);
+  };
+
+  if (el) {
+    el.addEventListener('mouseover', dispatchOver, false);
+    el.addEventListener('mouseout', dispatchOut, false);
+  }
+
+  return h;
+};
+
+global.hoverintent = hoverintent;
+if ( true && module.exports) module.exports = hoverintent;
+})(this);
+
+
+/***/ }),
+
+/***/ 7564:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/*!
+ * imagesLoaded v5.0.0
+ * JavaScript is all like "You images are done yet or what?"
+ * MIT License
+ */
+
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory( window, __webpack_require__(7158) );
+  } else {
+    // browser global
+    window.imagesLoaded = factory( window, window.EvEmitter );
+  }
+
+} )( typeof window !== 'undefined' ? window : this,
+    function factory( window, EvEmitter ) {
+
+let $ = window.jQuery;
+let console = window.console;
+
+// -------------------------- helpers -------------------------- //
+
+// turn element or nodeList into an array
+function makeArray( obj ) {
+  // use object if already an array
+  if ( Array.isArray( obj ) ) return obj;
+
+  let isArrayLike = typeof obj == 'object' && typeof obj.length == 'number';
+  // convert nodeList to array
+  if ( isArrayLike ) return [ ...obj ];
+
+  // array of single index
+  return [ obj ];
+}
+
+// -------------------------- imagesLoaded -------------------------- //
+
+/**
+ * @param {[Array, Element, NodeList, String]} elem
+ * @param {[Object, Function]} options - if function, use as callback
+ * @param {Function} onAlways - callback function
+ * @returns {ImagesLoaded}
+ */
+function ImagesLoaded( elem, options, onAlways ) {
+  // coerce ImagesLoaded() without new, to be new ImagesLoaded()
+  if ( !( this instanceof ImagesLoaded ) ) {
+    return new ImagesLoaded( elem, options, onAlways );
+  }
+  // use elem as selector string
+  let queryElem = elem;
+  if ( typeof elem == 'string' ) {
+    queryElem = document.querySelectorAll( elem );
+  }
+  // bail if bad element
+  if ( !queryElem ) {
+    console.error(`Bad element for imagesLoaded ${queryElem || elem}`);
+    return;
+  }
+
+  this.elements = makeArray( queryElem );
+  this.options = {};
+  // shift arguments if no options set
+  if ( typeof options == 'function' ) {
+    onAlways = options;
+  } else {
+    Object.assign( this.options, options );
+  }
+
+  if ( onAlways ) this.on( 'always', onAlways );
+
+  this.getImages();
+  // add jQuery Deferred object
+  if ( $ ) this.jqDeferred = new $.Deferred();
+
+  // HACK check async to allow time to bind listeners
+  setTimeout( this.check.bind( this ) );
+}
+
+ImagesLoaded.prototype = Object.create( EvEmitter.prototype );
+
+ImagesLoaded.prototype.getImages = function() {
+  this.images = [];
+
+  // filter & find items if we have an item selector
+  this.elements.forEach( this.addElementImages, this );
+};
+
+const elementNodeTypes = [ 1, 9, 11 ];
+
+/**
+ * @param {Node} elem
+ */
+ImagesLoaded.prototype.addElementImages = function( elem ) {
+  // filter siblings
+  if ( elem.nodeName === 'IMG' ) {
+    this.addImage( elem );
+  }
+  // get background image on element
+  if ( this.options.background === true ) {
+    this.addElementBackgroundImages( elem );
+  }
+
+  // find children
+  // no non-element nodes, #143
+  let { nodeType } = elem;
+  if ( !nodeType || !elementNodeTypes.includes( nodeType ) ) return;
+
+  let childImgs = elem.querySelectorAll('img');
+  // concat childElems to filterFound array
+  for ( let img of childImgs ) {
+    this.addImage( img );
+  }
+
+  // get child background images
+  if ( typeof this.options.background == 'string' ) {
+    let children = elem.querySelectorAll( this.options.background );
+    for ( let child of children ) {
+      this.addElementBackgroundImages( child );
+    }
+  }
+};
+
+const reURL = /url\((['"])?(.*?)\1\)/gi;
+
+ImagesLoaded.prototype.addElementBackgroundImages = function( elem ) {
+  let style = getComputedStyle( elem );
+  // Firefox returns null if in a hidden iframe https://bugzil.la/548397
+  if ( !style ) return;
+
+  // get url inside url("...")
+  let matches = reURL.exec( style.backgroundImage );
+  while ( matches !== null ) {
+    let url = matches && matches[2];
+    if ( url ) {
+      this.addBackground( url, elem );
+    }
+    matches = reURL.exec( style.backgroundImage );
+  }
+};
+
+/**
+ * @param {Image} img
+ */
+ImagesLoaded.prototype.addImage = function( img ) {
+  let loadingImage = new LoadingImage( img );
+  this.images.push( loadingImage );
+};
+
+ImagesLoaded.prototype.addBackground = function( url, elem ) {
+  let background = new Background( url, elem );
+  this.images.push( background );
+};
+
+ImagesLoaded.prototype.check = function() {
+  this.progressedCount = 0;
+  this.hasAnyBroken = false;
+  // complete if no images
+  if ( !this.images.length ) {
+    this.complete();
+    return;
+  }
+
+  /* eslint-disable-next-line func-style */
+  let onProgress = ( image, elem, message ) => {
+    // HACK - Chrome triggers event before object properties have changed. #83
+    setTimeout( () => {
+      this.progress( image, elem, message );
+    } );
+  };
+
+  this.images.forEach( function( loadingImage ) {
+    loadingImage.once( 'progress', onProgress );
+    loadingImage.check();
+  } );
+};
+
+ImagesLoaded.prototype.progress = function( image, elem, message ) {
+  this.progressedCount++;
+  this.hasAnyBroken = this.hasAnyBroken || !image.isLoaded;
+  // progress event
+  this.emitEvent( 'progress', [ this, image, elem ] );
+  if ( this.jqDeferred && this.jqDeferred.notify ) {
+    this.jqDeferred.notify( this, image );
+  }
+  // check if completed
+  if ( this.progressedCount === this.images.length ) {
+    this.complete();
+  }
+
+  if ( this.options.debug && console ) {
+    console.log( `progress: ${message}`, image, elem );
+  }
+};
+
+ImagesLoaded.prototype.complete = function() {
+  let eventName = this.hasAnyBroken ? 'fail' : 'done';
+  this.isComplete = true;
+  this.emitEvent( eventName, [ this ] );
+  this.emitEvent( 'always', [ this ] );
+  if ( this.jqDeferred ) {
+    let jqMethod = this.hasAnyBroken ? 'reject' : 'resolve';
+    this.jqDeferred[ jqMethod ]( this );
+  }
+};
+
+// --------------------------  -------------------------- //
+
+function LoadingImage( img ) {
+  this.img = img;
+}
+
+LoadingImage.prototype = Object.create( EvEmitter.prototype );
+
+LoadingImage.prototype.check = function() {
+  // If complete is true and browser supports natural sizes,
+  // try to check for image status manually.
+  let isComplete = this.getIsImageComplete();
+  if ( isComplete ) {
+    // report based on naturalWidth
+    this.confirm( this.img.naturalWidth !== 0, 'naturalWidth' );
+    return;
+  }
+
+  // If none of the checks above matched, simulate loading on detached element.
+  this.proxyImage = new Image();
+  // add crossOrigin attribute. #204
+  if ( this.img.crossOrigin ) {
+    this.proxyImage.crossOrigin = this.img.crossOrigin;
+  }
+  this.proxyImage.addEventListener( 'load', this );
+  this.proxyImage.addEventListener( 'error', this );
+  // bind to image as well for Firefox. #191
+  this.img.addEventListener( 'load', this );
+  this.img.addEventListener( 'error', this );
+  this.proxyImage.src = this.img.currentSrc || this.img.src;
+};
+
+LoadingImage.prototype.getIsImageComplete = function() {
+  // check for non-zero, non-undefined naturalWidth
+  // fixes Safari+InfiniteScroll+Masonry bug infinite-scroll#671
+  return this.img.complete && this.img.naturalWidth;
+};
+
+LoadingImage.prototype.confirm = function( isLoaded, message ) {
+  this.isLoaded = isLoaded;
+  let { parentNode } = this.img;
+  // emit progress with parent <picture> or self <img>
+  let elem = parentNode.nodeName === 'PICTURE' ? parentNode : this.img;
+  this.emitEvent( 'progress', [ this, elem, message ] );
+};
+
+// ----- events ----- //
+
+// trigger specified handler for event type
+LoadingImage.prototype.handleEvent = function( event ) {
+  let method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+LoadingImage.prototype.onload = function() {
+  this.confirm( true, 'onload' );
+  this.unbindEvents();
+};
+
+LoadingImage.prototype.onerror = function() {
+  this.confirm( false, 'onerror' );
+  this.unbindEvents();
+};
+
+LoadingImage.prototype.unbindEvents = function() {
+  this.proxyImage.removeEventListener( 'load', this );
+  this.proxyImage.removeEventListener( 'error', this );
+  this.img.removeEventListener( 'load', this );
+  this.img.removeEventListener( 'error', this );
+};
+
+// -------------------------- Background -------------------------- //
+
+function Background( url, element ) {
+  this.url = url;
+  this.element = element;
+  this.img = new Image();
+}
+
+// inherit LoadingImage prototype
+Background.prototype = Object.create( LoadingImage.prototype );
+
+Background.prototype.check = function() {
+  this.img.addEventListener( 'load', this );
+  this.img.addEventListener( 'error', this );
+  this.img.src = this.url;
+  // check if image is already complete
+  let isComplete = this.getIsImageComplete();
+  if ( isComplete ) {
+    this.confirm( this.img.naturalWidth !== 0, 'naturalWidth' );
+    this.unbindEvents();
+  }
+};
+
+Background.prototype.unbindEvents = function() {
+  this.img.removeEventListener( 'load', this );
+  this.img.removeEventListener( 'error', this );
+};
+
+Background.prototype.confirm = function( isLoaded, message ) {
+  this.isLoaded = isLoaded;
+  this.emitEvent( 'progress', [ this, this.element, message ] );
+};
+
+// -------------------------- jQuery -------------------------- //
+
+ImagesLoaded.makeJQueryPlugin = function( jQuery ) {
+  jQuery = jQuery || window.jQuery;
+  if ( !jQuery ) return;
+
+  // set local variable
+  $ = jQuery;
+  // $().imagesLoaded()
+  $.fn.imagesLoaded = function( options, onAlways ) {
+    let instance = new ImagesLoaded( this, options, onAlways );
+    return instance.jqDeferred.promise( $( this ) );
+  };
+};
+// try making plugin
+ImagesLoaded.makeJQueryPlugin();
+
+// --------------------------  -------------------------- //
+
+return ImagesLoaded;
+
+} );
+
+
+/***/ }),
+
+/***/ 8751:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * Masonry v4.2.2
+ * Cascading grid layout library
+ * https://masonry.desandro.com
+ * MIT License
+ * by David DeSandro
+ */
+
+( function( window, factory ) {
+  // universal module definition
+  /* jshint strict: false */ /*globals define, module, require */
+  if ( true ) {
+    // AMD
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+        __webpack_require__(1794),
+        __webpack_require__(6131)
+      ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+
+}( window, function factory( Outlayer, getSize ) {
+
+'use strict';
+
+// -------------------------- masonryDefinition -------------------------- //
+
+  // create an Outlayer layout class
+  var Masonry = Outlayer.create('masonry');
+  // isFitWidth -> fitWidth
+  Masonry.compatOptions.fitWidth = 'isFitWidth';
+
+  var proto = Masonry.prototype;
+
+  proto._resetLayout = function() {
+    this.getSize();
+    this._getMeasurement( 'columnWidth', 'outerWidth' );
+    this._getMeasurement( 'gutter', 'outerWidth' );
+    this.measureColumns();
+
+    // reset column Y
+    this.colYs = [];
+    for ( var i=0; i < this.cols; i++ ) {
+      this.colYs.push( 0 );
+    }
+
+    this.maxY = 0;
+    this.horizontalColIndex = 0;
+  };
+
+  proto.measureColumns = function() {
+    this.getContainerWidth();
+    // if columnWidth is 0, default to outerWidth of first item
+    if ( !this.columnWidth ) {
+      var firstItem = this.items[0];
+      var firstItemElem = firstItem && firstItem.element;
+      // columnWidth fall back to item of first element
+      this.columnWidth = firstItemElem && getSize( firstItemElem ).outerWidth ||
+        // if first elem has no width, default to size of container
+        this.containerWidth;
+    }
+
+    var columnWidth = this.columnWidth += this.gutter;
+
+    // calculate columns
+    var containerWidth = this.containerWidth + this.gutter;
+    var cols = containerWidth / columnWidth;
+    // fix rounding errors, typically with gutters
+    var excess = columnWidth - containerWidth % columnWidth;
+    // if overshoot is less than a pixel, round up, otherwise floor it
+    var mathMethod = excess && excess < 1 ? 'round' : 'floor';
+    cols = Math[ mathMethod ]( cols );
+    this.cols = Math.max( cols, 1 );
+  };
+
+  proto.getContainerWidth = function() {
+    // container is parent if fit width
+    var isFitWidth = this._getOption('fitWidth');
+    var container = isFitWidth ? this.element.parentNode : this.element;
+    // check that this.size and size are there
+    // IE8 triggers resize on body size change, so they might not be
+    var size = getSize( container );
+    this.containerWidth = size && size.innerWidth;
+  };
+
+  proto._getItemLayoutPosition = function( item ) {
+    item.getSize();
+    // how many columns does this brick span
+    var remainder = item.size.outerWidth % this.columnWidth;
+    var mathMethod = remainder && remainder < 1 ? 'round' : 'ceil';
+    // round if off by 1 pixel, otherwise use ceil
+    var colSpan = Math[ mathMethod ]( item.size.outerWidth / this.columnWidth );
+    colSpan = Math.min( colSpan, this.cols );
+    // use horizontal or top column position
+    var colPosMethod = this.options.horizontalOrder ?
+      '_getHorizontalColPosition' : '_getTopColPosition';
+    var colPosition = this[ colPosMethod ]( colSpan, item );
+    // position the brick
+    var position = {
+      x: this.columnWidth * colPosition.col,
+      y: colPosition.y
+    };
+    // apply setHeight to necessary columns
+    var setHeight = colPosition.y + item.size.outerHeight;
+    var setMax = colSpan + colPosition.col;
+    for ( var i = colPosition.col; i < setMax; i++ ) {
+      this.colYs[i] = setHeight;
+    }
+
+    return position;
+  };
+
+  proto._getTopColPosition = function( colSpan ) {
+    var colGroup = this._getTopColGroup( colSpan );
+    // get the minimum Y value from the columns
+    var minimumY = Math.min.apply( Math, colGroup );
+
+    return {
+      col: colGroup.indexOf( minimumY ),
+      y: minimumY,
+    };
+  };
+
+  /**
+   * @param {Number} colSpan - number of columns the element spans
+   * @returns {Array} colGroup
+   */
+  proto._getTopColGroup = function( colSpan ) {
+    if ( colSpan < 2 ) {
+      // if brick spans only one column, use all the column Ys
+      return this.colYs;
+    }
+
+    var colGroup = [];
+    // how many different places could this brick fit horizontally
+    var groupCount = this.cols + 1 - colSpan;
+    // for each group potential horizontal position
+    for ( var i = 0; i < groupCount; i++ ) {
+      colGroup[i] = this._getColGroupY( i, colSpan );
+    }
+    return colGroup;
+  };
+
+  proto._getColGroupY = function( col, colSpan ) {
+    if ( colSpan < 2 ) {
+      return this.colYs[ col ];
+    }
+    // make an array of colY values for that one group
+    var groupColYs = this.colYs.slice( col, col + colSpan );
+    // and get the max value of the array
+    return Math.max.apply( Math, groupColYs );
+  };
+
+  // get column position based on horizontal index. #873
+  proto._getHorizontalColPosition = function( colSpan, item ) {
+    var col = this.horizontalColIndex % this.cols;
+    var isOver = colSpan > 1 && col + colSpan > this.cols;
+    // shift to next row if item can't fit on current row
+    col = isOver ? 0 : col;
+    // don't let zero-size items take up space
+    var hasSize = item.size.outerWidth && item.size.outerHeight;
+    this.horizontalColIndex = hasSize ? col + colSpan : this.horizontalColIndex;
+
+    return {
+      col: col,
+      y: this._getColGroupY( col, colSpan ),
+    };
+  };
+
+  proto._manageStamp = function( stamp ) {
+    var stampSize = getSize( stamp );
+    var offset = this._getElementOffset( stamp );
+    // get the columns that this stamp affects
+    var isOriginLeft = this._getOption('originLeft');
+    var firstX = isOriginLeft ? offset.left : offset.right;
+    var lastX = firstX + stampSize.outerWidth;
+    var firstCol = Math.floor( firstX / this.columnWidth );
+    firstCol = Math.max( 0, firstCol );
+    var lastCol = Math.floor( lastX / this.columnWidth );
+    // lastCol should not go over if multiple of columnWidth #425
+    lastCol -= lastX % this.columnWidth ? 0 : 1;
+    lastCol = Math.min( this.cols - 1, lastCol );
+    // set colYs to bottom of the stamp
+
+    var isOriginTop = this._getOption('originTop');
+    var stampMaxY = ( isOriginTop ? offset.top : offset.bottom ) +
+      stampSize.outerHeight;
+    for ( var i = firstCol; i <= lastCol; i++ ) {
+      this.colYs[i] = Math.max( stampMaxY, this.colYs[i] );
+    }
+  };
+
+  proto._getContainerSize = function() {
+    this.maxY = Math.max.apply( Math, this.colYs );
+    var size = {
+      height: this.maxY
+    };
+
+    if ( this._getOption('fitWidth') ) {
+      size.width = this._getContainerFitWidth();
+    }
+
+    return size;
+  };
+
+  proto._getContainerFitWidth = function() {
+    var unusedCols = 0;
+    // count unused columns
+    var i = this.cols;
+    while ( --i ) {
+      if ( this.colYs[i] !== 0 ) {
+        break;
+      }
+      unusedCols++;
+    }
+    // fit container to columns that have been used
+    return ( this.cols - unusedCols ) * this.columnWidth - this.gutter;
+  };
+
+  proto.needsResizeLayout = function() {
+    var previousWidth = this.containerWidth;
+    this.getContainerWidth();
+    return previousWidth != this.containerWidth;
+  };
+
+  return Masonry;
+
+}));
+
+
+/***/ }),
+
+/***/ 652:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+ * Outlayer Item
+ */
+
+( function( window, factory ) {
+  // universal module definition
+  /* jshint strict: false */ /* globals define, module, require */
+  if ( true ) {
+    // AMD - RequireJS
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+        __webpack_require__(1206),
+        __webpack_require__(6131)
+      ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+
+}( window, function factory( EvEmitter, getSize ) {
+'use strict';
+
+// ----- helpers ----- //
+
+function isEmptyObj( obj ) {
+  for ( var prop in obj ) {
+    return false;
+  }
+  prop = null;
+  return true;
+}
+
+// -------------------------- CSS3 support -------------------------- //
+
+
+var docElemStyle = document.documentElement.style;
+
+var transitionProperty = typeof docElemStyle.transition == 'string' ?
+  'transition' : 'WebkitTransition';
+var transformProperty = typeof docElemStyle.transform == 'string' ?
+  'transform' : 'WebkitTransform';
+
+var transitionEndEvent = {
+  WebkitTransition: 'webkitTransitionEnd',
+  transition: 'transitionend'
+}[ transitionProperty ];
+
+// cache all vendor properties that could have vendor prefix
+var vendorProperties = {
+  transform: transformProperty,
+  transition: transitionProperty,
+  transitionDuration: transitionProperty + 'Duration',
+  transitionProperty: transitionProperty + 'Property',
+  transitionDelay: transitionProperty + 'Delay'
+};
+
+// -------------------------- Item -------------------------- //
+
+function Item( element, layout ) {
+  if ( !element ) {
+    return;
+  }
+
+  this.element = element;
+  // parent layout class, i.e. Masonry, Isotope, or Packery
+  this.layout = layout;
+  this.position = {
+    x: 0,
+    y: 0
+  };
+
+  this._create();
+}
+
+// inherit EvEmitter
+var proto = Item.prototype = Object.create( EvEmitter.prototype );
+proto.constructor = Item;
+
+proto._create = function() {
+  // transition objects
+  this._transn = {
+    ingProperties: {},
+    clean: {},
+    onEnd: {}
+  };
+
+  this.css({
+    position: 'absolute'
+  });
+};
+
+// trigger specified handler for event type
+proto.handleEvent = function( event ) {
+  var method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+proto.getSize = function() {
+  this.size = getSize( this.element );
+};
+
+/**
+ * apply CSS styles to element
+ * @param {Object} style
+ */
+proto.css = function( style ) {
+  var elemStyle = this.element.style;
+
+  for ( var prop in style ) {
+    // use vendor property if available
+    var supportedProp = vendorProperties[ prop ] || prop;
+    elemStyle[ supportedProp ] = style[ prop ];
+  }
+};
+
+ // measure position, and sets it
+proto.getPosition = function() {
+  var style = getComputedStyle( this.element );
+  var isOriginLeft = this.layout._getOption('originLeft');
+  var isOriginTop = this.layout._getOption('originTop');
+  var xValue = style[ isOriginLeft ? 'left' : 'right' ];
+  var yValue = style[ isOriginTop ? 'top' : 'bottom' ];
+  var x = parseFloat( xValue );
+  var y = parseFloat( yValue );
+  // convert percent to pixels
+  var layoutSize = this.layout.size;
+  if ( xValue.indexOf('%') != -1 ) {
+    x = ( x / 100 ) * layoutSize.width;
+  }
+  if ( yValue.indexOf('%') != -1 ) {
+    y = ( y / 100 ) * layoutSize.height;
+  }
+  // clean up 'auto' or other non-integer values
+  x = isNaN( x ) ? 0 : x;
+  y = isNaN( y ) ? 0 : y;
+  // remove padding from measurement
+  x -= isOriginLeft ? layoutSize.paddingLeft : layoutSize.paddingRight;
+  y -= isOriginTop ? layoutSize.paddingTop : layoutSize.paddingBottom;
+
+  this.position.x = x;
+  this.position.y = y;
+};
+
+// set settled position, apply padding
+proto.layoutPosition = function() {
+  var layoutSize = this.layout.size;
+  var style = {};
+  var isOriginLeft = this.layout._getOption('originLeft');
+  var isOriginTop = this.layout._getOption('originTop');
+
+  // x
+  var xPadding = isOriginLeft ? 'paddingLeft' : 'paddingRight';
+  var xProperty = isOriginLeft ? 'left' : 'right';
+  var xResetProperty = isOriginLeft ? 'right' : 'left';
+
+  var x = this.position.x + layoutSize[ xPadding ];
+  // set in percentage or pixels
+  style[ xProperty ] = this.getXValue( x );
+  // reset other property
+  style[ xResetProperty ] = '';
+
+  // y
+  var yPadding = isOriginTop ? 'paddingTop' : 'paddingBottom';
+  var yProperty = isOriginTop ? 'top' : 'bottom';
+  var yResetProperty = isOriginTop ? 'bottom' : 'top';
+
+  var y = this.position.y + layoutSize[ yPadding ];
+  // set in percentage or pixels
+  style[ yProperty ] = this.getYValue( y );
+  // reset other property
+  style[ yResetProperty ] = '';
+
+  this.css( style );
+  this.emitEvent( 'layout', [ this ] );
+};
+
+proto.getXValue = function( x ) {
+  var isHorizontal = this.layout._getOption('horizontal');
+  return this.layout.options.percentPosition && !isHorizontal ?
+    ( ( x / this.layout.size.width ) * 100 ) + '%' : x + 'px';
+};
+
+proto.getYValue = function( y ) {
+  var isHorizontal = this.layout._getOption('horizontal');
+  return this.layout.options.percentPosition && isHorizontal ?
+    ( ( y / this.layout.size.height ) * 100 ) + '%' : y + 'px';
+};
+
+proto._transitionTo = function( x, y ) {
+  this.getPosition();
+  // get current x & y from top/left
+  var curX = this.position.x;
+  var curY = this.position.y;
+
+  var didNotMove = x == this.position.x && y == this.position.y;
+
+  // save end position
+  this.setPosition( x, y );
+
+  // if did not move and not transitioning, just go to layout
+  if ( didNotMove && !this.isTransitioning ) {
+    this.layoutPosition();
+    return;
+  }
+
+  var transX = x - curX;
+  var transY = y - curY;
+  var transitionStyle = {};
+  transitionStyle.transform = this.getTranslate( transX, transY );
+
+  this.transition({
+    to: transitionStyle,
+    onTransitionEnd: {
+      transform: this.layoutPosition
+    },
+    isCleaning: true
+  });
+};
+
+proto.getTranslate = function( x, y ) {
+  // flip cooridinates if origin on right or bottom
+  var isOriginLeft = this.layout._getOption('originLeft');
+  var isOriginTop = this.layout._getOption('originTop');
+  x = isOriginLeft ? x : -x;
+  y = isOriginTop ? y : -y;
+  return 'translate3d(' + x + 'px, ' + y + 'px, 0)';
+};
+
+// non transition + transform support
+proto.goTo = function( x, y ) {
+  this.setPosition( x, y );
+  this.layoutPosition();
+};
+
+proto.moveTo = proto._transitionTo;
+
+proto.setPosition = function( x, y ) {
+  this.position.x = parseFloat( x );
+  this.position.y = parseFloat( y );
+};
+
+// ----- transition ----- //
+
+/**
+ * @param {Object} style - CSS
+ * @param {Function} onTransitionEnd
+ */
+
+// non transition, just trigger callback
+proto._nonTransition = function( args ) {
+  this.css( args.to );
+  if ( args.isCleaning ) {
+    this._removeStyles( args.to );
+  }
+  for ( var prop in args.onTransitionEnd ) {
+    args.onTransitionEnd[ prop ].call( this );
+  }
+};
+
+/**
+ * proper transition
+ * @param {Object} args - arguments
+ *   @param {Object} to - style to transition to
+ *   @param {Object} from - style to start transition from
+ *   @param {Boolean} isCleaning - removes transition styles after transition
+ *   @param {Function} onTransitionEnd - callback
+ */
+proto.transition = function( args ) {
+  // redirect to nonTransition if no transition duration
+  if ( !parseFloat( this.layout.options.transitionDuration ) ) {
+    this._nonTransition( args );
+    return;
+  }
+
+  var _transition = this._transn;
+  // keep track of onTransitionEnd callback by css property
+  for ( var prop in args.onTransitionEnd ) {
+    _transition.onEnd[ prop ] = args.onTransitionEnd[ prop ];
+  }
+  // keep track of properties that are transitioning
+  for ( prop in args.to ) {
+    _transition.ingProperties[ prop ] = true;
+    // keep track of properties to clean up when transition is done
+    if ( args.isCleaning ) {
+      _transition.clean[ prop ] = true;
+    }
+  }
+
+  // set from styles
+  if ( args.from ) {
+    this.css( args.from );
+    // force redraw. http://blog.alexmaccaw.com/css-transitions
+    var h = this.element.offsetHeight;
+    // hack for JSHint to hush about unused var
+    h = null;
+  }
+  // enable transition
+  this.enableTransition( args.to );
+  // set styles that are transitioning
+  this.css( args.to );
+
+  this.isTransitioning = true;
+
+};
+
+// dash before all cap letters, including first for
+// WebkitTransform => -webkit-transform
+function toDashedAll( str ) {
+  return str.replace( /([A-Z])/g, function( $1 ) {
+    return '-' + $1.toLowerCase();
+  });
+}
+
+var transitionProps = 'opacity,' + toDashedAll( transformProperty );
+
+proto.enableTransition = function(/* style */) {
+  // HACK changing transitionProperty during a transition
+  // will cause transition to jump
+  if ( this.isTransitioning ) {
+    return;
+  }
+
+  // make `transition: foo, bar, baz` from style object
+  // HACK un-comment this when enableTransition can work
+  // while a transition is happening
+  // var transitionValues = [];
+  // for ( var prop in style ) {
+  //   // dash-ify camelCased properties like WebkitTransition
+  //   prop = vendorProperties[ prop ] || prop;
+  //   transitionValues.push( toDashedAll( prop ) );
+  // }
+  // munge number to millisecond, to match stagger
+  var duration = this.layout.options.transitionDuration;
+  duration = typeof duration == 'number' ? duration + 'ms' : duration;
+  // enable transition styles
+  this.css({
+    transitionProperty: transitionProps,
+    transitionDuration: duration,
+    transitionDelay: this.staggerDelay || 0
+  });
+  // listen for transition end event
+  this.element.addEventListener( transitionEndEvent, this, false );
+};
+
+// ----- events ----- //
+
+proto.onwebkitTransitionEnd = function( event ) {
+  this.ontransitionend( event );
+};
+
+proto.onotransitionend = function( event ) {
+  this.ontransitionend( event );
+};
+
+// properties that I munge to make my life easier
+var dashedVendorProperties = {
+  '-webkit-transform': 'transform'
+};
+
+proto.ontransitionend = function( event ) {
+  // disregard bubbled events from children
+  if ( event.target !== this.element ) {
+    return;
+  }
+  var _transition = this._transn;
+  // get property name of transitioned property, convert to prefix-free
+  var propertyName = dashedVendorProperties[ event.propertyName ] || event.propertyName;
+
+  // remove property that has completed transitioning
+  delete _transition.ingProperties[ propertyName ];
+  // check if any properties are still transitioning
+  if ( isEmptyObj( _transition.ingProperties ) ) {
+    // all properties have completed transitioning
+    this.disableTransition();
+  }
+  // clean style
+  if ( propertyName in _transition.clean ) {
+    // clean up style
+    this.element.style[ event.propertyName ] = '';
+    delete _transition.clean[ propertyName ];
+  }
+  // trigger onTransitionEnd callback
+  if ( propertyName in _transition.onEnd ) {
+    var onTransitionEnd = _transition.onEnd[ propertyName ];
+    onTransitionEnd.call( this );
+    delete _transition.onEnd[ propertyName ];
+  }
+
+  this.emitEvent( 'transitionEnd', [ this ] );
+};
+
+proto.disableTransition = function() {
+  this.removeTransitionStyles();
+  this.element.removeEventListener( transitionEndEvent, this, false );
+  this.isTransitioning = false;
+};
+
+/**
+ * removes style property from element
+ * @param {Object} style
+**/
+proto._removeStyles = function( style ) {
+  // clean up transition styles
+  var cleanStyle = {};
+  for ( var prop in style ) {
+    cleanStyle[ prop ] = '';
+  }
+  this.css( cleanStyle );
+};
+
+var cleanTransitionStyle = {
+  transitionProperty: '',
+  transitionDuration: '',
+  transitionDelay: ''
+};
+
+proto.removeTransitionStyles = function() {
+  // remove transition
+  this.css( cleanTransitionStyle );
+};
+
+// ----- stagger ----- //
+
+proto.stagger = function( delay ) {
+  delay = isNaN( delay ) ? 0 : delay;
+  this.staggerDelay = delay + 'ms';
+};
+
+// ----- show/hide/remove ----- //
+
+// remove element from DOM
+proto.removeElem = function() {
+  this.element.parentNode.removeChild( this.element );
+  // remove display: none
+  this.css({ display: '' });
+  this.emitEvent( 'remove', [ this ] );
+};
+
+proto.remove = function() {
+  // just remove element if no transition support or no transition
+  if ( !transitionProperty || !parseFloat( this.layout.options.transitionDuration ) ) {
+    this.removeElem();
+    return;
+  }
+
+  // start transition
+  this.once( 'transitionEnd', function() {
+    this.removeElem();
+  });
+  this.hide();
+};
+
+proto.reveal = function() {
+  delete this.isHidden;
+  // remove display: none
+  this.css({ display: '' });
+
+  var options = this.layout.options;
+
+  var onTransitionEnd = {};
+  var transitionEndProperty = this.getHideRevealTransitionEndProperty('visibleStyle');
+  onTransitionEnd[ transitionEndProperty ] = this.onRevealTransitionEnd;
+
+  this.transition({
+    from: options.hiddenStyle,
+    to: options.visibleStyle,
+    isCleaning: true,
+    onTransitionEnd: onTransitionEnd
+  });
+};
+
+proto.onRevealTransitionEnd = function() {
+  // check if still visible
+  // during transition, item may have been hidden
+  if ( !this.isHidden ) {
+    this.emitEvent('reveal');
+  }
+};
+
+/**
+ * get style property use for hide/reveal transition end
+ * @param {String} styleProperty - hiddenStyle/visibleStyle
+ * @returns {String}
+ */
+proto.getHideRevealTransitionEndProperty = function( styleProperty ) {
+  var optionStyle = this.layout.options[ styleProperty ];
+  // use opacity
+  if ( optionStyle.opacity ) {
+    return 'opacity';
+  }
+  // get first property
+  for ( var prop in optionStyle ) {
+    return prop;
+  }
+};
+
+proto.hide = function() {
+  // set flag
+  this.isHidden = true;
+  // remove display: none
+  this.css({ display: '' });
+
+  var options = this.layout.options;
+
+  var onTransitionEnd = {};
+  var transitionEndProperty = this.getHideRevealTransitionEndProperty('hiddenStyle');
+  onTransitionEnd[ transitionEndProperty ] = this.onHideTransitionEnd;
+
+  this.transition({
+    from: options.visibleStyle,
+    to: options.hiddenStyle,
+    // keep hidden stuff hidden
+    isCleaning: true,
+    onTransitionEnd: onTransitionEnd
+  });
+};
+
+proto.onHideTransitionEnd = function() {
+  // check if still hidden
+  // during transition, item may have been un-hidden
+  if ( this.isHidden ) {
+    this.css({ display: 'none' });
+    this.emitEvent('hide');
+  }
+};
+
+proto.destroy = function() {
+  this.css({
+    position: '',
+    left: '',
+    right: '',
+    top: '',
+    bottom: '',
+    transition: '',
+    transform: ''
+  });
+};
+
+return Item;
+
+}));
+
+
+/***/ }),
+
+/***/ 1206:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+ * EvEmitter v1.1.0
+ * Lil' event emitter
+ * MIT License
+ */
+
+/* jshint unused: true, undef: true, strict: true */
+
+( function( global, factory ) {
+  // universal module definition
+  /* jshint strict: false */ /* globals define, module, window */
+  if ( true ) {
+    // AMD - RequireJS
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+		__WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+
+}( typeof window != 'undefined' ? window : this, function() {
+
+"use strict";
+
+function EvEmitter() {}
+
+var proto = EvEmitter.prototype;
+
+proto.on = function( eventName, listener ) {
+  if ( !eventName || !listener ) {
+    return;
+  }
+  // set events hash
+  var events = this._events = this._events || {};
+  // set listeners array
+  var listeners = events[ eventName ] = events[ eventName ] || [];
+  // only add once
+  if ( listeners.indexOf( listener ) == -1 ) {
+    listeners.push( listener );
+  }
+
+  return this;
+};
+
+proto.once = function( eventName, listener ) {
+  if ( !eventName || !listener ) {
+    return;
+  }
+  // add event
+  this.on( eventName, listener );
+  // set once flag
+  // set onceEvents hash
+  var onceEvents = this._onceEvents = this._onceEvents || {};
+  // set onceListeners object
+  var onceListeners = onceEvents[ eventName ] = onceEvents[ eventName ] || {};
+  // set flag
+  onceListeners[ listener ] = true;
+
+  return this;
+};
+
+proto.off = function( eventName, listener ) {
+  var listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) {
+    return;
+  }
+  var index = listeners.indexOf( listener );
+  if ( index != -1 ) {
+    listeners.splice( index, 1 );
+  }
+
+  return this;
+};
+
+proto.emitEvent = function( eventName, args ) {
+  var listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) {
+    return;
+  }
+  // copy over to avoid interference if .off() in listener
+  listeners = listeners.slice(0);
+  args = args || [];
+  // once stuff
+  var onceListeners = this._onceEvents && this._onceEvents[ eventName ];
+
+  for ( var i=0; i < listeners.length; i++ ) {
+    var listener = listeners[i]
+    var isOnce = onceListeners && onceListeners[ listener ];
+    if ( isOnce ) {
+      // remove listener
+      // remove before trigger to prevent recursion
+      this.off( eventName, listener );
+      // unset once flag
+      delete onceListeners[ listener ];
+    }
+    // trigger listener
+    listener.apply( this, args );
+  }
+
+  return this;
+};
+
+proto.allOff = function() {
+  delete this._events;
+  delete this._onceEvents;
+};
+
+return EvEmitter;
+
+}));
+
+
+/***/ }),
+
+/***/ 3095:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+ * Fizzy UI utils v2.0.7
+ * MIT license
+ */
+
+/*jshint browser: true, undef: true, unused: true, strict: true */
+
+( function( window, factory ) {
+  // universal module definition
+  /*jshint strict: false */ /*globals define, module, require */
+
+  if ( true ) {
+    // AMD
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+      __webpack_require__(9741)
+    ], __WEBPACK_AMD_DEFINE_RESULT__ = (function( matchesSelector ) {
+      return factory( window, matchesSelector );
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+
+}( window, function factory( window, matchesSelector ) {
+
+'use strict';
+
+var utils = {};
+
+// ----- extend ----- //
+
+// extends objects
+utils.extend = function( a, b ) {
+  for ( var prop in b ) {
+    a[ prop ] = b[ prop ];
+  }
+  return a;
+};
+
+// ----- modulo ----- //
+
+utils.modulo = function( num, div ) {
+  return ( ( num % div ) + div ) % div;
+};
+
+// ----- makeArray ----- //
+
+var arraySlice = Array.prototype.slice;
+
+// turn element or nodeList into an array
+utils.makeArray = function( obj ) {
+  if ( Array.isArray( obj ) ) {
+    // use object if already an array
+    return obj;
+  }
+  // return empty array if undefined or null. #6
+  if ( obj === null || obj === undefined ) {
+    return [];
+  }
+
+  var isArrayLike = typeof obj == 'object' && typeof obj.length == 'number';
+  if ( isArrayLike ) {
+    // convert nodeList to array
+    return arraySlice.call( obj );
+  }
+
+  // array of single index
+  return [ obj ];
+};
+
+// ----- removeFrom ----- //
+
+utils.removeFrom = function( ary, obj ) {
+  var index = ary.indexOf( obj );
+  if ( index != -1 ) {
+    ary.splice( index, 1 );
+  }
+};
+
+// ----- getParent ----- //
+
+utils.getParent = function( elem, selector ) {
+  while ( elem.parentNode && elem != document.body ) {
+    elem = elem.parentNode;
+    if ( matchesSelector( elem, selector ) ) {
+      return elem;
+    }
+  }
+};
+
+// ----- getQueryElement ----- //
+
+// use element as selector string
+utils.getQueryElement = function( elem ) {
+  if ( typeof elem == 'string' ) {
+    return document.querySelector( elem );
+  }
+  return elem;
+};
+
+// ----- handleEvent ----- //
+
+// enable .ontype to trigger from .addEventListener( elem, 'type' )
+utils.handleEvent = function( event ) {
+  var method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+// ----- filterFindElements ----- //
+
+utils.filterFindElements = function( elems, selector ) {
+  // make array of elems
+  elems = utils.makeArray( elems );
+  var ffElems = [];
+
+  elems.forEach( function( elem ) {
+    // check that elem is an actual element
+    if ( !( elem instanceof HTMLElement ) ) {
+      return;
+    }
+    // add elem if no selector
+    if ( !selector ) {
+      ffElems.push( elem );
+      return;
+    }
+    // filter & find items if we have a selector
+    // filter
+    if ( matchesSelector( elem, selector ) ) {
+      ffElems.push( elem );
+    }
+    // find children
+    var childElems = elem.querySelectorAll( selector );
+    // concat childElems to filterFound array
+    for ( var i=0; i < childElems.length; i++ ) {
+      ffElems.push( childElems[i] );
+    }
+  });
+
+  return ffElems;
+};
+
+// ----- debounceMethod ----- //
+
+utils.debounceMethod = function( _class, methodName, threshold ) {
+  threshold = threshold || 100;
+  // original method
+  var method = _class.prototype[ methodName ];
+  var timeoutName = methodName + 'Timeout';
+
+  _class.prototype[ methodName ] = function() {
+    var timeout = this[ timeoutName ];
+    clearTimeout( timeout );
+
+    var args = arguments;
+    var _this = this;
+    this[ timeoutName ] = setTimeout( function() {
+      method.apply( _this, args );
+      delete _this[ timeoutName ];
+    }, threshold );
+  };
+};
+
+// ----- docReady ----- //
+
+utils.docReady = function( callback ) {
+  var readyState = document.readyState;
+  if ( readyState == 'complete' || readyState == 'interactive' ) {
+    // do async to allow for other scripts to run. metafizzy/flickity#441
+    setTimeout( callback );
+  } else {
+    document.addEventListener( 'DOMContentLoaded', callback );
+  }
+};
+
+// ----- htmlInit ----- //
+
+// http://jamesroberts.name/blog/2010/02/22/string-functions-for-javascript-trim-to-camel-case-to-dashed-and-to-underscore/
+utils.toDashed = function( str ) {
+  return str.replace( /(.)([A-Z])/g, function( match, $1, $2 ) {
+    return $1 + '-' + $2;
+  }).toLowerCase();
+};
+
+var console = window.console;
+/**
+ * allow user to initialize classes via [data-namespace] or .js-namespace class
+ * htmlInit( Widget, 'widgetName' )
+ * options are parsed from data-namespace-options
+ */
+utils.htmlInit = function( WidgetClass, namespace ) {
+  utils.docReady( function() {
+    var dashedNamespace = utils.toDashed( namespace );
+    var dataAttr = 'data-' + dashedNamespace;
+    var dataAttrElems = document.querySelectorAll( '[' + dataAttr + ']' );
+    var jsDashElems = document.querySelectorAll( '.js-' + dashedNamespace );
+    var elems = utils.makeArray( dataAttrElems )
+      .concat( utils.makeArray( jsDashElems ) );
+    var dataOptionsAttr = dataAttr + '-options';
+    var jQuery = window.jQuery;
+
+    elems.forEach( function( elem ) {
+      var attr = elem.getAttribute( dataAttr ) ||
+        elem.getAttribute( dataOptionsAttr );
+      var options;
+      try {
+        options = attr && JSON.parse( attr );
+      } catch ( error ) {
+        // log error, do not initialize
+        if ( console ) {
+          console.error( 'Error parsing ' + dataAttr + ' on ' + elem.className +
+          ': ' + error );
+        }
+        return;
+      }
+      // initialize
+      var instance = new WidgetClass( elem, options );
+      // make available via $().data('namespace')
+      if ( jQuery ) {
+        jQuery.data( elem, namespace, instance );
+      }
+    });
+
+  });
+};
+
+// -----  ----- //
+
+return utils;
+
+}));
+
+
+/***/ }),
+
+/***/ 1794:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * Outlayer v2.1.1
+ * the brains and guts of a layout library
+ * MIT license
+ */
+
+( function( window, factory ) {
+  'use strict';
+  // universal module definition
+  /* jshint strict: false */ /* globals define, module, require */
+  if ( true ) {
+    // AMD - RequireJS
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+        __webpack_require__(1206),
+        __webpack_require__(6131),
+        __webpack_require__(3095),
+        __webpack_require__(652)
+      ], __WEBPACK_AMD_DEFINE_RESULT__ = (function( EvEmitter, getSize, utils, Item ) {
+        return factory( window, EvEmitter, getSize, utils, Item);
+      }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+
+}( window, function factory( window, EvEmitter, getSize, utils, Item ) {
+'use strict';
+
+// ----- vars ----- //
+
+var console = window.console;
+var jQuery = window.jQuery;
+var noop = function() {};
+
+// -------------------------- Outlayer -------------------------- //
+
+// globally unique identifiers
+var GUID = 0;
+// internal store of all Outlayer intances
+var instances = {};
+
+
+/**
+ * @param {Element, String} element
+ * @param {Object} options
+ * @constructor
+ */
+function Outlayer( element, options ) {
+  var queryElement = utils.getQueryElement( element );
+  if ( !queryElement ) {
+    if ( console ) {
+      console.error( 'Bad element for ' + this.constructor.namespace +
+        ': ' + ( queryElement || element ) );
+    }
+    return;
+  }
+  this.element = queryElement;
+  // add jQuery
+  if ( jQuery ) {
+    this.$element = jQuery( this.element );
+  }
+
+  // options
+  this.options = utils.extend( {}, this.constructor.defaults );
+  this.option( options );
+
+  // add id for Outlayer.getFromElement
+  var id = ++GUID;
+  this.element.outlayerGUID = id; // expando
+  instances[ id ] = this; // associate via id
+
+  // kick it off
+  this._create();
+
+  var isInitLayout = this._getOption('initLayout');
+  if ( isInitLayout ) {
+    this.layout();
+  }
+}
+
+// settings are for internal use only
+Outlayer.namespace = 'outlayer';
+Outlayer.Item = Item;
+
+// default options
+Outlayer.defaults = {
+  containerStyle: {
+    position: 'relative'
+  },
+  initLayout: true,
+  originLeft: true,
+  originTop: true,
+  resize: true,
+  resizeContainer: true,
+  // item options
+  transitionDuration: '0.4s',
+  hiddenStyle: {
+    opacity: 0,
+    transform: 'scale(0.001)'
+  },
+  visibleStyle: {
+    opacity: 1,
+    transform: 'scale(1)'
+  }
+};
+
+var proto = Outlayer.prototype;
+// inherit EvEmitter
+utils.extend( proto, EvEmitter.prototype );
+
+/**
+ * set options
+ * @param {Object} opts
+ */
+proto.option = function( opts ) {
+  utils.extend( this.options, opts );
+};
+
+/**
+ * get backwards compatible option value, check old name
+ */
+proto._getOption = function( option ) {
+  var oldOption = this.constructor.compatOptions[ option ];
+  return oldOption && this.options[ oldOption ] !== undefined ?
+    this.options[ oldOption ] : this.options[ option ];
+};
+
+Outlayer.compatOptions = {
+  // currentName: oldName
+  initLayout: 'isInitLayout',
+  horizontal: 'isHorizontal',
+  layoutInstant: 'isLayoutInstant',
+  originLeft: 'isOriginLeft',
+  originTop: 'isOriginTop',
+  resize: 'isResizeBound',
+  resizeContainer: 'isResizingContainer'
+};
+
+proto._create = function() {
+  // get items from children
+  this.reloadItems();
+  // elements that affect layout, but are not laid out
+  this.stamps = [];
+  this.stamp( this.options.stamp );
+  // set container style
+  utils.extend( this.element.style, this.options.containerStyle );
+
+  // bind resize method
+  var canBindResize = this._getOption('resize');
+  if ( canBindResize ) {
+    this.bindResize();
+  }
+};
+
+// goes through all children again and gets bricks in proper order
+proto.reloadItems = function() {
+  // collection of item elements
+  this.items = this._itemize( this.element.children );
+};
+
+
+/**
+ * turn elements into Outlayer.Items to be used in layout
+ * @param {Array or NodeList or HTMLElement} elems
+ * @returns {Array} items - collection of new Outlayer Items
+ */
+proto._itemize = function( elems ) {
+
+  var itemElems = this._filterFindItemElements( elems );
+  var Item = this.constructor.Item;
+
+  // create new Outlayer Items for collection
+  var items = [];
+  for ( var i=0; i < itemElems.length; i++ ) {
+    var elem = itemElems[i];
+    var item = new Item( elem, this );
+    items.push( item );
+  }
+
+  return items;
+};
+
+/**
+ * get item elements to be used in layout
+ * @param {Array or NodeList or HTMLElement} elems
+ * @returns {Array} items - item elements
+ */
+proto._filterFindItemElements = function( elems ) {
+  return utils.filterFindElements( elems, this.options.itemSelector );
+};
+
+/**
+ * getter method for getting item elements
+ * @returns {Array} elems - collection of item elements
+ */
+proto.getItemElements = function() {
+  return this.items.map( function( item ) {
+    return item.element;
+  });
+};
+
+// ----- init & layout ----- //
+
+/**
+ * lays out all items
+ */
+proto.layout = function() {
+  this._resetLayout();
+  this._manageStamps();
+
+  // don't animate first layout
+  var layoutInstant = this._getOption('layoutInstant');
+  var isInstant = layoutInstant !== undefined ?
+    layoutInstant : !this._isLayoutInited;
+  this.layoutItems( this.items, isInstant );
+
+  // flag for initalized
+  this._isLayoutInited = true;
+};
+
+// _init is alias for layout
+proto._init = proto.layout;
+
+/**
+ * logic before any new layout
+ */
+proto._resetLayout = function() {
+  this.getSize();
+};
+
+
+proto.getSize = function() {
+  this.size = getSize( this.element );
+};
+
+/**
+ * get measurement from option, for columnWidth, rowHeight, gutter
+ * if option is String -> get element from selector string, & get size of element
+ * if option is Element -> get size of element
+ * else use option as a number
+ *
+ * @param {String} measurement
+ * @param {String} size - width or height
+ * @private
+ */
+proto._getMeasurement = function( measurement, size ) {
+  var option = this.options[ measurement ];
+  var elem;
+  if ( !option ) {
+    // default to 0
+    this[ measurement ] = 0;
+  } else {
+    // use option as an element
+    if ( typeof option == 'string' ) {
+      elem = this.element.querySelector( option );
+    } else if ( option instanceof HTMLElement ) {
+      elem = option;
+    }
+    // use size of element, if element
+    this[ measurement ] = elem ? getSize( elem )[ size ] : option;
+  }
+};
+
+/**
+ * layout a collection of item elements
+ * @api public
+ */
+proto.layoutItems = function( items, isInstant ) {
+  items = this._getItemsForLayout( items );
+
+  this._layoutItems( items, isInstant );
+
+  this._postLayout();
+};
+
+/**
+ * get the items to be laid out
+ * you may want to skip over some items
+ * @param {Array} items
+ * @returns {Array} items
+ */
+proto._getItemsForLayout = function( items ) {
+  return items.filter( function( item ) {
+    return !item.isIgnored;
+  });
+};
+
+/**
+ * layout items
+ * @param {Array} items
+ * @param {Boolean} isInstant
+ */
+proto._layoutItems = function( items, isInstant ) {
+  this._emitCompleteOnItems( 'layout', items );
+
+  if ( !items || !items.length ) {
+    // no items, emit event with empty array
+    return;
+  }
+
+  var queue = [];
+
+  items.forEach( function( item ) {
+    // get x/y object from method
+    var position = this._getItemLayoutPosition( item );
+    // enqueue
+    position.item = item;
+    position.isInstant = isInstant || item.isLayoutInstant;
+    queue.push( position );
+  }, this );
+
+  this._processLayoutQueue( queue );
+};
+
+/**
+ * get item layout position
+ * @param {Outlayer.Item} item
+ * @returns {Object} x and y position
+ */
+proto._getItemLayoutPosition = function( /* item */ ) {
+  return {
+    x: 0,
+    y: 0
+  };
+};
+
+/**
+ * iterate over array and position each item
+ * Reason being - separating this logic prevents 'layout invalidation'
+ * thx @paul_irish
+ * @param {Array} queue
+ */
+proto._processLayoutQueue = function( queue ) {
+  this.updateStagger();
+  queue.forEach( function( obj, i ) {
+    this._positionItem( obj.item, obj.x, obj.y, obj.isInstant, i );
+  }, this );
+};
+
+// set stagger from option in milliseconds number
+proto.updateStagger = function() {
+  var stagger = this.options.stagger;
+  if ( stagger === null || stagger === undefined ) {
+    this.stagger = 0;
+    return;
+  }
+  this.stagger = getMilliseconds( stagger );
+  return this.stagger;
+};
+
+/**
+ * Sets position of item in DOM
+ * @param {Outlayer.Item} item
+ * @param {Number} x - horizontal position
+ * @param {Number} y - vertical position
+ * @param {Boolean} isInstant - disables transitions
+ */
+proto._positionItem = function( item, x, y, isInstant, i ) {
+  if ( isInstant ) {
+    // if not transition, just set CSS
+    item.goTo( x, y );
+  } else {
+    item.stagger( i * this.stagger );
+    item.moveTo( x, y );
+  }
+};
+
+/**
+ * Any logic you want to do after each layout,
+ * i.e. size the container
+ */
+proto._postLayout = function() {
+  this.resizeContainer();
+};
+
+proto.resizeContainer = function() {
+  var isResizingContainer = this._getOption('resizeContainer');
+  if ( !isResizingContainer ) {
+    return;
+  }
+  var size = this._getContainerSize();
+  if ( size ) {
+    this._setContainerMeasure( size.width, true );
+    this._setContainerMeasure( size.height, false );
+  }
+};
+
+/**
+ * Sets width or height of container if returned
+ * @returns {Object} size
+ *   @param {Number} width
+ *   @param {Number} height
+ */
+proto._getContainerSize = noop;
+
+/**
+ * @param {Number} measure - size of width or height
+ * @param {Boolean} isWidth
+ */
+proto._setContainerMeasure = function( measure, isWidth ) {
+  if ( measure === undefined ) {
+    return;
+  }
+
+  var elemSize = this.size;
+  // add padding and border width if border box
+  if ( elemSize.isBorderBox ) {
+    measure += isWidth ? elemSize.paddingLeft + elemSize.paddingRight +
+      elemSize.borderLeftWidth + elemSize.borderRightWidth :
+      elemSize.paddingBottom + elemSize.paddingTop +
+      elemSize.borderTopWidth + elemSize.borderBottomWidth;
+  }
+
+  measure = Math.max( measure, 0 );
+  this.element.style[ isWidth ? 'width' : 'height' ] = measure + 'px';
+};
+
+/**
+ * emit eventComplete on a collection of items events
+ * @param {String} eventName
+ * @param {Array} items - Outlayer.Items
+ */
+proto._emitCompleteOnItems = function( eventName, items ) {
+  var _this = this;
+  function onComplete() {
+    _this.dispatchEvent( eventName + 'Complete', null, [ items ] );
+  }
+
+  var count = items.length;
+  if ( !items || !count ) {
+    onComplete();
+    return;
+  }
+
+  var doneCount = 0;
+  function tick() {
+    doneCount++;
+    if ( doneCount == count ) {
+      onComplete();
+    }
+  }
+
+  // bind callback
+  items.forEach( function( item ) {
+    item.once( eventName, tick );
+  });
+};
+
+/**
+ * emits events via EvEmitter and jQuery events
+ * @param {String} type - name of event
+ * @param {Event} event - original event
+ * @param {Array} args - extra arguments
+ */
+proto.dispatchEvent = function( type, event, args ) {
+  // add original event to arguments
+  var emitArgs = event ? [ event ].concat( args ) : args;
+  this.emitEvent( type, emitArgs );
+
+  if ( jQuery ) {
+    // set this.$element
+    this.$element = this.$element || jQuery( this.element );
+    if ( event ) {
+      // create jQuery event
+      var $event = jQuery.Event( event );
+      $event.type = type;
+      this.$element.trigger( $event, args );
+    } else {
+      // just trigger with type if no event available
+      this.$element.trigger( type, args );
+    }
+  }
+};
+
+// -------------------------- ignore & stamps -------------------------- //
+
+
+/**
+ * keep item in collection, but do not lay it out
+ * ignored items do not get skipped in layout
+ * @param {Element} elem
+ */
+proto.ignore = function( elem ) {
+  var item = this.getItem( elem );
+  if ( item ) {
+    item.isIgnored = true;
+  }
+};
+
+/**
+ * return item to layout collection
+ * @param {Element} elem
+ */
+proto.unignore = function( elem ) {
+  var item = this.getItem( elem );
+  if ( item ) {
+    delete item.isIgnored;
+  }
+};
+
+/**
+ * adds elements to stamps
+ * @param {NodeList, Array, Element, or String} elems
+ */
+proto.stamp = function( elems ) {
+  elems = this._find( elems );
+  if ( !elems ) {
+    return;
+  }
+
+  this.stamps = this.stamps.concat( elems );
+  // ignore
+  elems.forEach( this.ignore, this );
+};
+
+/**
+ * removes elements to stamps
+ * @param {NodeList, Array, or Element} elems
+ */
+proto.unstamp = function( elems ) {
+  elems = this._find( elems );
+  if ( !elems ){
+    return;
+  }
+
+  elems.forEach( function( elem ) {
+    // filter out removed stamp elements
+    utils.removeFrom( this.stamps, elem );
+    this.unignore( elem );
+  }, this );
+};
+
+/**
+ * finds child elements
+ * @param {NodeList, Array, Element, or String} elems
+ * @returns {Array} elems
+ */
+proto._find = function( elems ) {
+  if ( !elems ) {
+    return;
+  }
+  // if string, use argument as selector string
+  if ( typeof elems == 'string' ) {
+    elems = this.element.querySelectorAll( elems );
+  }
+  elems = utils.makeArray( elems );
+  return elems;
+};
+
+proto._manageStamps = function() {
+  if ( !this.stamps || !this.stamps.length ) {
+    return;
+  }
+
+  this._getBoundingRect();
+
+  this.stamps.forEach( this._manageStamp, this );
+};
+
+// update boundingLeft / Top
+proto._getBoundingRect = function() {
+  // get bounding rect for container element
+  var boundingRect = this.element.getBoundingClientRect();
+  var size = this.size;
+  this._boundingRect = {
+    left: boundingRect.left + size.paddingLeft + size.borderLeftWidth,
+    top: boundingRect.top + size.paddingTop + size.borderTopWidth,
+    right: boundingRect.right - ( size.paddingRight + size.borderRightWidth ),
+    bottom: boundingRect.bottom - ( size.paddingBottom + size.borderBottomWidth )
+  };
+};
+
+/**
+ * @param {Element} stamp
+**/
+proto._manageStamp = noop;
+
+/**
+ * get x/y position of element relative to container element
+ * @param {Element} elem
+ * @returns {Object} offset - has left, top, right, bottom
+ */
+proto._getElementOffset = function( elem ) {
+  var boundingRect = elem.getBoundingClientRect();
+  var thisRect = this._boundingRect;
+  var size = getSize( elem );
+  var offset = {
+    left: boundingRect.left - thisRect.left - size.marginLeft,
+    top: boundingRect.top - thisRect.top - size.marginTop,
+    right: thisRect.right - boundingRect.right - size.marginRight,
+    bottom: thisRect.bottom - boundingRect.bottom - size.marginBottom
+  };
+  return offset;
+};
+
+// -------------------------- resize -------------------------- //
+
+// enable event handlers for listeners
+// i.e. resize -> onresize
+proto.handleEvent = utils.handleEvent;
+
+/**
+ * Bind layout to window resizing
+ */
+proto.bindResize = function() {
+  window.addEventListener( 'resize', this );
+  this.isResizeBound = true;
+};
+
+/**
+ * Unbind layout to window resizing
+ */
+proto.unbindResize = function() {
+  window.removeEventListener( 'resize', this );
+  this.isResizeBound = false;
+};
+
+proto.onresize = function() {
+  this.resize();
+};
+
+utils.debounceMethod( Outlayer, 'onresize', 100 );
+
+proto.resize = function() {
+  // don't trigger if size did not change
+  // or if resize was unbound. See #9
+  if ( !this.isResizeBound || !this.needsResizeLayout() ) {
+    return;
+  }
+
+  this.layout();
+};
+
+/**
+ * check if layout is needed post layout
+ * @returns Boolean
+ */
+proto.needsResizeLayout = function() {
+  var size = getSize( this.element );
+  // check that this.size and size are there
+  // IE8 triggers resize on body size change, so they might not be
+  var hasSizes = this.size && size;
+  return hasSizes && size.innerWidth !== this.size.innerWidth;
+};
+
+// -------------------------- methods -------------------------- //
+
+/**
+ * add items to Outlayer instance
+ * @param {Array or NodeList or Element} elems
+ * @returns {Array} items - Outlayer.Items
+**/
+proto.addItems = function( elems ) {
+  var items = this._itemize( elems );
+  // add items to collection
+  if ( items.length ) {
+    this.items = this.items.concat( items );
+  }
+  return items;
+};
+
+/**
+ * Layout newly-appended item elements
+ * @param {Array or NodeList or Element} elems
+ */
+proto.appended = function( elems ) {
+  var items = this.addItems( elems );
+  if ( !items.length ) {
+    return;
+  }
+  // layout and reveal just the new items
+  this.layoutItems( items, true );
+  this.reveal( items );
+};
+
+/**
+ * Layout prepended elements
+ * @param {Array or NodeList or Element} elems
+ */
+proto.prepended = function( elems ) {
+  var items = this._itemize( elems );
+  if ( !items.length ) {
+    return;
+  }
+  // add items to beginning of collection
+  var previousItems = this.items.slice(0);
+  this.items = items.concat( previousItems );
+  // start new layout
+  this._resetLayout();
+  this._manageStamps();
+  // layout new stuff without transition
+  this.layoutItems( items, true );
+  this.reveal( items );
+  // layout previous items
+  this.layoutItems( previousItems );
+};
+
+/**
+ * reveal a collection of items
+ * @param {Array of Outlayer.Items} items
+ */
+proto.reveal = function( items ) {
+  this._emitCompleteOnItems( 'reveal', items );
+  if ( !items || !items.length ) {
+    return;
+  }
+  var stagger = this.updateStagger();
+  items.forEach( function( item, i ) {
+    item.stagger( i * stagger );
+    item.reveal();
+  });
+};
+
+/**
+ * hide a collection of items
+ * @param {Array of Outlayer.Items} items
+ */
+proto.hide = function( items ) {
+  this._emitCompleteOnItems( 'hide', items );
+  if ( !items || !items.length ) {
+    return;
+  }
+  var stagger = this.updateStagger();
+  items.forEach( function( item, i ) {
+    item.stagger( i * stagger );
+    item.hide();
+  });
+};
+
+/**
+ * reveal item elements
+ * @param {Array}, {Element}, {NodeList} items
+ */
+proto.revealItemElements = function( elems ) {
+  var items = this.getItems( elems );
+  this.reveal( items );
+};
+
+/**
+ * hide item elements
+ * @param {Array}, {Element}, {NodeList} items
+ */
+proto.hideItemElements = function( elems ) {
+  var items = this.getItems( elems );
+  this.hide( items );
+};
+
+/**
+ * get Outlayer.Item, given an Element
+ * @param {Element} elem
+ * @param {Function} callback
+ * @returns {Outlayer.Item} item
+ */
+proto.getItem = function( elem ) {
+  // loop through items to get the one that matches
+  for ( var i=0; i < this.items.length; i++ ) {
+    var item = this.items[i];
+    if ( item.element == elem ) {
+      // return item
+      return item;
+    }
+  }
+};
+
+/**
+ * get collection of Outlayer.Items, given Elements
+ * @param {Array} elems
+ * @returns {Array} items - Outlayer.Items
+ */
+proto.getItems = function( elems ) {
+  elems = utils.makeArray( elems );
+  var items = [];
+  elems.forEach( function( elem ) {
+    var item = this.getItem( elem );
+    if ( item ) {
+      items.push( item );
+    }
+  }, this );
+
+  return items;
+};
+
+/**
+ * remove element(s) from instance and DOM
+ * @param {Array or NodeList or Element} elems
+ */
+proto.remove = function( elems ) {
+  var removeItems = this.getItems( elems );
+
+  this._emitCompleteOnItems( 'remove', removeItems );
+
+  // bail if no items to remove
+  if ( !removeItems || !removeItems.length ) {
+    return;
+  }
+
+  removeItems.forEach( function( item ) {
+    item.remove();
+    // remove item from collection
+    utils.removeFrom( this.items, item );
+  }, this );
+};
+
+// ----- destroy ----- //
+
+// remove and disable Outlayer instance
+proto.destroy = function() {
+  // clean up dynamic styles
+  var style = this.element.style;
+  style.height = '';
+  style.position = '';
+  style.width = '';
+  // destroy items
+  this.items.forEach( function( item ) {
+    item.destroy();
+  });
+
+  this.unbindResize();
+
+  var id = this.element.outlayerGUID;
+  delete instances[ id ]; // remove reference to instance by id
+  delete this.element.outlayerGUID;
+  // remove data for jQuery
+  if ( jQuery ) {
+    jQuery.removeData( this.element, this.constructor.namespace );
+  }
+
+};
+
+// -------------------------- data -------------------------- //
+
+/**
+ * get Outlayer instance from element
+ * @param {Element} elem
+ * @returns {Outlayer}
+ */
+Outlayer.data = function( elem ) {
+  elem = utils.getQueryElement( elem );
+  var id = elem && elem.outlayerGUID;
+  return id && instances[ id ];
+};
+
+
+// -------------------------- create Outlayer class -------------------------- //
+
+/**
+ * create a layout class
+ * @param {String} namespace
+ */
+Outlayer.create = function( namespace, options ) {
+  // sub-class Outlayer
+  var Layout = subclass( Outlayer );
+  // apply new options and compatOptions
+  Layout.defaults = utils.extend( {}, Outlayer.defaults );
+  utils.extend( Layout.defaults, options );
+  Layout.compatOptions = utils.extend( {}, Outlayer.compatOptions  );
+
+  Layout.namespace = namespace;
+
+  Layout.data = Outlayer.data;
+
+  // sub-class Item
+  Layout.Item = subclass( Item );
+
+  // -------------------------- declarative -------------------------- //
+
+  utils.htmlInit( Layout, namespace );
+
+  // -------------------------- jQuery bridge -------------------------- //
+
+  // make into jQuery plugin
+  if ( jQuery && jQuery.bridget ) {
+    jQuery.bridget( namespace, Layout );
+  }
+
+  return Layout;
+};
+
+function subclass( Parent ) {
+  function SubClass() {
+    Parent.apply( this, arguments );
+  }
+
+  SubClass.prototype = Object.create( Parent.prototype );
+  SubClass.prototype.constructor = SubClass;
+
+  return SubClass;
+}
+
+// ----- helpers ----- //
+
+// how many milliseconds are in each unit
+var msUnits = {
+  ms: 1,
+  s: 1000
+};
+
+// munge time-like parameter into millisecond number
+// '0.4s' -> 40
+function getMilliseconds( time ) {
+  if ( typeof time == 'number' ) {
+    return time;
+  }
+  var matches = time.match( /(^\d*\.?\d*)(\w*)/ );
+  var num = matches && matches[1];
+  var unit = matches && matches[2];
+  if ( !num.length ) {
+    return 0;
+  }
+  num = parseFloat( num );
+  var mult = msUnits[ unit ] || 1;
+  return num * mult;
+}
+
+// ----- fin ----- //
+
+// back in global
+Outlayer.Item = Item;
+
+return Outlayer;
+
+}));
+
+
+/***/ }),
+
+/***/ 1443:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"object"==typeof navigator&&function(e,t){ true?module.exports=t():0}(this,(function(){"use strict";function e(e,t,i){return(t=function(e){var t=function(e,t){if("object"!=typeof e||null===e)return e;var i=e[Symbol.toPrimitive];if(void 0!==i){var s=i.call(e,t||"default");if("object"!=typeof s)return s;throw new TypeError("@@toPrimitive must return a primitive value.")}return("string"===t?String:Number)(e)}(e,"string");return"symbol"==typeof t?t:String(t)}(t))in e?Object.defineProperty(e,t,{value:i,enumerable:!0,configurable:!0,writable:!0}):e[t]=i,e}function t(e,t){for(var i=0;i<t.length;i++){var s=t[i];s.enumerable=s.enumerable||!1,s.configurable=!0,"value"in s&&(s.writable=!0),Object.defineProperty(e,s.key,s)}}function i(e,t,i){return t in e?Object.defineProperty(e,t,{value:i,enumerable:!0,configurable:!0,writable:!0}):e[t]=i,e}function s(e,t){var i=Object.keys(e);if(Object.getOwnPropertySymbols){var s=Object.getOwnPropertySymbols(e);t&&(s=s.filter((function(t){return Object.getOwnPropertyDescriptor(e,t).enumerable}))),i.push.apply(i,s)}return i}function n(e){for(var t=1;t<arguments.length;t++){var n=null!=arguments[t]?arguments[t]:{};t%2?s(Object(n),!0).forEach((function(t){i(e,t,n[t])})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(n)):s(Object(n)).forEach((function(t){Object.defineProperty(e,t,Object.getOwnPropertyDescriptor(n,t))}))}return e}var a={addCSS:!0,thumbWidth:15,watch:!0};var l=function(e){return null!=e?e.constructor:null},r=function(e,t){return!!(e&&t&&e instanceof t)},o=function(e){return null==e},c=function(e){return l(e)===Object},u=function(e){return l(e)===String},h=function(e){return Array.isArray(e)},d=function(e){return r(e,NodeList)},m={nullOrUndefined:o,object:c,number:function(e){return l(e)===Number&&!Number.isNaN(e)},string:u,boolean:function(e){return l(e)===Boolean},function:function(e){return l(e)===Function},array:h,nodeList:d,element:function(e){return r(e,Element)},event:function(e){return r(e,Event)},empty:function(e){return o(e)||(u(e)||h(e)||d(e))&&!e.length||c(e)&&!Object.keys(e).length}};function p(e,t){if(1>t){var i=function(e){var t="".concat(e).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);return t?Math.max(0,(t[1]?t[1].length:0)-(t[2]?+t[2]:0)):0}(t);return parseFloat(e.toFixed(i))}return Math.round(e/t)*t}var g=function(){function e(t,i){(function(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")})(this,e),m.element(t)?this.element=t:m.string(t)&&(this.element=document.querySelector(t)),m.element(this.element)&&m.empty(this.element.rangeTouch)&&(this.config=n({},a,{},i),this.init())}return function(e,i,s){i&&t(e.prototype,i),s&&t(e,s)}(e,[{key:"init",value:function(){e.enabled&&(this.config.addCSS&&(this.element.style.userSelect="none",this.element.style.webKitUserSelect="none",this.element.style.touchAction="manipulation"),this.listeners(!0),this.element.rangeTouch=this)}},{key:"destroy",value:function(){e.enabled&&(this.config.addCSS&&(this.element.style.userSelect="",this.element.style.webKitUserSelect="",this.element.style.touchAction=""),this.listeners(!1),this.element.rangeTouch=null)}},{key:"listeners",value:function(e){var t=this,i=e?"addEventListener":"removeEventListener";["touchstart","touchmove","touchend"].forEach((function(e){t.element[i](e,(function(e){return t.set(e)}),!1)}))}},{key:"get",value:function(t){if(!e.enabled||!m.event(t))return null;var i,s=t.target,n=t.changedTouches[0],a=parseFloat(s.getAttribute("min"))||0,l=parseFloat(s.getAttribute("max"))||100,r=parseFloat(s.getAttribute("step"))||1,o=s.getBoundingClientRect(),c=100/o.width*(this.config.thumbWidth/2)/100;return 0>(i=100/o.width*(n.clientX-o.left))?i=0:100<i&&(i=100),50>i?i-=(100-2*i)*c:50<i&&(i+=2*(i-50)*c),a+p(i/100*(l-a),r)}},{key:"set",value:function(t){e.enabled&&m.event(t)&&!t.target.disabled&&(t.preventDefault(),t.target.value=this.get(t),function(e,t){if(e&&t){var i=new Event(t,{bubbles:!0});e.dispatchEvent(i)}}(t.target,"touchend"===t.type?"change":"input"))}}],[{key:"setup",value:function(t){var i=1<arguments.length&&void 0!==arguments[1]?arguments[1]:{},s=null;if(m.empty(t)||m.string(t)?s=Array.from(document.querySelectorAll(m.string(t)?t:'input[type="range"]')):m.element(t)?s=[t]:m.nodeList(t)?s=Array.from(t):m.array(t)&&(s=t.filter(m.element)),m.empty(s))return null;var l=n({},a,{},i);if(m.string(t)&&l.watch){var r=new MutationObserver((function(i){Array.from(i).forEach((function(i){Array.from(i.addedNodes).forEach((function(i){m.element(i)&&function(e,t){return function(){return Array.from(document.querySelectorAll(t)).includes(this)}.call(e,t)}(i,t)&&new e(i,l)}))}))}));r.observe(document.body,{childList:!0,subtree:!0})}return s.map((function(t){return new e(t,i)}))}},{key:"enabled",get:function(){return"ontouchstart"in document.documentElement}}]),e}();const f=e=>null!=e?e.constructor:null,y=(e,t)=>Boolean(e&&t&&e instanceof t),b=e=>null==e,v=e=>f(e)===Object,w=e=>f(e)===String,T=e=>"function"==typeof e,k=e=>Array.isArray(e),C=e=>y(e,NodeList),A=e=>b(e)||(w(e)||k(e)||C(e))&&!e.length||v(e)&&!Object.keys(e).length;var S={nullOrUndefined:b,object:v,number:e=>f(e)===Number&&!Number.isNaN(e),string:w,boolean:e=>f(e)===Boolean,function:T,array:k,weakMap:e=>y(e,WeakMap),nodeList:C,element:e=>null!==e&&"object"==typeof e&&1===e.nodeType&&"object"==typeof e.style&&"object"==typeof e.ownerDocument,textNode:e=>f(e)===Text,event:e=>y(e,Event),keyboardEvent:e=>y(e,KeyboardEvent),cue:e=>y(e,window.TextTrackCue)||y(e,window.VTTCue),track:e=>y(e,TextTrack)||!b(e)&&w(e.kind),promise:e=>y(e,Promise)&&T(e.then),url:e=>{if(y(e,window.URL))return!0;if(!w(e))return!1;let t=e;e.startsWith("http://")&&e.startsWith("https://")||(t=`http://${e}`);try{return!A(new URL(t).hostname)}catch(e){return!1}},empty:A};const E=(()=>{const e=document.createElement("span"),t={WebkitTransition:"webkitTransitionEnd",MozTransition:"transitionend",OTransition:"oTransitionEnd otransitionend",transition:"transitionend"},i=Object.keys(t).find((t=>void 0!==e.style[t]));return!!S.string(i)&&t[i]})();function P(e,t){setTimeout((()=>{try{e.hidden=!0,e.offsetHeight,e.hidden=!1}catch(e){}}),t)}var M={isIE:Boolean(window.document.documentMode),isEdge:/Edge/g.test(navigator.userAgent),isWebKit:"WebkitAppearance"in document.documentElement.style&&!/Edge/g.test(navigator.userAgent),isIPhone:/iPhone|iPod/gi.test(navigator.userAgent)&&navigator.maxTouchPoints>1,isIPadOS:"MacIntel"===navigator.platform&&navigator.maxTouchPoints>1,isIos:/iPad|iPhone|iPod/gi.test(navigator.userAgent)&&navigator.maxTouchPoints>1};function N(e,t){return t.split(".").reduce(((e,t)=>e&&e[t]),e)}function x(e={},...t){if(!t.length)return e;const i=t.shift();return S.object(i)?(Object.keys(i).forEach((t=>{S.object(i[t])?(Object.keys(e).includes(t)||Object.assign(e,{[t]:{}}),x(e[t],i[t])):Object.assign(e,{[t]:i[t]})})),x(e,...t)):e}function L(e,t){const i=e.length?e:[e];Array.from(i).reverse().forEach(((e,i)=>{const s=i>0?t.cloneNode(!0):t,n=e.parentNode,a=e.nextSibling;s.appendChild(e),a?n.insertBefore(s,a):n.appendChild(s)}))}function I(e,t){S.element(e)&&!S.empty(t)&&Object.entries(t).filter((([,e])=>!S.nullOrUndefined(e))).forEach((([t,i])=>e.setAttribute(t,i)))}function $(e,t,i){const s=document.createElement(e);return S.object(t)&&I(s,t),S.string(i)&&(s.innerText=i),s}function _(e,t,i,s){S.element(t)&&t.appendChild($(e,i,s))}function O(e){S.nodeList(e)||S.array(e)?Array.from(e).forEach(O):S.element(e)&&S.element(e.parentNode)&&e.parentNode.removeChild(e)}function j(e){if(!S.element(e))return;let{length:t}=e.childNodes;for(;t>0;)e.removeChild(e.lastChild),t-=1}function q(e,t){return S.element(t)&&S.element(t.parentNode)&&S.element(e)?(t.parentNode.replaceChild(e,t),e):null}function D(e,t){if(!S.string(e)||S.empty(e))return{};const i={},s=x({},t);return e.split(",").forEach((e=>{const t=e.trim(),n=t.replace(".",""),a=t.replace(/[[\]]/g,"").split("="),[l]=a,r=a.length>1?a[1].replace(/["']/g,""):"";switch(t.charAt(0)){case".":S.string(s.class)?i.class=`${s.class} ${n}`:i.class=n;break;case"#":i.id=t.replace("#","");break;case"[":i[l]=r}})),x(s,i)}function H(e,t){if(!S.element(e))return;let i=t;S.boolean(i)||(i=!e.hidden),e.hidden=i}function R(e,t,i){if(S.nodeList(e))return Array.from(e).map((e=>R(e,t,i)));if(S.element(e)){let s="toggle";return void 0!==i&&(s=i?"add":"remove"),e.classList[s](t),e.classList.contains(t)}return!1}function F(e,t){return S.element(e)&&e.classList.contains(t)}function V(e,t){const{prototype:i}=Element;return(i.matches||i.webkitMatchesSelector||i.mozMatchesSelector||i.msMatchesSelector||function(){return Array.from(document.querySelectorAll(t)).includes(this)}).call(e,t)}function U(e){return this.elements.container.querySelectorAll(e)}function B(e){return this.elements.container.querySelector(e)}function W(e=null,t=!1){S.element(e)&&e.focus({preventScroll:!0,focusVisible:t})}const z={"audio/ogg":"vorbis","audio/wav":"1","video/webm":"vp8, vorbis","video/mp4":"avc1.42E01E, mp4a.40.2","video/ogg":"theora"},K={audio:"canPlayType"in document.createElement("audio"),video:"canPlayType"in document.createElement("video"),check(e,t){const i=K[e]||"html5"!==t;return{api:i,ui:i&&K.rangeInput}},pip:!(M.isIPhone||!S.function($("video").webkitSetPresentationMode)&&(!document.pictureInPictureEnabled||$("video").disablePictureInPicture)),airplay:S.function(window.WebKitPlaybackTargetAvailabilityEvent),playsinline:"playsInline"in document.createElement("video"),mime(e){if(S.empty(e))return!1;const[t]=e.split("/");let i=e;if(!this.isHTML5||t!==this.type)return!1;Object.keys(z).includes(i)&&(i+=`; codecs="${z[e]}"`);try{return Boolean(i&&this.media.canPlayType(i).replace(/no/,""))}catch(e){return!1}},textTracks:"textTracks"in document.createElement("video"),rangeInput:(()=>{const e=document.createElement("input");return e.type="range","range"===e.type})(),touch:"ontouchstart"in document.documentElement,transitions:!1!==E,reducedMotion:"matchMedia"in window&&window.matchMedia("(prefers-reduced-motion)").matches},Y=(()=>{let e=!1;try{const t=Object.defineProperty({},"passive",{get:()=>(e=!0,null)});window.addEventListener("test",null,t),window.removeEventListener("test",null,t)}catch(e){}return e})();function Q(e,t,i,s=!1,n=!0,a=!1){if(!e||!("addEventListener"in e)||S.empty(t)||!S.function(i))return;const l=t.split(" ");let r=a;Y&&(r={passive:n,capture:a}),l.forEach((t=>{this&&this.eventListeners&&s&&this.eventListeners.push({element:e,type:t,callback:i,options:r}),e[s?"addEventListener":"removeEventListener"](t,i,r)}))}function X(e,t="",i,s=!0,n=!1){Q.call(this,e,t,i,!0,s,n)}function J(e,t="",i,s=!0,n=!1){Q.call(this,e,t,i,!1,s,n)}function G(e,t="",i,s=!0,n=!1){const a=(...l)=>{J(e,t,a,s,n),i.apply(this,l)};Q.call(this,e,t,a,!0,s,n)}function Z(e,t="",i=!1,s={}){if(!S.element(e)||S.empty(t))return;const n=new CustomEvent(t,{bubbles:i,detail:{...s,plyr:this}});e.dispatchEvent(n)}function ee(){this&&this.eventListeners&&(this.eventListeners.forEach((e=>{const{element:t,type:i,callback:s,options:n}=e;t.removeEventListener(i,s,n)})),this.eventListeners=[])}function te(){return new Promise((e=>this.ready?setTimeout(e,0):X.call(this,this.elements.container,"ready",e))).then((()=>{}))}function ie(e){S.promise(e)&&e.then(null,(()=>{}))}function se(e){return S.array(e)?e.filter(((t,i)=>e.indexOf(t)===i)):e}function ne(e,t){return S.array(e)&&e.length?e.reduce(((e,i)=>Math.abs(i-t)<Math.abs(e-t)?i:e)):null}function ae(e){return!(!window||!window.CSS)&&window.CSS.supports(e)}const le=[[1,1],[4,3],[3,4],[5,4],[4,5],[3,2],[2,3],[16,10],[10,16],[16,9],[9,16],[21,9],[9,21],[32,9],[9,32]].reduce(((e,[t,i])=>({...e,[t/i]:[t,i]})),{});function re(e){if(!(S.array(e)||S.string(e)&&e.includes(":")))return!1;return(S.array(e)?e:e.split(":")).map(Number).every(S.number)}function oe(e){if(!S.array(e)||!e.every(S.number))return null;const[t,i]=e,s=(e,t)=>0===t?e:s(t,e%t),n=s(t,i);return[t/n,i/n]}function ce(e){const t=e=>re(e)?e.split(":").map(Number):null;let i=t(e);if(null===i&&(i=t(this.config.ratio)),null===i&&!S.empty(this.embed)&&S.array(this.embed.ratio)&&({ratio:i}=this.embed),null===i&&this.isHTML5){const{videoWidth:e,videoHeight:t}=this.media;i=[e,t]}return oe(i)}function ue(e){if(!this.isVideo)return{};const{wrapper:t}=this.elements,i=ce.call(this,e);if(!S.array(i))return{};const[s,n]=oe(i),a=100/s*n;if(ae(`aspect-ratio: ${s}/${n}`)?t.style.aspectRatio=`${s}/${n}`:t.style.paddingBottom=`${a}%`,this.isVimeo&&!this.config.vimeo.premium&&this.supported.ui){const e=100/this.media.offsetWidth*parseInt(window.getComputedStyle(this.media).paddingBottom,10),i=(e-a)/(e/50);this.fullscreen.active?t.style.paddingBottom=null:this.media.style.transform=`translateY(-${i}%)`}else this.isHTML5&&t.classList.add(this.config.classNames.videoFixedRatio);return{padding:a,ratio:i}}function he(e,t,i=.05){const s=e/t,n=ne(Object.keys(le),s);return Math.abs(n-s)<=i?le[n]:[e,t]}const de={getSources(){if(!this.isHTML5)return[];return Array.from(this.media.querySelectorAll("source")).filter((e=>{const t=e.getAttribute("type");return!!S.empty(t)||K.mime.call(this,t)}))},getQualityOptions(){return this.config.quality.forced?this.config.quality.options:de.getSources.call(this).map((e=>Number(e.getAttribute("size")))).filter(Boolean)},setup(){if(!this.isHTML5)return;const e=this;e.options.speed=e.config.speed.options,S.empty(this.config.ratio)||ue.call(e),Object.defineProperty(e.media,"quality",{get(){const t=de.getSources.call(e).find((t=>t.getAttribute("src")===e.source));return t&&Number(t.getAttribute("size"))},set(t){if(e.quality!==t){if(e.config.quality.forced&&S.function(e.config.quality.onChange))e.config.quality.onChange(t);else{const i=de.getSources.call(e).find((e=>Number(e.getAttribute("size"))===t));if(!i)return;const{currentTime:s,paused:n,preload:a,readyState:l,playbackRate:r}=e.media;e.media.src=i.getAttribute("src"),("none"!==a||l)&&(e.once("loadedmetadata",(()=>{e.speed=r,e.currentTime=s,n||ie(e.play())})),e.media.load())}Z.call(e,e.media,"qualitychange",!1,{quality:t})}}})},cancelRequests(){this.isHTML5&&(O(de.getSources.call(this)),this.media.setAttribute("src",this.config.blankVideo),this.media.load(),this.debug.log("Cancelled network requests"))}};function me(e,...t){return S.empty(e)?e:e.toString().replace(/{(\d+)}/g,((e,i)=>t[i].toString()))}const pe=(e="",t="",i="")=>e.replace(new RegExp(t.toString().replace(/([.*+?^=!:${}()|[\]/\\])/g,"\\$1"),"g"),i.toString()),ge=(e="")=>e.toString().replace(/\w\S*/g,(e=>e.charAt(0).toUpperCase()+e.slice(1).toLowerCase()));function fe(e=""){let t=e.toString();return t=function(e=""){let t=e.toString();return t=pe(t,"-"," "),t=pe(t,"_"," "),t=ge(t),pe(t," ","")}(t),t.charAt(0).toLowerCase()+t.slice(1)}function ye(e){const t=document.createElement("div");return t.appendChild(e),t.innerHTML}const be={pip:"PIP",airplay:"AirPlay",html5:"HTML5",vimeo:"Vimeo",youtube:"YouTube"},ve={get(e="",t={}){if(S.empty(e)||S.empty(t))return"";let i=N(t.i18n,e);if(S.empty(i))return Object.keys(be).includes(e)?be[e]:"";const s={"{seektime}":t.seekTime,"{title}":t.title};return Object.entries(s).forEach((([e,t])=>{i=pe(i,e,t)})),i}};class we{constructor(t){e(this,"get",(e=>{if(!we.supported||!this.enabled)return null;const t=window.localStorage.getItem(this.key);if(S.empty(t))return null;const i=JSON.parse(t);return S.string(e)&&e.length?i[e]:i})),e(this,"set",(e=>{if(!we.supported||!this.enabled)return;if(!S.object(e))return;let t=this.get();S.empty(t)&&(t={}),x(t,e);try{window.localStorage.setItem(this.key,JSON.stringify(t))}catch(e){}})),this.enabled=t.config.storage.enabled,this.key=t.config.storage.key}static get supported(){try{if(!("localStorage"in window))return!1;const e="___test";return window.localStorage.setItem(e,e),window.localStorage.removeItem(e),!0}catch(e){return!1}}}function Te(e,t="text"){return new Promise(((i,s)=>{try{const s=new XMLHttpRequest;if(!("withCredentials"in s))return;s.addEventListener("load",(()=>{if("text"===t)try{i(JSON.parse(s.responseText))}catch(e){i(s.responseText)}else i(s.response)})),s.addEventListener("error",(()=>{throw new Error(s.status)})),s.open("GET",e,!0),s.responseType=t,s.send()}catch(e){s(e)}}))}function ke(e,t){if(!S.string(e))return;const i="cache",s=S.string(t);let n=!1;const a=()=>null!==document.getElementById(t),l=(e,t)=>{e.innerHTML=t,s&&a()||document.body.insertAdjacentElement("afterbegin",e)};if(!s||!a()){const a=we.supported,r=document.createElement("div");if(r.setAttribute("hidden",""),s&&r.setAttribute("id",t),a){const e=window.localStorage.getItem(`${i}-${t}`);if(n=null!==e,n){const t=JSON.parse(e);l(r,t.content)}}Te(e).then((e=>{if(!S.empty(e)){if(a)try{window.localStorage.setItem(`${i}-${t}`,JSON.stringify({content:e}))}catch(e){}l(r,e)}})).catch((()=>{}))}}const Ce=e=>Math.trunc(e/60/60%60,10),Ae=e=>Math.trunc(e/60%60,10),Se=e=>Math.trunc(e%60,10);function Ee(e=0,t=!1,i=!1){if(!S.number(e))return Ee(void 0,t,i);const s=e=>`0${e}`.slice(-2);let n=Ce(e);const a=Ae(e),l=Se(e);return n=t||n>0?`${n}:`:"",`${i&&e>0?"-":""}${n}${s(a)}:${s(l)}`}const Pe={getIconUrl(){const e=new URL(this.config.iconUrl,window.location),t=window.location.host?window.location.host:window.top.location.host,i=e.host!==t||M.isIE&&!window.svg4everybody;return{url:this.config.iconUrl,cors:i}},findElements(){try{return this.elements.controls=B.call(this,this.config.selectors.controls.wrapper),this.elements.buttons={play:U.call(this,this.config.selectors.buttons.play),pause:B.call(this,this.config.selectors.buttons.pause),restart:B.call(this,this.config.selectors.buttons.restart),rewind:B.call(this,this.config.selectors.buttons.rewind),fastForward:B.call(this,this.config.selectors.buttons.fastForward),mute:B.call(this,this.config.selectors.buttons.mute),pip:B.call(this,this.config.selectors.buttons.pip),airplay:B.call(this,this.config.selectors.buttons.airplay),settings:B.call(this,this.config.selectors.buttons.settings),captions:B.call(this,this.config.selectors.buttons.captions),fullscreen:B.call(this,this.config.selectors.buttons.fullscreen)},this.elements.progress=B.call(this,this.config.selectors.progress),this.elements.inputs={seek:B.call(this,this.config.selectors.inputs.seek),volume:B.call(this,this.config.selectors.inputs.volume)},this.elements.display={buffer:B.call(this,this.config.selectors.display.buffer),currentTime:B.call(this,this.config.selectors.display.currentTime),duration:B.call(this,this.config.selectors.display.duration)},S.element(this.elements.progress)&&(this.elements.display.seekTooltip=this.elements.progress.querySelector(`.${this.config.classNames.tooltip}`)),!0}catch(e){return this.debug.warn("It looks like there is a problem with your custom controls HTML",e),this.toggleNativeControls(!0),!1}},createIcon(e,t){const i="http://www.w3.org/2000/svg",s=Pe.getIconUrl.call(this),n=`${s.cors?"":s.url}#${this.config.iconPrefix}`,a=document.createElementNS(i,"svg");I(a,x(t,{"aria-hidden":"true",focusable:"false"}));const l=document.createElementNS(i,"use"),r=`${n}-${e}`;return"href"in l&&l.setAttributeNS("http://www.w3.org/1999/xlink","href",r),l.setAttributeNS("http://www.w3.org/1999/xlink","xlink:href",r),a.appendChild(l),a},createLabel(e,t={}){const i=ve.get(e,this.config);return $("span",{...t,class:[t.class,this.config.classNames.hidden].filter(Boolean).join(" ")},i)},createBadge(e){if(S.empty(e))return null;const t=$("span",{class:this.config.classNames.menu.value});return t.appendChild($("span",{class:this.config.classNames.menu.badge},e)),t},createButton(e,t){const i=x({},t);let s=fe(e);const n={element:"button",toggle:!1,label:null,icon:null,labelPressed:null,iconPressed:null};switch(["element","icon","label"].forEach((e=>{Object.keys(i).includes(e)&&(n[e]=i[e],delete i[e])})),"button"!==n.element||Object.keys(i).includes("type")||(i.type="button"),Object.keys(i).includes("class")?i.class.split(" ").some((e=>e===this.config.classNames.control))||x(i,{class:`${i.class} ${this.config.classNames.control}`}):i.class=this.config.classNames.control,e){case"play":n.toggle=!0,n.label="play",n.labelPressed="pause",n.icon="play",n.iconPressed="pause";break;case"mute":n.toggle=!0,n.label="mute",n.labelPressed="unmute",n.icon="volume",n.iconPressed="muted";break;case"captions":n.toggle=!0,n.label="enableCaptions",n.labelPressed="disableCaptions",n.icon="captions-off",n.iconPressed="captions-on";break;case"fullscreen":n.toggle=!0,n.label="enterFullscreen",n.labelPressed="exitFullscreen",n.icon="enter-fullscreen",n.iconPressed="exit-fullscreen";break;case"play-large":i.class+=` ${this.config.classNames.control}--overlaid`,s="play",n.label="play",n.icon="play";break;default:S.empty(n.label)&&(n.label=s),S.empty(n.icon)&&(n.icon=e)}const a=$(n.element);return n.toggle?(a.appendChild(Pe.createIcon.call(this,n.iconPressed,{class:"icon--pressed"})),a.appendChild(Pe.createIcon.call(this,n.icon,{class:"icon--not-pressed"})),a.appendChild(Pe.createLabel.call(this,n.labelPressed,{class:"label--pressed"})),a.appendChild(Pe.createLabel.call(this,n.label,{class:"label--not-pressed"}))):(a.appendChild(Pe.createIcon.call(this,n.icon)),a.appendChild(Pe.createLabel.call(this,n.label))),x(i,D(this.config.selectors.buttons[s],i)),I(a,i),"play"===s?(S.array(this.elements.buttons[s])||(this.elements.buttons[s]=[]),this.elements.buttons[s].push(a)):this.elements.buttons[s]=a,a},createRange(e,t){const i=$("input",x(D(this.config.selectors.inputs[e]),{type:"range",min:0,max:100,step:.01,value:0,autocomplete:"off",role:"slider","aria-label":ve.get(e,this.config),"aria-valuemin":0,"aria-valuemax":100,"aria-valuenow":0},t));return this.elements.inputs[e]=i,Pe.updateRangeFill.call(this,i),g.setup(i),i},createProgress(e,t){const i=$("progress",x(D(this.config.selectors.display[e]),{min:0,max:100,value:0,role:"progressbar","aria-hidden":!0},t));if("volume"!==e){i.appendChild($("span",null,"0"));const t={played:"played",buffer:"buffered"}[e],s=t?ve.get(t,this.config):"";i.innerText=`% ${s.toLowerCase()}`}return this.elements.display[e]=i,i},createTime(e,t){const i=D(this.config.selectors.display[e],t),s=$("div",x(i,{class:`${i.class?i.class:""} ${this.config.classNames.display.time} `.trim(),"aria-label":ve.get(e,this.config),role:"timer"}),"00:00");return this.elements.display[e]=s,s},bindMenuItemShortcuts(e,t){X.call(this,e,"keydown keyup",(i=>{if(![" ","ArrowUp","ArrowDown","ArrowRight"].includes(i.key))return;if(i.preventDefault(),i.stopPropagation(),"keydown"===i.type)return;const s=V(e,'[role="menuitemradio"]');if(!s&&[" ","ArrowRight"].includes(i.key))Pe.showMenuPanel.call(this,t,!0);else{let t;" "!==i.key&&("ArrowDown"===i.key||s&&"ArrowRight"===i.key?(t=e.nextElementSibling,S.element(t)||(t=e.parentNode.firstElementChild)):(t=e.previousElementSibling,S.element(t)||(t=e.parentNode.lastElementChild)),W.call(this,t,!0))}}),!1),X.call(this,e,"keyup",(e=>{"Return"===e.key&&Pe.focusFirstMenuItem.call(this,null,!0)}))},createMenuItem({value:e,list:t,type:i,title:s,badge:n=null,checked:a=!1}){const l=D(this.config.selectors.inputs[i]),r=$("button",x(l,{type:"button",role:"menuitemradio",class:`${this.config.classNames.control} ${l.class?l.class:""}`.trim(),"aria-checked":a,value:e})),o=$("span");o.innerHTML=s,S.element(n)&&o.appendChild(n),r.appendChild(o),Object.defineProperty(r,"checked",{enumerable:!0,get:()=>"true"===r.getAttribute("aria-checked"),set(e){e&&Array.from(r.parentNode.children).filter((e=>V(e,'[role="menuitemradio"]'))).forEach((e=>e.setAttribute("aria-checked","false"))),r.setAttribute("aria-checked",e?"true":"false")}}),this.listeners.bind(r,"click keyup",(t=>{if(!S.keyboardEvent(t)||" "===t.key){switch(t.preventDefault(),t.stopPropagation(),r.checked=!0,i){case"language":this.currentTrack=Number(e);break;case"quality":this.quality=e;break;case"speed":this.speed=parseFloat(e)}Pe.showMenuPanel.call(this,"home",S.keyboardEvent(t))}}),i,!1),Pe.bindMenuItemShortcuts.call(this,r,i),t.appendChild(r)},formatTime(e=0,t=!1){if(!S.number(e))return e;return Ee(e,Ce(this.duration)>0,t)},updateTimeDisplay(e=null,t=0,i=!1){S.element(e)&&S.number(t)&&(e.innerText=Pe.formatTime(t,i))},updateVolume(){this.supported.ui&&(S.element(this.elements.inputs.volume)&&Pe.setRange.call(this,this.elements.inputs.volume,this.muted?0:this.volume),S.element(this.elements.buttons.mute)&&(this.elements.buttons.mute.pressed=this.muted||0===this.volume))},setRange(e,t=0){S.element(e)&&(e.value=t,Pe.updateRangeFill.call(this,e))},updateProgress(e){if(!this.supported.ui||!S.event(e))return;let t=0;const i=(e,t)=>{const i=S.number(t)?t:0,s=S.element(e)?e:this.elements.display.buffer;if(S.element(s)){s.value=i;const e=s.getElementsByTagName("span")[0];S.element(e)&&(e.childNodes[0].nodeValue=i)}};if(e)switch(e.type){case"timeupdate":case"seeking":case"seeked":s=this.currentTime,n=this.duration,t=0===s||0===n||Number.isNaN(s)||Number.isNaN(n)?0:(s/n*100).toFixed(2),"timeupdate"===e.type&&Pe.setRange.call(this,this.elements.inputs.seek,t);break;case"playing":case"progress":i(this.elements.display.buffer,100*this.buffered)}var s,n},updateRangeFill(e){const t=S.event(e)?e.target:e;if(S.element(t)&&"range"===t.getAttribute("type")){if(V(t,this.config.selectors.inputs.seek)){t.setAttribute("aria-valuenow",this.currentTime);const e=Pe.formatTime(this.currentTime),i=Pe.formatTime(this.duration),s=ve.get("seekLabel",this.config);t.setAttribute("aria-valuetext",s.replace("{currentTime}",e).replace("{duration}",i))}else if(V(t,this.config.selectors.inputs.volume)){const e=100*t.value;t.setAttribute("aria-valuenow",e),t.setAttribute("aria-valuetext",`${e.toFixed(1)}%`)}else t.setAttribute("aria-valuenow",t.value);(M.isWebKit||M.isIPadOS)&&t.style.setProperty("--value",t.value/t.max*100+"%")}},updateSeekTooltip(e){var t,i;if(!this.config.tooltips.seek||!S.element(this.elements.inputs.seek)||!S.element(this.elements.display.seekTooltip)||0===this.duration)return;const s=this.elements.display.seekTooltip,n=`${this.config.classNames.tooltip}--visible`,a=e=>R(s,n,e);if(this.touch)return void a(!1);let l=0;const r=this.elements.progress.getBoundingClientRect();if(S.event(e))l=100/r.width*(e.pageX-r.left);else{if(!F(s,n))return;l=parseFloat(s.style.left,10)}l<0?l=0:l>100&&(l=100);const o=this.duration/100*l;s.innerText=Pe.formatTime(o);const c=null===(t=this.config.markers)||void 0===t||null===(i=t.points)||void 0===i?void 0:i.find((({time:e})=>e===Math.round(o)));c&&s.insertAdjacentHTML("afterbegin",`${c.label}<br>`),s.style.left=`${l}%`,S.event(e)&&["mouseenter","mouseleave"].includes(e.type)&&a("mouseenter"===e.type)},timeUpdate(e){const t=!S.element(this.elements.display.duration)&&this.config.invertTime;Pe.updateTimeDisplay.call(this,this.elements.display.currentTime,t?this.duration-this.currentTime:this.currentTime,t),e&&"timeupdate"===e.type&&this.media.seeking||Pe.updateProgress.call(this,e)},durationUpdate(){if(!this.supported.ui||!this.config.invertTime&&this.currentTime)return;if(this.duration>=2**32)return H(this.elements.display.currentTime,!0),void H(this.elements.progress,!0);S.element(this.elements.inputs.seek)&&this.elements.inputs.seek.setAttribute("aria-valuemax",this.duration);const e=S.element(this.elements.display.duration);!e&&this.config.displayDuration&&this.paused&&Pe.updateTimeDisplay.call(this,this.elements.display.currentTime,this.duration),e&&Pe.updateTimeDisplay.call(this,this.elements.display.duration,this.duration),this.config.markers.enabled&&Pe.setMarkers.call(this),Pe.updateSeekTooltip.call(this)},toggleMenuButton(e,t){H(this.elements.settings.buttons[e],!t)},updateSetting(e,t,i){const s=this.elements.settings.panels[e];let n=null,a=t;if("captions"===e)n=this.currentTrack;else{if(n=S.empty(i)?this[e]:i,S.empty(n)&&(n=this.config[e].default),!S.empty(this.options[e])&&!this.options[e].includes(n))return void this.debug.warn(`Unsupported value of '${n}' for ${e}`);if(!this.config[e].options.includes(n))return void this.debug.warn(`Disabled value of '${n}' for ${e}`)}if(S.element(a)||(a=s&&s.querySelector('[role="menu"]')),!S.element(a))return;this.elements.settings.buttons[e].querySelector(`.${this.config.classNames.menu.value}`).innerHTML=Pe.getLabel.call(this,e,n);const l=a&&a.querySelector(`[value="${n}"]`);S.element(l)&&(l.checked=!0)},getLabel(e,t){switch(e){case"speed":return 1===t?ve.get("normal",this.config):`${t}&times;`;case"quality":if(S.number(t)){const e=ve.get(`qualityLabel.${t}`,this.config);return e.length?e:`${t}p`}return ge(t);case"captions":return xe.getLabel.call(this);default:return null}},setQualityMenu(e){if(!S.element(this.elements.settings.panels.quality))return;const t="quality",i=this.elements.settings.panels.quality.querySelector('[role="menu"]');S.array(e)&&(this.options.quality=se(e).filter((e=>this.config.quality.options.includes(e))));const s=!S.empty(this.options.quality)&&this.options.quality.length>1;if(Pe.toggleMenuButton.call(this,t,s),j(i),Pe.checkMenu.call(this),!s)return;const n=e=>{const t=ve.get(`qualityBadge.${e}`,this.config);return t.length?Pe.createBadge.call(this,t):null};this.options.quality.sort(((e,t)=>{const i=this.config.quality.options;return i.indexOf(e)>i.indexOf(t)?1:-1})).forEach((e=>{Pe.createMenuItem.call(this,{value:e,list:i,type:t,title:Pe.getLabel.call(this,"quality",e),badge:n(e)})})),Pe.updateSetting.call(this,t,i)},setCaptionsMenu(){if(!S.element(this.elements.settings.panels.captions))return;const e="captions",t=this.elements.settings.panels.captions.querySelector('[role="menu"]'),i=xe.getTracks.call(this),s=Boolean(i.length);if(Pe.toggleMenuButton.call(this,e,s),j(t),Pe.checkMenu.call(this),!s)return;const n=i.map(((e,i)=>({value:i,checked:this.captions.toggled&&this.currentTrack===i,title:xe.getLabel.call(this,e),badge:e.language&&Pe.createBadge.call(this,e.language.toUpperCase()),list:t,type:"language"})));n.unshift({value:-1,checked:!this.captions.toggled,title:ve.get("disabled",this.config),list:t,type:"language"}),n.forEach(Pe.createMenuItem.bind(this)),Pe.updateSetting.call(this,e,t)},setSpeedMenu(){if(!S.element(this.elements.settings.panels.speed))return;const e="speed",t=this.elements.settings.panels.speed.querySelector('[role="menu"]');this.options.speed=this.options.speed.filter((e=>e>=this.minimumSpeed&&e<=this.maximumSpeed));const i=!S.empty(this.options.speed)&&this.options.speed.length>1;Pe.toggleMenuButton.call(this,e,i),j(t),Pe.checkMenu.call(this),i&&(this.options.speed.forEach((i=>{Pe.createMenuItem.call(this,{value:i,list:t,type:e,title:Pe.getLabel.call(this,"speed",i)})})),Pe.updateSetting.call(this,e,t))},checkMenu(){const{buttons:e}=this.elements.settings,t=!S.empty(e)&&Object.values(e).some((e=>!e.hidden));H(this.elements.settings.menu,!t)},focusFirstMenuItem(e,t=!1){if(this.elements.settings.popup.hidden)return;let i=e;S.element(i)||(i=Object.values(this.elements.settings.panels).find((e=>!e.hidden)));const s=i.querySelector('[role^="menuitem"]');W.call(this,s,t)},toggleMenu(e){const{popup:t}=this.elements.settings,i=this.elements.buttons.settings;if(!S.element(t)||!S.element(i))return;const{hidden:s}=t;let n=s;if(S.boolean(e))n=e;else if(S.keyboardEvent(e)&&"Escape"===e.key)n=!1;else if(S.event(e)){const s=S.function(e.composedPath)?e.composedPath()[0]:e.target,a=t.contains(s);if(a||!a&&e.target!==i&&n)return}i.setAttribute("aria-expanded",n),H(t,!n),R(this.elements.container,this.config.classNames.menu.open,n),n&&S.keyboardEvent(e)?Pe.focusFirstMenuItem.call(this,null,!0):n||s||W.call(this,i,S.keyboardEvent(e))},getMenuSize(e){const t=e.cloneNode(!0);t.style.position="absolute",t.style.opacity=0,t.removeAttribute("hidden"),e.parentNode.appendChild(t);const i=t.scrollWidth,s=t.scrollHeight;return O(t),{width:i,height:s}},showMenuPanel(e="",t=!1){const i=this.elements.container.querySelector(`#plyr-settings-${this.id}-${e}`);if(!S.element(i))return;const s=i.parentNode,n=Array.from(s.children).find((e=>!e.hidden));if(K.transitions&&!K.reducedMotion){s.style.width=`${n.scrollWidth}px`,s.style.height=`${n.scrollHeight}px`;const e=Pe.getMenuSize.call(this,i),t=e=>{e.target===s&&["width","height"].includes(e.propertyName)&&(s.style.width="",s.style.height="",J.call(this,s,E,t))};X.call(this,s,E,t),s.style.width=`${e.width}px`,s.style.height=`${e.height}px`}H(n,!0),H(i,!1),Pe.focusFirstMenuItem.call(this,i,t)},setDownloadUrl(){const e=this.elements.buttons.download;S.element(e)&&e.setAttribute("href",this.download)},create(e){const{bindMenuItemShortcuts:t,createButton:i,createProgress:s,createRange:n,createTime:a,setQualityMenu:l,setSpeedMenu:r,showMenuPanel:o}=Pe;this.elements.controls=null,S.array(this.config.controls)&&this.config.controls.includes("play-large")&&this.elements.container.appendChild(i.call(this,"play-large"));const c=$("div",D(this.config.selectors.controls.wrapper));this.elements.controls=c;const u={class:"plyr__controls__item"};return se(S.array(this.config.controls)?this.config.controls:[]).forEach((l=>{if("restart"===l&&c.appendChild(i.call(this,"restart",u)),"rewind"===l&&c.appendChild(i.call(this,"rewind",u)),"play"===l&&c.appendChild(i.call(this,"play",u)),"fast-forward"===l&&c.appendChild(i.call(this,"fast-forward",u)),"progress"===l){const t=$("div",{class:`${u.class} plyr__progress__container`}),i=$("div",D(this.config.selectors.progress));if(i.appendChild(n.call(this,"seek",{id:`plyr-seek-${e.id}`})),i.appendChild(s.call(this,"buffer")),this.config.tooltips.seek){const e=$("span",{class:this.config.classNames.tooltip},"00:00");i.appendChild(e),this.elements.display.seekTooltip=e}this.elements.progress=i,t.appendChild(this.elements.progress),c.appendChild(t)}if("current-time"===l&&c.appendChild(a.call(this,"currentTime",u)),"duration"===l&&c.appendChild(a.call(this,"duration",u)),"mute"===l||"volume"===l){let{volume:t}=this.elements;if(S.element(t)&&c.contains(t)||(t=$("div",x({},u,{class:`${u.class} plyr__volume`.trim()})),this.elements.volume=t,c.appendChild(t)),"mute"===l&&t.appendChild(i.call(this,"mute")),"volume"===l&&!M.isIos&&!M.isIPadOS){const i={max:1,step:.05,value:this.config.volume};t.appendChild(n.call(this,"volume",x(i,{id:`plyr-volume-${e.id}`})))}}if("captions"===l&&c.appendChild(i.call(this,"captions",u)),"settings"===l&&!S.empty(this.config.settings)){const s=$("div",x({},u,{class:`${u.class} plyr__menu`.trim(),hidden:""}));s.appendChild(i.call(this,"settings",{"aria-haspopup":!0,"aria-controls":`plyr-settings-${e.id}`,"aria-expanded":!1}));const n=$("div",{class:"plyr__menu__container",id:`plyr-settings-${e.id}`,hidden:""}),a=$("div"),l=$("div",{id:`plyr-settings-${e.id}-home`}),r=$("div",{role:"menu"});l.appendChild(r),a.appendChild(l),this.elements.settings.panels.home=l,this.config.settings.forEach((i=>{const s=$("button",x(D(this.config.selectors.buttons.settings),{type:"button",class:`${this.config.classNames.control} ${this.config.classNames.control}--forward`,role:"menuitem","aria-haspopup":!0,hidden:""}));t.call(this,s,i),X.call(this,s,"click",(()=>{o.call(this,i,!1)}));const n=$("span",null,ve.get(i,this.config)),l=$("span",{class:this.config.classNames.menu.value});l.innerHTML=e[i],n.appendChild(l),s.appendChild(n),r.appendChild(s);const c=$("div",{id:`plyr-settings-${e.id}-${i}`,hidden:""}),u=$("button",{type:"button",class:`${this.config.classNames.control} ${this.config.classNames.control}--back`});u.appendChild($("span",{"aria-hidden":!0},ve.get(i,this.config))),u.appendChild($("span",{class:this.config.classNames.hidden},ve.get("menuBack",this.config))),X.call(this,c,"keydown",(e=>{"ArrowLeft"===e.key&&(e.preventDefault(),e.stopPropagation(),o.call(this,"home",!0))}),!1),X.call(this,u,"click",(()=>{o.call(this,"home",!1)})),c.appendChild(u),c.appendChild($("div",{role:"menu"})),a.appendChild(c),this.elements.settings.buttons[i]=s,this.elements.settings.panels[i]=c})),n.appendChild(a),s.appendChild(n),c.appendChild(s),this.elements.settings.popup=n,this.elements.settings.menu=s}if("pip"===l&&K.pip&&c.appendChild(i.call(this,"pip",u)),"airplay"===l&&K.airplay&&c.appendChild(i.call(this,"airplay",u)),"download"===l){const e=x({},u,{element:"a",href:this.download,target:"_blank"});this.isHTML5&&(e.download="");const{download:t}=this.config.urls;!S.url(t)&&this.isEmbed&&x(e,{icon:`logo-${this.provider}`,label:this.provider}),c.appendChild(i.call(this,"download",e))}"fullscreen"===l&&c.appendChild(i.call(this,"fullscreen",u))})),this.isHTML5&&l.call(this,de.getQualityOptions.call(this)),r.call(this),c},inject(){if(this.config.loadSprite){const e=Pe.getIconUrl.call(this);e.cors&&ke(e.url,"sprite-plyr")}this.id=Math.floor(1e4*Math.random());let e=null;this.elements.controls=null;const t={id:this.id,seektime:this.config.seekTime,title:this.config.title};let i=!0;S.function(this.config.controls)&&(this.config.controls=this.config.controls.call(this,t)),this.config.controls||(this.config.controls=[]),S.element(this.config.controls)||S.string(this.config.controls)?e=this.config.controls:(e=Pe.create.call(this,{id:this.id,seektime:this.config.seekTime,speed:this.speed,quality:this.quality,captions:xe.getLabel.call(this)}),i=!1);let s;i&&S.string(this.config.controls)&&(e=(e=>{let i=e;return Object.entries(t).forEach((([e,t])=>{i=pe(i,`{${e}}`,t)})),i})(e)),S.string(this.config.selectors.controls.container)&&(s=document.querySelector(this.config.selectors.controls.container)),S.element(s)||(s=this.elements.container);if(s[S.element(e)?"insertAdjacentElement":"insertAdjacentHTML"]("afterbegin",e),S.element(this.elements.controls)||Pe.findElements.call(this),!S.empty(this.elements.buttons)){const e=e=>{const t=this.config.classNames.controlPressed;e.setAttribute("aria-pressed","false"),Object.defineProperty(e,"pressed",{configurable:!0,enumerable:!0,get:()=>F(e,t),set(i=!1){R(e,t,i),e.setAttribute("aria-pressed",i?"true":"false")}})};Object.values(this.elements.buttons).filter(Boolean).forEach((t=>{S.array(t)||S.nodeList(t)?Array.from(t).filter(Boolean).forEach(e):e(t)}))}if(M.isEdge&&P(s),this.config.tooltips.controls){const{classNames:e,selectors:t}=this.config,i=`${t.controls.wrapper} ${t.labels} .${e.hidden}`,s=U.call(this,i);Array.from(s).forEach((e=>{R(e,this.config.classNames.hidden,!1),R(e,this.config.classNames.tooltip,!0)}))}},setMediaMetadata(){try{"mediaSession"in navigator&&(navigator.mediaSession.metadata=new window.MediaMetadata({title:this.config.mediaMetadata.title,artist:this.config.mediaMetadata.artist,album:this.config.mediaMetadata.album,artwork:this.config.mediaMetadata.artwork}))}catch(e){}},setMarkers(){var e,t;if(!this.duration||this.elements.markers)return;const i=null===(e=this.config.markers)||void 0===e||null===(t=e.points)||void 0===t?void 0:t.filter((({time:e})=>e>0&&e<this.duration));if(null==i||!i.length)return;const s=document.createDocumentFragment(),n=document.createDocumentFragment();let a=null;const l=`${this.config.classNames.tooltip}--visible`,r=e=>R(a,l,e);i.forEach((e=>{const t=$("span",{class:this.config.classNames.marker},""),i=e.time/this.duration*100+"%";a&&(t.addEventListener("mouseenter",(()=>{e.label||(a.style.left=i,a.innerHTML=e.label,r(!0))})),t.addEventListener("mouseleave",(()=>{r(!1)}))),t.addEventListener("click",(()=>{this.currentTime=e.time})),t.style.left=i,n.appendChild(t)})),s.appendChild(n),this.config.tooltips.seek||(a=$("span",{class:this.config.classNames.tooltip},""),s.appendChild(a)),this.elements.markers={points:n,tip:a},this.elements.progress.appendChild(s)}};function Me(e,t=!0){let i=e;if(t){const e=document.createElement("a");e.href=i,i=e.href}try{return new URL(i)}catch(e){return null}}function Ne(e){const t=new URLSearchParams;return S.object(e)&&Object.entries(e).forEach((([e,i])=>{t.set(e,i)})),t}const xe={setup(){if(!this.supported.ui)return;if(!this.isVideo||this.isYouTube||this.isHTML5&&!K.textTracks)return void(S.array(this.config.controls)&&this.config.controls.includes("settings")&&this.config.settings.includes("captions")&&Pe.setCaptionsMenu.call(this));var e,t;if(S.element(this.elements.captions)||(this.elements.captions=$("div",D(this.config.selectors.captions)),this.elements.captions.setAttribute("dir","auto"),e=this.elements.captions,t=this.elements.wrapper,S.element(e)&&S.element(t)&&t.parentNode.insertBefore(e,t.nextSibling)),M.isIE&&window.URL){const e=this.media.querySelectorAll("track");Array.from(e).forEach((e=>{const t=e.getAttribute("src"),i=Me(t);null!==i&&i.hostname!==window.location.href.hostname&&["http:","https:"].includes(i.protocol)&&Te(t,"blob").then((t=>{e.setAttribute("src",window.URL.createObjectURL(t))})).catch((()=>{O(e)}))}))}const i=se((navigator.languages||[navigator.language||navigator.userLanguage||"en"]).map((e=>e.split("-")[0])));let s=(this.storage.get("language")||this.config.captions.language||"auto").toLowerCase();"auto"===s&&([s]=i);let n=this.storage.get("captions");if(S.boolean(n)||({active:n}=this.config.captions),Object.assign(this.captions,{toggled:!1,active:n,language:s,languages:i}),this.isHTML5){const e=this.config.captions.update?"addtrack removetrack":"removetrack";X.call(this,this.media.textTracks,e,xe.update.bind(this))}setTimeout(xe.update.bind(this),0)},update(){const e=xe.getTracks.call(this,!0),{active:t,language:i,meta:s,currentTrackNode:n}=this.captions,a=Boolean(e.find((e=>e.language===i)));this.isHTML5&&this.isVideo&&e.filter((e=>!s.get(e))).forEach((e=>{this.debug.log("Track added",e),s.set(e,{default:"showing"===e.mode}),"showing"===e.mode&&(e.mode="hidden"),X.call(this,e,"cuechange",(()=>xe.updateCues.call(this)))})),(a&&this.language!==i||!e.includes(n))&&(xe.setLanguage.call(this,i),xe.toggle.call(this,t&&a)),this.elements&&R(this.elements.container,this.config.classNames.captions.enabled,!S.empty(e)),S.array(this.config.controls)&&this.config.controls.includes("settings")&&this.config.settings.includes("captions")&&Pe.setCaptionsMenu.call(this)},toggle(e,t=!0){if(!this.supported.ui)return;const{toggled:i}=this.captions,s=this.config.classNames.captions.active,n=S.nullOrUndefined(e)?!i:e;if(n!==i){if(t||(this.captions.active=n,this.storage.set({captions:n})),!this.language&&n&&!t){const e=xe.getTracks.call(this),t=xe.findTrack.call(this,[this.captions.language,...this.captions.languages],!0);return this.captions.language=t.language,void xe.set.call(this,e.indexOf(t))}this.elements.buttons.captions&&(this.elements.buttons.captions.pressed=n),R(this.elements.container,s,n),this.captions.toggled=n,Pe.updateSetting.call(this,"captions"),Z.call(this,this.media,n?"captionsenabled":"captionsdisabled")}setTimeout((()=>{n&&this.captions.toggled&&(this.captions.currentTrackNode.mode="hidden")}))},set(e,t=!0){const i=xe.getTracks.call(this);if(-1!==e)if(S.number(e))if(e in i){if(this.captions.currentTrack!==e){this.captions.currentTrack=e;const s=i[e],{language:n}=s||{};this.captions.currentTrackNode=s,Pe.updateSetting.call(this,"captions"),t||(this.captions.language=n,this.storage.set({language:n})),this.isVimeo&&this.embed.enableTextTrack(n),Z.call(this,this.media,"languagechange")}xe.toggle.call(this,!0,t),this.isHTML5&&this.isVideo&&xe.updateCues.call(this)}else this.debug.warn("Track not found",e);else this.debug.warn("Invalid caption argument",e);else xe.toggle.call(this,!1,t)},setLanguage(e,t=!0){if(!S.string(e))return void this.debug.warn("Invalid language argument",e);const i=e.toLowerCase();this.captions.language=i;const s=xe.getTracks.call(this),n=xe.findTrack.call(this,[i]);xe.set.call(this,s.indexOf(n),t)},getTracks(e=!1){return Array.from((this.media||{}).textTracks||[]).filter((t=>!this.isHTML5||e||this.captions.meta.has(t))).filter((e=>["captions","subtitles"].includes(e.kind)))},findTrack(e,t=!1){const i=xe.getTracks.call(this),s=e=>Number((this.captions.meta.get(e)||{}).default),n=Array.from(i).sort(((e,t)=>s(t)-s(e)));let a;return e.every((e=>(a=n.find((t=>t.language===e)),!a))),a||(t?n[0]:void 0)},getCurrentTrack(){return xe.getTracks.call(this)[this.currentTrack]},getLabel(e){let t=e;return!S.track(t)&&K.textTracks&&this.captions.toggled&&(t=xe.getCurrentTrack.call(this)),S.track(t)?S.empty(t.label)?S.empty(t.language)?ve.get("enabled",this.config):e.language.toUpperCase():t.label:ve.get("disabled",this.config)},updateCues(e){if(!this.supported.ui)return;if(!S.element(this.elements.captions))return void this.debug.warn("No captions element to render to");if(!S.nullOrUndefined(e)&&!Array.isArray(e))return void this.debug.warn("updateCues: Invalid input",e);let t=e;if(!t){const e=xe.getCurrentTrack.call(this);t=Array.from((e||{}).activeCues||[]).map((e=>e.getCueAsHTML())).map(ye)}const i=t.map((e=>e.trim())).join("\n");if(i!==this.elements.captions.innerHTML){j(this.elements.captions);const e=$("span",D(this.config.selectors.caption));e.innerHTML=i,this.elements.captions.appendChild(e),Z.call(this,this.media,"cuechange")}}},Le={enabled:!0,title:"",debug:!1,autoplay:!1,autopause:!0,playsinline:!0,seekTime:10,volume:1,muted:!1,duration:null,displayDuration:!0,invertTime:!0,toggleInvert:!0,ratio:null,clickToPlay:!0,hideControls:!0,resetOnEnd:!1,disableContextMenu:!0,loadSprite:!0,iconPrefix:"plyr",iconUrl:"https://cdn.plyr.io/3.7.8/plyr.svg",blankVideo:"https://cdn.plyr.io/static/blank.mp4",quality:{default:576,options:[4320,2880,2160,1440,1080,720,576,480,360,240],forced:!1,onChange:null},loop:{active:!1},speed:{selected:1,options:[.5,.75,1,1.25,1.5,1.75,2,4]},keyboard:{focused:!0,global:!1},tooltips:{controls:!1,seek:!0},captions:{active:!1,language:"auto",update:!1},fullscreen:{enabled:!0,fallback:!0,iosNative:!1},storage:{enabled:!0,key:"plyr"},controls:["play-large","play","progress","current-time","mute","volume","captions","settings","pip","airplay","fullscreen"],settings:["captions","quality","speed"],i18n:{restart:"Restart",rewind:"Rewind {seektime}s",play:"Play",pause:"Pause",fastForward:"Forward {seektime}s",seek:"Seek",seekLabel:"{currentTime} of {duration}",played:"Played",buffered:"Buffered",currentTime:"Current time",duration:"Duration",volume:"Volume",mute:"Mute",unmute:"Unmute",enableCaptions:"Enable captions",disableCaptions:"Disable captions",download:"Download",enterFullscreen:"Enter fullscreen",exitFullscreen:"Exit fullscreen",frameTitle:"Player for {title}",captions:"Captions",settings:"Settings",pip:"PIP",menuBack:"Go back to previous menu",speed:"Speed",normal:"Normal",quality:"Quality",loop:"Loop",start:"Start",end:"End",all:"All",reset:"Reset",disabled:"Disabled",enabled:"Enabled",advertisement:"Ad",qualityBadge:{2160:"4K",1440:"HD",1080:"HD",720:"HD",576:"SD",480:"SD"}},urls:{download:null,vimeo:{sdk:"https://player.vimeo.com/api/player.js",iframe:"https://player.vimeo.com/video/{0}?{1}",api:"https://vimeo.com/api/oembed.json?url={0}"},youtube:{sdk:"https://www.youtube.com/iframe_api",api:"https://noembed.com/embed?url=https://www.youtube.com/watch?v={0}"},googleIMA:{sdk:"https://imasdk.googleapis.com/js/sdkloader/ima3.js"}},listeners:{seek:null,play:null,pause:null,restart:null,rewind:null,fastForward:null,mute:null,volume:null,captions:null,download:null,fullscreen:null,pip:null,airplay:null,speed:null,quality:null,loop:null,language:null},events:["ended","progress","stalled","playing","waiting","canplay","canplaythrough","loadstart","loadeddata","loadedmetadata","timeupdate","volumechange","play","pause","error","seeking","seeked","emptied","ratechange","cuechange","download","enterfullscreen","exitfullscreen","captionsenabled","captionsdisabled","languagechange","controlshidden","controlsshown","ready","statechange","qualitychange","adsloaded","adscontentpause","adscontentresume","adstarted","adsmidpoint","adscomplete","adsallcomplete","adsimpression","adsclick"],selectors:{editable:"input, textarea, select, [contenteditable]",container:".plyr",controls:{container:null,wrapper:".plyr__controls"},labels:"[data-plyr]",buttons:{play:'[data-plyr="play"]',pause:'[data-plyr="pause"]',restart:'[data-plyr="restart"]',rewind:'[data-plyr="rewind"]',fastForward:'[data-plyr="fast-forward"]',mute:'[data-plyr="mute"]',captions:'[data-plyr="captions"]',download:'[data-plyr="download"]',fullscreen:'[data-plyr="fullscreen"]',pip:'[data-plyr="pip"]',airplay:'[data-plyr="airplay"]',settings:'[data-plyr="settings"]',loop:'[data-plyr="loop"]'},inputs:{seek:'[data-plyr="seek"]',volume:'[data-plyr="volume"]',speed:'[data-plyr="speed"]',language:'[data-plyr="language"]',quality:'[data-plyr="quality"]'},display:{currentTime:".plyr__time--current",duration:".plyr__time--duration",buffer:".plyr__progress__buffer",loop:".plyr__progress__loop",volume:".plyr__volume--display"},progress:".plyr__progress",captions:".plyr__captions",caption:".plyr__caption"},classNames:{type:"plyr--{0}",provider:"plyr--{0}",video:"plyr__video-wrapper",embed:"plyr__video-embed",videoFixedRatio:"plyr__video-wrapper--fixed-ratio",embedContainer:"plyr__video-embed__container",poster:"plyr__poster",posterEnabled:"plyr__poster-enabled",ads:"plyr__ads",control:"plyr__control",controlPressed:"plyr__control--pressed",playing:"plyr--playing",paused:"plyr--paused",stopped:"plyr--stopped",loading:"plyr--loading",hover:"plyr--hover",tooltip:"plyr__tooltip",cues:"plyr__cues",marker:"plyr__progress__marker",hidden:"plyr__sr-only",hideControls:"plyr--hide-controls",isTouch:"plyr--is-touch",uiSupported:"plyr--full-ui",noTransition:"plyr--no-transition",display:{time:"plyr__time"},menu:{value:"plyr__menu__value",badge:"plyr__badge",open:"plyr--menu-open"},captions:{enabled:"plyr--captions-enabled",active:"plyr--captions-active"},fullscreen:{enabled:"plyr--fullscreen-enabled",fallback:"plyr--fullscreen-fallback"},pip:{supported:"plyr--pip-supported",active:"plyr--pip-active"},airplay:{supported:"plyr--airplay-supported",active:"plyr--airplay-active"},previewThumbnails:{thumbContainer:"plyr__preview-thumb",thumbContainerShown:"plyr__preview-thumb--is-shown",imageContainer:"plyr__preview-thumb__image-container",timeContainer:"plyr__preview-thumb__time-container",scrubbingContainer:"plyr__preview-scrubbing",scrubbingContainerShown:"plyr__preview-scrubbing--is-shown"}},attributes:{embed:{provider:"data-plyr-provider",id:"data-plyr-embed-id",hash:"data-plyr-embed-hash"}},ads:{enabled:!1,publisherId:"",tagUrl:""},previewThumbnails:{enabled:!1,src:""},vimeo:{byline:!1,portrait:!1,title:!1,speed:!0,transparent:!1,customControls:!0,referrerPolicy:null,premium:!1},youtube:{rel:0,showinfo:0,iv_load_policy:3,modestbranding:1,customControls:!0,noCookie:!1},mediaMetadata:{title:"",artist:"",album:"",artwork:[]},markers:{enabled:!1,points:[]}},Ie="picture-in-picture",$e="inline",_e={html5:"html5",youtube:"youtube",vimeo:"vimeo"},Oe="audio",je="video";const qe=()=>{};class De{constructor(e=!1){this.enabled=window.console&&e,this.enabled&&this.log("Debugging enabled")}get log(){return this.enabled?Function.prototype.bind.call(console.log,console):qe}get warn(){return this.enabled?Function.prototype.bind.call(console.warn,console):qe}get error(){return this.enabled?Function.prototype.bind.call(console.error,console):qe}}class He{constructor(t){e(this,"onChange",(()=>{if(!this.supported)return;const e=this.player.elements.buttons.fullscreen;S.element(e)&&(e.pressed=this.active);const t=this.target===this.player.media?this.target:this.player.elements.container;Z.call(this.player,t,this.active?"enterfullscreen":"exitfullscreen",!0)})),e(this,"toggleFallback",((e=!1)=>{if(e?this.scrollPosition={x:window.scrollX??0,y:window.scrollY??0}:window.scrollTo(this.scrollPosition.x,this.scrollPosition.y),document.body.style.overflow=e?"hidden":"",R(this.target,this.player.config.classNames.fullscreen.fallback,e),M.isIos){let t=document.head.querySelector('meta[name="viewport"]');const i="viewport-fit=cover";t||(t=document.createElement("meta"),t.setAttribute("name","viewport"));const s=S.string(t.content)&&t.content.includes(i);e?(this.cleanupViewport=!s,s||(t.content+=`,${i}`)):this.cleanupViewport&&(t.content=t.content.split(",").filter((e=>e.trim()!==i)).join(","))}this.onChange()})),e(this,"trapFocus",(e=>{if(M.isIos||M.isIPadOS||!this.active||"Tab"!==e.key)return;const t=document.activeElement,i=U.call(this.player,"a[href], button:not(:disabled), input:not(:disabled), [tabindex]"),[s]=i,n=i[i.length-1];t!==n||e.shiftKey?t===s&&e.shiftKey&&(n.focus(),e.preventDefault()):(s.focus(),e.preventDefault())})),e(this,"update",(()=>{if(this.supported){let e;e=this.forceFallback?"Fallback (forced)":He.nativeSupported?"Native":"Fallback",this.player.debug.log(`${e} fullscreen enabled`)}else this.player.debug.log("Fullscreen not supported and fallback disabled");R(this.player.elements.container,this.player.config.classNames.fullscreen.enabled,this.supported)})),e(this,"enter",(()=>{this.supported&&(M.isIos&&this.player.config.fullscreen.iosNative?this.player.isVimeo?this.player.embed.requestFullscreen():this.target.webkitEnterFullscreen():!He.nativeSupported||this.forceFallback?this.toggleFallback(!0):this.prefix?S.empty(this.prefix)||this.target[`${this.prefix}Request${this.property}`]():this.target.requestFullscreen({navigationUI:"hide"}))})),e(this,"exit",(()=>{if(this.supported)if(M.isIos&&this.player.config.fullscreen.iosNative)this.player.isVimeo?this.player.embed.exitFullscreen():this.target.webkitEnterFullscreen(),ie(this.player.play());else if(!He.nativeSupported||this.forceFallback)this.toggleFallback(!1);else if(this.prefix){if(!S.empty(this.prefix)){const e="moz"===this.prefix?"Cancel":"Exit";document[`${this.prefix}${e}${this.property}`]()}}else(document.cancelFullScreen||document.exitFullscreen).call(document)})),e(this,"toggle",(()=>{this.active?this.exit():this.enter()})),this.player=t,this.prefix=He.prefix,this.property=He.property,this.scrollPosition={x:0,y:0},this.forceFallback="force"===t.config.fullscreen.fallback,this.player.elements.fullscreen=t.config.fullscreen.container&&function(e,t){const{prototype:i}=Element;return(i.closest||function(){let e=this;do{if(V.matches(e,t))return e;e=e.parentElement||e.parentNode}while(null!==e&&1===e.nodeType);return null}).call(e,t)}(this.player.elements.container,t.config.fullscreen.container),X.call(this.player,document,"ms"===this.prefix?"MSFullscreenChange":`${this.prefix}fullscreenchange`,(()=>{this.onChange()})),X.call(this.player,this.player.elements.container,"dblclick",(e=>{S.element(this.player.elements.controls)&&this.player.elements.controls.contains(e.target)||this.player.listeners.proxy(e,this.toggle,"fullscreen")})),X.call(this,this.player.elements.container,"keydown",(e=>this.trapFocus(e))),this.update()}static get nativeSupported(){return!!(document.fullscreenEnabled||document.webkitFullscreenEnabled||document.mozFullScreenEnabled||document.msFullscreenEnabled)}get useNative(){return He.nativeSupported&&!this.forceFallback}static get prefix(){if(S.function(document.exitFullscreen))return"";let e="";return["webkit","moz","ms"].some((t=>!(!S.function(document[`${t}ExitFullscreen`])&&!S.function(document[`${t}CancelFullScreen`]))&&(e=t,!0))),e}static get property(){return"moz"===this.prefix?"FullScreen":"Fullscreen"}get supported(){return[this.player.config.fullscreen.enabled,this.player.isVideo,He.nativeSupported||this.player.config.fullscreen.fallback,!this.player.isYouTube||He.nativeSupported||!M.isIos||this.player.config.playsinline&&!this.player.config.fullscreen.iosNative].every(Boolean)}get active(){if(!this.supported)return!1;if(!He.nativeSupported||this.forceFallback)return F(this.target,this.player.config.classNames.fullscreen.fallback);const e=this.prefix?this.target.getRootNode()[`${this.prefix}${this.property}Element`]:this.target.getRootNode().fullscreenElement;return e&&e.shadowRoot?e===this.target.getRootNode().host:e===this.target}get target(){return M.isIos&&this.player.config.fullscreen.iosNative?this.player.media:this.player.elements.fullscreen??this.player.elements.container}}function Re(e,t=1){return new Promise(((i,s)=>{const n=new Image,a=()=>{delete n.onload,delete n.onerror,(n.naturalWidth>=t?i:s)(n)};Object.assign(n,{onload:a,onerror:a,src:e})}))}const Fe={addStyleHook(){R(this.elements.container,this.config.selectors.container.replace(".",""),!0),R(this.elements.container,this.config.classNames.uiSupported,this.supported.ui)},toggleNativeControls(e=!1){e&&this.isHTML5?this.media.setAttribute("controls",""):this.media.removeAttribute("controls")},build(){if(this.listeners.media(),!this.supported.ui)return this.debug.warn(`Basic support only for ${this.provider} ${this.type}`),void Fe.toggleNativeControls.call(this,!0);S.element(this.elements.controls)||(Pe.inject.call(this),this.listeners.controls()),Fe.toggleNativeControls.call(this),this.isHTML5&&xe.setup.call(this),this.volume=null,this.muted=null,this.loop=null,this.quality=null,this.speed=null,Pe.updateVolume.call(this),Pe.timeUpdate.call(this),Pe.durationUpdate.call(this),Fe.checkPlaying.call(this),R(this.elements.container,this.config.classNames.pip.supported,K.pip&&this.isHTML5&&this.isVideo),R(this.elements.container,this.config.classNames.airplay.supported,K.airplay&&this.isHTML5),R(this.elements.container,this.config.classNames.isTouch,this.touch),this.ready=!0,setTimeout((()=>{Z.call(this,this.media,"ready")}),0),Fe.setTitle.call(this),this.poster&&Fe.setPoster.call(this,this.poster,!1).catch((()=>{})),this.config.duration&&Pe.durationUpdate.call(this),this.config.mediaMetadata&&Pe.setMediaMetadata.call(this)},setTitle(){let e=ve.get("play",this.config);if(S.string(this.config.title)&&!S.empty(this.config.title)&&(e+=`, ${this.config.title}`),Array.from(this.elements.buttons.play||[]).forEach((t=>{t.setAttribute("aria-label",e)})),this.isEmbed){const e=B.call(this,"iframe");if(!S.element(e))return;const t=S.empty(this.config.title)?"video":this.config.title,i=ve.get("frameTitle",this.config);e.setAttribute("title",i.replace("{title}",t))}},togglePoster(e){R(this.elements.container,this.config.classNames.posterEnabled,e)},setPoster(e,t=!0){return t&&this.poster?Promise.reject(new Error("Poster already set")):(this.media.setAttribute("data-poster",e),this.elements.poster.removeAttribute("hidden"),te.call(this).then((()=>Re(e))).catch((t=>{throw e===this.poster&&Fe.togglePoster.call(this,!1),t})).then((()=>{if(e!==this.poster)throw new Error("setPoster cancelled by later call to setPoster")})).then((()=>(Object.assign(this.elements.poster.style,{backgroundImage:`url('${e}')`,backgroundSize:""}),Fe.togglePoster.call(this,!0),e))))},checkPlaying(e){R(this.elements.container,this.config.classNames.playing,this.playing),R(this.elements.container,this.config.classNames.paused,this.paused),R(this.elements.container,this.config.classNames.stopped,this.stopped),Array.from(this.elements.buttons.play||[]).forEach((e=>{Object.assign(e,{pressed:this.playing}),e.setAttribute("aria-label",ve.get(this.playing?"pause":"play",this.config))})),S.event(e)&&"timeupdate"===e.type||Fe.toggleControls.call(this)},checkLoading(e){this.loading=["stalled","waiting"].includes(e.type),clearTimeout(this.timers.loading),this.timers.loading=setTimeout((()=>{R(this.elements.container,this.config.classNames.loading,this.loading),Fe.toggleControls.call(this)}),this.loading?250:0)},toggleControls(e){const{controls:t}=this.elements;if(t&&this.config.hideControls){const i=this.touch&&this.lastSeekTime+2e3>Date.now();this.toggleControls(Boolean(e||this.loading||this.paused||t.pressed||t.hover||i))}},migrateStyles(){Object.values({...this.media.style}).filter((e=>!S.empty(e)&&S.string(e)&&e.startsWith("--plyr"))).forEach((e=>{this.elements.container.style.setProperty(e,this.media.style.getPropertyValue(e)),this.media.style.removeProperty(e)})),S.empty(this.media.style)&&this.media.removeAttribute("style")}};class Ve{constructor(t){e(this,"firstTouch",(()=>{const{player:e}=this,{elements:t}=e;e.touch=!0,R(t.container,e.config.classNames.isTouch,!0)})),e(this,"global",((e=!0)=>{const{player:t}=this;t.config.keyboard.global&&Q.call(t,window,"keydown keyup",this.handleKey,e,!1),Q.call(t,document.body,"click",this.toggleMenu,e),G.call(t,document.body,"touchstart",this.firstTouch)})),e(this,"container",(()=>{const{player:e}=this,{config:t,elements:i,timers:s}=e;!t.keyboard.global&&t.keyboard.focused&&X.call(e,i.container,"keydown keyup",this.handleKey,!1),X.call(e,i.container,"mousemove mouseleave touchstart touchmove enterfullscreen exitfullscreen",(t=>{const{controls:n}=i;n&&"enterfullscreen"===t.type&&(n.pressed=!1,n.hover=!1);let a=0;["touchstart","touchmove","mousemove"].includes(t.type)&&(Fe.toggleControls.call(e,!0),a=e.touch?3e3:2e3),clearTimeout(s.controls),s.controls=setTimeout((()=>Fe.toggleControls.call(e,!1)),a)}));const n=()=>{if(!e.isVimeo||e.config.vimeo.premium)return;const t=i.wrapper,{active:s}=e.fullscreen,[n,a]=ce.call(e),l=ae(`aspect-ratio: ${n} / ${a}`);if(!s)return void(l?(t.style.width=null,t.style.height=null):(t.style.maxWidth=null,t.style.margin=null));const[r,o]=[Math.max(document.documentElement.clientWidth||0,window.innerWidth||0),Math.max(document.documentElement.clientHeight||0,window.innerHeight||0)],c=r/o>n/a;l?(t.style.width=c?"auto":"100%",t.style.height=c?"100%":"auto"):(t.style.maxWidth=c?o/a*n+"px":null,t.style.margin=c?"0 auto":null)},a=()=>{clearTimeout(s.resized),s.resized=setTimeout(n,50)};X.call(e,i.container,"enterfullscreen exitfullscreen",(t=>{const{target:s}=e.fullscreen;if(s!==i.container)return;if(!e.isEmbed&&S.empty(e.config.ratio))return;n();("enterfullscreen"===t.type?X:J).call(e,window,"resize",a)}))})),e(this,"media",(()=>{const{player:e}=this,{elements:t}=e;if(X.call(e,e.media,"timeupdate seeking seeked",(t=>Pe.timeUpdate.call(e,t))),X.call(e,e.media,"durationchange loadeddata loadedmetadata",(t=>Pe.durationUpdate.call(e,t))),X.call(e,e.media,"ended",(()=>{e.isHTML5&&e.isVideo&&e.config.resetOnEnd&&(e.restart(),e.pause())})),X.call(e,e.media,"progress playing seeking seeked",(t=>Pe.updateProgress.call(e,t))),X.call(e,e.media,"volumechange",(t=>Pe.updateVolume.call(e,t))),X.call(e,e.media,"playing play pause ended emptied timeupdate",(t=>Fe.checkPlaying.call(e,t))),X.call(e,e.media,"waiting canplay seeked playing",(t=>Fe.checkLoading.call(e,t))),e.supported.ui&&e.config.clickToPlay&&!e.isAudio){const i=B.call(e,`.${e.config.classNames.video}`);if(!S.element(i))return;X.call(e,t.container,"click",(s=>{([t.container,i].includes(s.target)||i.contains(s.target))&&(e.touch&&e.config.hideControls||(e.ended?(this.proxy(s,e.restart,"restart"),this.proxy(s,(()=>{ie(e.play())}),"play")):this.proxy(s,(()=>{ie(e.togglePlay())}),"play")))}))}e.supported.ui&&e.config.disableContextMenu&&X.call(e,t.wrapper,"contextmenu",(e=>{e.preventDefault()}),!1),X.call(e,e.media,"volumechange",(()=>{e.storage.set({volume:e.volume,muted:e.muted})})),X.call(e,e.media,"ratechange",(()=>{Pe.updateSetting.call(e,"speed"),e.storage.set({speed:e.speed})})),X.call(e,e.media,"qualitychange",(t=>{Pe.updateSetting.call(e,"quality",null,t.detail.quality)})),X.call(e,e.media,"ready qualitychange",(()=>{Pe.setDownloadUrl.call(e)}));const i=e.config.events.concat(["keyup","keydown"]).join(" ");X.call(e,e.media,i,(i=>{let{detail:s={}}=i;"error"===i.type&&(s=e.media.error),Z.call(e,t.container,i.type,!0,s)}))})),e(this,"proxy",((e,t,i)=>{const{player:s}=this,n=s.config.listeners[i];let a=!0;S.function(n)&&(a=n.call(s,e)),!1!==a&&S.function(t)&&t.call(s,e)})),e(this,"bind",((e,t,i,s,n=!0)=>{const{player:a}=this,l=a.config.listeners[s],r=S.function(l);X.call(a,e,t,(e=>this.proxy(e,i,s)),n&&!r)})),e(this,"controls",(()=>{const{player:e}=this,{elements:t}=e,i=M.isIE?"change":"input";if(t.buttons.play&&Array.from(t.buttons.play).forEach((t=>{this.bind(t,"click",(()=>{ie(e.togglePlay())}),"play")})),this.bind(t.buttons.restart,"click",e.restart,"restart"),this.bind(t.buttons.rewind,"click",(()=>{e.lastSeekTime=Date.now(),e.rewind()}),"rewind"),this.bind(t.buttons.fastForward,"click",(()=>{e.lastSeekTime=Date.now(),e.forward()}),"fastForward"),this.bind(t.buttons.mute,"click",(()=>{e.muted=!e.muted}),"mute"),this.bind(t.buttons.captions,"click",(()=>e.toggleCaptions())),this.bind(t.buttons.download,"click",(()=>{Z.call(e,e.media,"download")}),"download"),this.bind(t.buttons.fullscreen,"click",(()=>{e.fullscreen.toggle()}),"fullscreen"),this.bind(t.buttons.pip,"click",(()=>{e.pip="toggle"}),"pip"),this.bind(t.buttons.airplay,"click",e.airplay,"airplay"),this.bind(t.buttons.settings,"click",(t=>{t.stopPropagation(),t.preventDefault(),Pe.toggleMenu.call(e,t)}),null,!1),this.bind(t.buttons.settings,"keyup",(t=>{[" ","Enter"].includes(t.key)&&("Enter"!==t.key?(t.preventDefault(),t.stopPropagation(),Pe.toggleMenu.call(e,t)):Pe.focusFirstMenuItem.call(e,null,!0))}),null,!1),this.bind(t.settings.menu,"keydown",(t=>{"Escape"===t.key&&Pe.toggleMenu.call(e,t)})),this.bind(t.inputs.seek,"mousedown mousemove",(e=>{const i=t.progress.getBoundingClientRect(),s=100/i.width*(e.pageX-i.left);e.currentTarget.setAttribute("seek-value",s)})),this.bind(t.inputs.seek,"mousedown mouseup keydown keyup touchstart touchend",(t=>{const i=t.currentTarget,s="play-on-seeked";if(S.keyboardEvent(t)&&!["ArrowLeft","ArrowRight"].includes(t.key))return;e.lastSeekTime=Date.now();const n=i.hasAttribute(s),a=["mouseup","touchend","keyup"].includes(t.type);n&&a?(i.removeAttribute(s),ie(e.play())):!a&&e.playing&&(i.setAttribute(s,""),e.pause())})),M.isIos){const t=U.call(e,'input[type="range"]');Array.from(t).forEach((e=>this.bind(e,i,(e=>P(e.target)))))}this.bind(t.inputs.seek,i,(t=>{const i=t.currentTarget;let s=i.getAttribute("seek-value");S.empty(s)&&(s=i.value),i.removeAttribute("seek-value"),e.currentTime=s/i.max*e.duration}),"seek"),this.bind(t.progress,"mouseenter mouseleave mousemove",(t=>Pe.updateSeekTooltip.call(e,t))),this.bind(t.progress,"mousemove touchmove",(t=>{const{previewThumbnails:i}=e;i&&i.loaded&&i.startMove(t)})),this.bind(t.progress,"mouseleave touchend click",(()=>{const{previewThumbnails:t}=e;t&&t.loaded&&t.endMove(!1,!0)})),this.bind(t.progress,"mousedown touchstart",(t=>{const{previewThumbnails:i}=e;i&&i.loaded&&i.startScrubbing(t)})),this.bind(t.progress,"mouseup touchend",(t=>{const{previewThumbnails:i}=e;i&&i.loaded&&i.endScrubbing(t)})),M.isWebKit&&Array.from(U.call(e,'input[type="range"]')).forEach((t=>{this.bind(t,"input",(t=>Pe.updateRangeFill.call(e,t.target)))})),e.config.toggleInvert&&!S.element(t.display.duration)&&this.bind(t.display.currentTime,"click",(()=>{0!==e.currentTime&&(e.config.invertTime=!e.config.invertTime,Pe.timeUpdate.call(e))})),this.bind(t.inputs.volume,i,(t=>{e.volume=t.target.value}),"volume"),this.bind(t.controls,"mouseenter mouseleave",(i=>{t.controls.hover=!e.touch&&"mouseenter"===i.type})),t.fullscreen&&Array.from(t.fullscreen.children).filter((e=>!e.contains(t.container))).forEach((i=>{this.bind(i,"mouseenter mouseleave",(i=>{t.controls&&(t.controls.hover=!e.touch&&"mouseenter"===i.type)}))})),this.bind(t.controls,"mousedown mouseup touchstart touchend touchcancel",(e=>{t.controls.pressed=["mousedown","touchstart"].includes(e.type)})),this.bind(t.controls,"focusin",(()=>{const{config:i,timers:s}=e;R(t.controls,i.classNames.noTransition,!0),Fe.toggleControls.call(e,!0),setTimeout((()=>{R(t.controls,i.classNames.noTransition,!1)}),0);const n=this.touch?3e3:4e3;clearTimeout(s.controls),s.controls=setTimeout((()=>Fe.toggleControls.call(e,!1)),n)})),this.bind(t.inputs.volume,"wheel",(t=>{const i=t.webkitDirectionInvertedFromDevice,[s,n]=[t.deltaX,-t.deltaY].map((e=>i?-e:e)),a=Math.sign(Math.abs(s)>Math.abs(n)?s:n);e.increaseVolume(a/50);const{volume:l}=e.media;(1===a&&l<1||-1===a&&l>0)&&t.preventDefault()}),"volume",!1)})),this.player=t,this.lastKey=null,this.focusTimer=null,this.lastKeyDown=null,this.handleKey=this.handleKey.bind(this),this.toggleMenu=this.toggleMenu.bind(this),this.firstTouch=this.firstTouch.bind(this)}handleKey(e){const{player:t}=this,{elements:i}=t,{key:s,type:n,altKey:a,ctrlKey:l,metaKey:r,shiftKey:o}=e,c="keydown"===n,u=c&&s===this.lastKey;if(a||l||r||o)return;if(!s)return;if(c){const n=document.activeElement;if(S.element(n)){const{editable:s}=t.config.selectors,{seek:a}=i.inputs;if(n!==a&&V(n,s))return;if(" "===e.key&&V(n,'button, [role^="menuitem"]'))return}switch([" ","ArrowLeft","ArrowUp","ArrowRight","ArrowDown","0","1","2","3","4","5","6","7","8","9","c","f","k","l","m"].includes(s)&&(e.preventDefault(),e.stopPropagation()),s){case"0":case"1":case"2":case"3":case"4":case"5":case"6":case"7":case"8":case"9":u||(h=parseInt(s,10),t.currentTime=t.duration/10*h);break;case" ":case"k":u||ie(t.togglePlay());break;case"ArrowUp":t.increaseVolume(.1);break;case"ArrowDown":t.decreaseVolume(.1);break;case"m":u||(t.muted=!t.muted);break;case"ArrowRight":t.forward();break;case"ArrowLeft":t.rewind();break;case"f":t.fullscreen.toggle();break;case"c":u||t.toggleCaptions();break;case"l":t.loop=!t.loop}"Escape"===s&&!t.fullscreen.usingNative&&t.fullscreen.active&&t.fullscreen.toggle(),this.lastKey=s}else this.lastKey=null;var h}toggleMenu(e){Pe.toggleMenu.call(this.player,e)}}"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof window?window:"undefined"!=typeof __webpack_require__.g?__webpack_require__.g:"undefined"!=typeof self&&self;var Ue=function(e,t){return e(t={exports:{}},t.exports),t.exports}((function(e,t){e.exports=function(){var e=function(){},t={},i={},s={};function n(e,t){e=e.push?e:[e];var n,a,l,r=[],o=e.length,c=o;for(n=function(e,i){i.length&&r.push(e),--c||t(r)};o--;)a=e[o],(l=i[a])?n(a,l):(s[a]=s[a]||[]).push(n)}function a(e,t){if(e){var n=s[e];if(i[e]=t,n)for(;n.length;)n[0](e,t),n.splice(0,1)}}function l(t,i){t.call&&(t={success:t}),i.length?(t.error||e)(i):(t.success||e)(t)}function r(t,i,s,n){var a,l,o=document,c=s.async,u=(s.numRetries||0)+1,h=s.before||e,d=t.replace(/[\?|#].*$/,""),m=t.replace(/^(css|img)!/,"");n=n||0,/(^css!|\.css$)/.test(d)?((l=o.createElement("link")).rel="stylesheet",l.href=m,(a="hideFocus"in l)&&l.relList&&(a=0,l.rel="preload",l.as="style")):/(^img!|\.(png|gif|jpg|svg|webp)$)/.test(d)?(l=o.createElement("img")).src=m:((l=o.createElement("script")).src=t,l.async=void 0===c||c),l.onload=l.onerror=l.onbeforeload=function(e){var o=e.type[0];if(a)try{l.sheet.cssText.length||(o="e")}catch(e){18!=e.code&&(o="e")}if("e"==o){if((n+=1)<u)return r(t,i,s,n)}else if("preload"==l.rel&&"style"==l.as)return l.rel="stylesheet";i(t,o,e.defaultPrevented)},!1!==h(t,l)&&o.head.appendChild(l)}function o(e,t,i){var s,n,a=(e=e.push?e:[e]).length,l=a,o=[];for(s=function(e,i,s){if("e"==i&&o.push(e),"b"==i){if(!s)return;o.push(e)}--a||t(o)},n=0;n<l;n++)r(e[n],s,i)}function c(e,i,s){var n,r;if(i&&i.trim&&(n=i),r=(n?s:i)||{},n){if(n in t)throw"LoadJS";t[n]=!0}function c(t,i){o(e,(function(e){l(r,e),t&&l({success:t,error:i},e),a(n,e)}),r)}if(r.returnPromise)return new Promise(c);c()}return c.ready=function(e,t){return n(e,(function(e){l(t,e)})),c},c.done=function(e){a(e,[])},c.reset=function(){t={},i={},s={}},c.isDefined=function(e){return e in t},c}()}));function Be(e){return new Promise(((t,i)=>{Ue(e,{success:t,error:i})}))}function We(e){e&&!this.embed.hasPlayed&&(this.embed.hasPlayed=!0),this.media.paused===e&&(this.media.paused=!e,Z.call(this,this.media,e?"play":"pause"))}const ze={setup(){const e=this;R(e.elements.wrapper,e.config.classNames.embed,!0),e.options.speed=e.config.speed.options,ue.call(e),S.object(window.Vimeo)?ze.ready.call(e):Be(e.config.urls.vimeo.sdk).then((()=>{ze.ready.call(e)})).catch((t=>{e.debug.warn("Vimeo SDK (player.js) failed to load",t)}))},ready(){const e=this,t=e.config.vimeo,{premium:i,referrerPolicy:s,...n}=t;let a=e.media.getAttribute("src"),l="";S.empty(a)?(a=e.media.getAttribute(e.config.attributes.embed.id),l=e.media.getAttribute(e.config.attributes.embed.hash)):l=function(e){const t=e.match(/^.*(vimeo.com\/|video\/)(\d+)(\?.*&*h=|\/)+([\d,a-f]+)/);return t&&5===t.length?t[4]:null}(a);const r=l?{h:l}:{};i&&Object.assign(n,{controls:!1,sidedock:!1});const o=Ne({loop:e.config.loop.active,autoplay:e.autoplay,muted:e.muted,gesture:"media",playsinline:e.config.playsinline,...r,...n}),c=(u=a,S.empty(u)?null:S.number(Number(u))?u:u.match(/^.*(vimeo.com\/|video\/)(\d+).*/)?RegExp.$2:u);var u;const h=$("iframe"),d=me(e.config.urls.vimeo.iframe,c,o);if(h.setAttribute("src",d),h.setAttribute("allowfullscreen",""),h.setAttribute("allow",["autoplay","fullscreen","picture-in-picture","encrypted-media","accelerometer","gyroscope"].join("; ")),S.empty(s)||h.setAttribute("referrerPolicy",s),i||!t.customControls)h.setAttribute("data-poster",e.poster),e.media=q(h,e.media);else{const t=$("div",{class:e.config.classNames.embedContainer,"data-poster":e.poster});t.appendChild(h),e.media=q(t,e.media)}t.customControls||Te(me(e.config.urls.vimeo.api,d)).then((t=>{!S.empty(t)&&t.thumbnail_url&&Fe.setPoster.call(e,t.thumbnail_url).catch((()=>{}))})),e.embed=new window.Vimeo.Player(h,{autopause:e.config.autopause,muted:e.muted}),e.media.paused=!0,e.media.currentTime=0,e.supported.ui&&e.embed.disableTextTrack(),e.media.play=()=>(We.call(e,!0),e.embed.play()),e.media.pause=()=>(We.call(e,!1),e.embed.pause()),e.media.stop=()=>{e.pause(),e.currentTime=0};let{currentTime:m}=e.media;Object.defineProperty(e.media,"currentTime",{get:()=>m,set(t){const{embed:i,media:s,paused:n,volume:a}=e,l=n&&!i.hasPlayed;s.seeking=!0,Z.call(e,s,"seeking"),Promise.resolve(l&&i.setVolume(0)).then((()=>i.setCurrentTime(t))).then((()=>l&&i.pause())).then((()=>l&&i.setVolume(a))).catch((()=>{}))}});let p=e.config.speed.selected;Object.defineProperty(e.media,"playbackRate",{get:()=>p,set(t){e.embed.setPlaybackRate(t).then((()=>{p=t,Z.call(e,e.media,"ratechange")})).catch((()=>{e.options.speed=[1]}))}});let{volume:g}=e.config;Object.defineProperty(e.media,"volume",{get:()=>g,set(t){e.embed.setVolume(t).then((()=>{g=t,Z.call(e,e.media,"volumechange")}))}});let{muted:f}=e.config;Object.defineProperty(e.media,"muted",{get:()=>f,set(t){const i=!!S.boolean(t)&&t;e.embed.setMuted(!!i||e.config.muted).then((()=>{f=i,Z.call(e,e.media,"volumechange")}))}});let y,{loop:b}=e.config;Object.defineProperty(e.media,"loop",{get:()=>b,set(t){const i=S.boolean(t)?t:e.config.loop.active;e.embed.setLoop(i).then((()=>{b=i}))}}),e.embed.getVideoUrl().then((t=>{y=t,Pe.setDownloadUrl.call(e)})).catch((e=>{this.debug.warn(e)})),Object.defineProperty(e.media,"currentSrc",{get:()=>y}),Object.defineProperty(e.media,"ended",{get:()=>e.currentTime===e.duration}),Promise.all([e.embed.getVideoWidth(),e.embed.getVideoHeight()]).then((t=>{const[i,s]=t;e.embed.ratio=he(i,s),ue.call(this)})),e.embed.setAutopause(e.config.autopause).then((t=>{e.config.autopause=t})),e.embed.getVideoTitle().then((t=>{e.config.title=t,Fe.setTitle.call(this)})),e.embed.getCurrentTime().then((t=>{m=t,Z.call(e,e.media,"timeupdate")})),e.embed.getDuration().then((t=>{e.media.duration=t,Z.call(e,e.media,"durationchange")})),e.embed.getTextTracks().then((t=>{e.media.textTracks=t,xe.setup.call(e)})),e.embed.on("cuechange",(({cues:t=[]})=>{const i=t.map((e=>function(e){const t=document.createDocumentFragment(),i=document.createElement("div");return t.appendChild(i),i.innerHTML=e,t.firstChild.innerText}(e.text)));xe.updateCues.call(e,i)})),e.embed.on("loaded",(()=>{if(e.embed.getPaused().then((t=>{We.call(e,!t),t||Z.call(e,e.media,"playing")})),S.element(e.embed.element)&&e.supported.ui){e.embed.element.setAttribute("tabindex",-1)}})),e.embed.on("bufferstart",(()=>{Z.call(e,e.media,"waiting")})),e.embed.on("bufferend",(()=>{Z.call(e,e.media,"playing")})),e.embed.on("play",(()=>{We.call(e,!0),Z.call(e,e.media,"playing")})),e.embed.on("pause",(()=>{We.call(e,!1)})),e.embed.on("timeupdate",(t=>{e.media.seeking=!1,m=t.seconds,Z.call(e,e.media,"timeupdate")})),e.embed.on("progress",(t=>{e.media.buffered=t.percent,Z.call(e,e.media,"progress"),1===parseInt(t.percent,10)&&Z.call(e,e.media,"canplaythrough"),e.embed.getDuration().then((t=>{t!==e.media.duration&&(e.media.duration=t,Z.call(e,e.media,"durationchange"))}))})),e.embed.on("seeked",(()=>{e.media.seeking=!1,Z.call(e,e.media,"seeked")})),e.embed.on("ended",(()=>{e.media.paused=!0,Z.call(e,e.media,"ended")})),e.embed.on("error",(t=>{e.media.error=t,Z.call(e,e.media,"error")})),t.customControls&&setTimeout((()=>Fe.build.call(e)),0)}};function Ke(e){e&&!this.embed.hasPlayed&&(this.embed.hasPlayed=!0),this.media.paused===e&&(this.media.paused=!e,Z.call(this,this.media,e?"play":"pause"))}function Ye(e){return e.noCookie?"https://www.youtube-nocookie.com":"http:"===window.location.protocol?"http://www.youtube.com":void 0}const Qe={setup(){if(R(this.elements.wrapper,this.config.classNames.embed,!0),S.object(window.YT)&&S.function(window.YT.Player))Qe.ready.call(this);else{const e=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{S.function(e)&&e(),Qe.ready.call(this)},Be(this.config.urls.youtube.sdk).catch((e=>{this.debug.warn("YouTube API failed to load",e)}))}},getTitle(e){Te(me(this.config.urls.youtube.api,e)).then((e=>{if(S.object(e)){const{title:t,height:i,width:s}=e;this.config.title=t,Fe.setTitle.call(this),this.embed.ratio=he(s,i)}ue.call(this)})).catch((()=>{ue.call(this)}))},ready(){const e=this,t=e.config.youtube,i=e.media&&e.media.getAttribute("id");if(!S.empty(i)&&i.startsWith("youtube-"))return;let s=e.media.getAttribute("src");S.empty(s)&&(s=e.media.getAttribute(this.config.attributes.embed.id));const n=(a=s,S.empty(a)?null:a.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/)?RegExp.$2:a);var a;const l=$("div",{id:`${e.provider}-${Math.floor(1e4*Math.random())}`,"data-poster":t.customControls?e.poster:void 0});if(e.media=q(l,e.media),t.customControls){const t=e=>`https://i.ytimg.com/vi/${n}/${e}default.jpg`;Re(t("maxres"),121).catch((()=>Re(t("sd"),121))).catch((()=>Re(t("hq")))).then((t=>Fe.setPoster.call(e,t.src))).then((t=>{t.includes("maxres")||(e.elements.poster.style.backgroundSize="cover")})).catch((()=>{}))}e.embed=new window.YT.Player(e.media,{videoId:n,host:Ye(t),playerVars:x({},{autoplay:e.config.autoplay?1:0,hl:e.config.hl,controls:e.supported.ui&&t.customControls?0:1,disablekb:1,playsinline:e.config.playsinline&&!e.config.fullscreen.iosNative?1:0,cc_load_policy:e.captions.active?1:0,cc_lang_pref:e.config.captions.language,widget_referrer:window?window.location.href:null},t),events:{onError(t){if(!e.media.error){const i=t.data,s={2:"The request contains an invalid parameter value. For example, this error occurs if you specify a video ID that does not have 11 characters, or if the video ID contains invalid characters, such as exclamation points or asterisks.",5:"The requested content cannot be played in an HTML5 player or another error related to the HTML5 player has occurred.",100:"The video requested was not found. This error occurs when a video has been removed (for any reason) or has been marked as private.",101:"The owner of the requested video does not allow it to be played in embedded players.",150:"The owner of the requested video does not allow it to be played in embedded players."}[i]||"An unknown error occurred";e.media.error={code:i,message:s},Z.call(e,e.media,"error")}},onPlaybackRateChange(t){const i=t.target;e.media.playbackRate=i.getPlaybackRate(),Z.call(e,e.media,"ratechange")},onReady(i){if(S.function(e.media.play))return;const s=i.target;Qe.getTitle.call(e,n),e.media.play=()=>{Ke.call(e,!0),s.playVideo()},e.media.pause=()=>{Ke.call(e,!1),s.pauseVideo()},e.media.stop=()=>{s.stopVideo()},e.media.duration=s.getDuration(),e.media.paused=!0,e.media.currentTime=0,Object.defineProperty(e.media,"currentTime",{get:()=>Number(s.getCurrentTime()),set(t){e.paused&&!e.embed.hasPlayed&&e.embed.mute(),e.media.seeking=!0,Z.call(e,e.media,"seeking"),s.seekTo(t)}}),Object.defineProperty(e.media,"playbackRate",{get:()=>s.getPlaybackRate(),set(e){s.setPlaybackRate(e)}});let{volume:a}=e.config;Object.defineProperty(e.media,"volume",{get:()=>a,set(t){a=t,s.setVolume(100*a),Z.call(e,e.media,"volumechange")}});let{muted:l}=e.config;Object.defineProperty(e.media,"muted",{get:()=>l,set(t){const i=S.boolean(t)?t:l;l=i,s[i?"mute":"unMute"](),s.setVolume(100*a),Z.call(e,e.media,"volumechange")}}),Object.defineProperty(e.media,"currentSrc",{get:()=>s.getVideoUrl()}),Object.defineProperty(e.media,"ended",{get:()=>e.currentTime===e.duration});const r=s.getAvailablePlaybackRates();e.options.speed=r.filter((t=>e.config.speed.options.includes(t))),e.supported.ui&&t.customControls&&e.media.setAttribute("tabindex",-1),Z.call(e,e.media,"timeupdate"),Z.call(e,e.media,"durationchange"),clearInterval(e.timers.buffering),e.timers.buffering=setInterval((()=>{e.media.buffered=s.getVideoLoadedFraction(),(null===e.media.lastBuffered||e.media.lastBuffered<e.media.buffered)&&Z.call(e,e.media,"progress"),e.media.lastBuffered=e.media.buffered,1===e.media.buffered&&(clearInterval(e.timers.buffering),Z.call(e,e.media,"canplaythrough"))}),200),t.customControls&&setTimeout((()=>Fe.build.call(e)),50)},onStateChange(i){const s=i.target;clearInterval(e.timers.playing);switch(e.media.seeking&&[1,2].includes(i.data)&&(e.media.seeking=!1,Z.call(e,e.media,"seeked")),i.data){case-1:Z.call(e,e.media,"timeupdate"),e.media.buffered=s.getVideoLoadedFraction(),Z.call(e,e.media,"progress");break;case 0:Ke.call(e,!1),e.media.loop?(s.stopVideo(),s.playVideo()):Z.call(e,e.media,"ended");break;case 1:t.customControls&&!e.config.autoplay&&e.media.paused&&!e.embed.hasPlayed?e.media.pause():(Ke.call(e,!0),Z.call(e,e.media,"playing"),e.timers.playing=setInterval((()=>{Z.call(e,e.media,"timeupdate")}),50),e.media.duration!==s.getDuration()&&(e.media.duration=s.getDuration(),Z.call(e,e.media,"durationchange")));break;case 2:e.muted||e.embed.unMute(),Ke.call(e,!1);break;case 3:Z.call(e,e.media,"waiting")}Z.call(e,e.elements.container,"statechange",!1,{code:i.data})}}})}},Xe={setup(){this.media?(R(this.elements.container,this.config.classNames.type.replace("{0}",this.type),!0),R(this.elements.container,this.config.classNames.provider.replace("{0}",this.provider),!0),this.isEmbed&&R(this.elements.container,this.config.classNames.type.replace("{0}","video"),!0),this.isVideo&&(this.elements.wrapper=$("div",{class:this.config.classNames.video}),L(this.media,this.elements.wrapper),this.elements.poster=$("div",{class:this.config.classNames.poster}),this.elements.wrapper.appendChild(this.elements.poster)),this.isHTML5?de.setup.call(this):this.isYouTube?Qe.setup.call(this):this.isVimeo&&ze.setup.call(this)):this.debug.warn("No media element found!")}};class Je{constructor(t){e(this,"load",(()=>{this.enabled&&(S.object(window.google)&&S.object(window.google.ima)?this.ready():Be(this.player.config.urls.googleIMA.sdk).then((()=>{this.ready()})).catch((()=>{this.trigger("error",new Error("Google IMA SDK failed to load"))})))})),e(this,"ready",(()=>{var e;this.enabled||((e=this).manager&&e.manager.destroy(),e.elements.displayContainer&&e.elements.displayContainer.destroy(),e.elements.container.remove()),this.startSafetyTimer(12e3,"ready()"),this.managerPromise.then((()=>{this.clearSafetyTimer("onAdsManagerLoaded()")})),this.listeners(),this.setupIMA()})),e(this,"setupIMA",(()=>{this.elements.container=$("div",{class:this.player.config.classNames.ads}),this.player.elements.container.appendChild(this.elements.container),google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED),google.ima.settings.setLocale(this.player.config.ads.language),google.ima.settings.setDisableCustomPlaybackForIOS10Plus(this.player.config.playsinline),this.elements.displayContainer=new google.ima.AdDisplayContainer(this.elements.container,this.player.media),this.loader=new google.ima.AdsLoader(this.elements.displayContainer),this.loader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,(e=>this.onAdsManagerLoaded(e)),!1),this.loader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR,(e=>this.onAdError(e)),!1),this.requestAds()})),e(this,"requestAds",(()=>{const{container:e}=this.player.elements;try{const t=new google.ima.AdsRequest;t.adTagUrl=this.tagUrl,t.linearAdSlotWidth=e.offsetWidth,t.linearAdSlotHeight=e.offsetHeight,t.nonLinearAdSlotWidth=e.offsetWidth,t.nonLinearAdSlotHeight=e.offsetHeight,t.forceNonLinearFullSlot=!1,t.setAdWillPlayMuted(!this.player.muted),this.loader.requestAds(t)}catch(e){this.onAdError(e)}})),e(this,"pollCountdown",((e=!1)=>{if(!e)return clearInterval(this.countdownTimer),void this.elements.container.removeAttribute("data-badge-text");this.countdownTimer=setInterval((()=>{const e=Ee(Math.max(this.manager.getRemainingTime(),0)),t=`${ve.get("advertisement",this.player.config)} - ${e}`;this.elements.container.setAttribute("data-badge-text",t)}),100)})),e(this,"onAdsManagerLoaded",(e=>{if(!this.enabled)return;const t=new google.ima.AdsRenderingSettings;t.restoreCustomPlaybackStateOnAdBreakComplete=!0,t.enablePreloading=!0,this.manager=e.getAdsManager(this.player,t),this.cuePoints=this.manager.getCuePoints(),this.manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR,(e=>this.onAdError(e))),Object.keys(google.ima.AdEvent.Type).forEach((e=>{this.manager.addEventListener(google.ima.AdEvent.Type[e],(e=>this.onAdEvent(e)))})),this.trigger("loaded")})),e(this,"addCuePoints",(()=>{S.empty(this.cuePoints)||this.cuePoints.forEach((e=>{if(0!==e&&-1!==e&&e<this.player.duration){const t=this.player.elements.progress;if(S.element(t)){const i=100/this.player.duration*e,s=$("span",{class:this.player.config.classNames.cues});s.style.left=`${i.toString()}%`,t.appendChild(s)}}}))})),e(this,"onAdEvent",(e=>{const{container:t}=this.player.elements,i=e.getAd(),s=e.getAdData();switch((e=>{Z.call(this.player,this.player.media,`ads${e.replace(/_/g,"").toLowerCase()}`)})(e.type),e.type){case google.ima.AdEvent.Type.LOADED:this.trigger("loaded"),this.pollCountdown(!0),i.isLinear()||(i.width=t.offsetWidth,i.height=t.offsetHeight);break;case google.ima.AdEvent.Type.STARTED:this.manager.setVolume(this.player.volume);break;case google.ima.AdEvent.Type.ALL_ADS_COMPLETED:this.player.ended?this.loadAds():this.loader.contentComplete();break;case google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED:this.pauseContent();break;case google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED:this.pollCountdown(),this.resumeContent();break;case google.ima.AdEvent.Type.LOG:s.adError&&this.player.debug.warn(`Non-fatal ad error: ${s.adError.getMessage()}`)}})),e(this,"onAdError",(e=>{this.cancel(),this.player.debug.warn("Ads error",e)})),e(this,"listeners",(()=>{const{container:e}=this.player.elements;let t;this.player.on("canplay",(()=>{this.addCuePoints()})),this.player.on("ended",(()=>{this.loader.contentComplete()})),this.player.on("timeupdate",(()=>{t=this.player.currentTime})),this.player.on("seeked",(()=>{const e=this.player.currentTime;S.empty(this.cuePoints)||this.cuePoints.forEach(((i,s)=>{t<i&&i<e&&(this.manager.discardAdBreak(),this.cuePoints.splice(s,1))}))})),window.addEventListener("resize",(()=>{this.manager&&this.manager.resize(e.offsetWidth,e.offsetHeight,google.ima.ViewMode.NORMAL)}))})),e(this,"play",(()=>{const{container:e}=this.player.elements;this.managerPromise||this.resumeContent(),this.managerPromise.then((()=>{this.manager.setVolume(this.player.volume),this.elements.displayContainer.initialize();try{this.initialized||(this.manager.init(e.offsetWidth,e.offsetHeight,google.ima.ViewMode.NORMAL),this.manager.start()),this.initialized=!0}catch(e){this.onAdError(e)}})).catch((()=>{}))})),e(this,"resumeContent",(()=>{this.elements.container.style.zIndex="",this.playing=!1,ie(this.player.media.play())})),e(this,"pauseContent",(()=>{this.elements.container.style.zIndex=3,this.playing=!0,this.player.media.pause()})),e(this,"cancel",(()=>{this.initialized&&this.resumeContent(),this.trigger("error"),this.loadAds()})),e(this,"loadAds",(()=>{this.managerPromise.then((()=>{this.manager&&this.manager.destroy(),this.managerPromise=new Promise((e=>{this.on("loaded",e),this.player.debug.log(this.manager)})),this.initialized=!1,this.requestAds()})).catch((()=>{}))})),e(this,"trigger",((e,...t)=>{const i=this.events[e];S.array(i)&&i.forEach((e=>{S.function(e)&&e.apply(this,t)}))})),e(this,"on",((e,t)=>(S.array(this.events[e])||(this.events[e]=[]),this.events[e].push(t),this))),e(this,"startSafetyTimer",((e,t)=>{this.player.debug.log(`Safety timer invoked from: ${t}`),this.safetyTimer=setTimeout((()=>{this.cancel(),this.clearSafetyTimer("startSafetyTimer()")}),e)})),e(this,"clearSafetyTimer",(e=>{S.nullOrUndefined(this.safetyTimer)||(this.player.debug.log(`Safety timer cleared from: ${e}`),clearTimeout(this.safetyTimer),this.safetyTimer=null)})),this.player=t,this.config=t.config.ads,this.playing=!1,this.initialized=!1,this.elements={container:null,displayContainer:null},this.manager=null,this.loader=null,this.cuePoints=null,this.events={},this.safetyTimer=null,this.countdownTimer=null,this.managerPromise=new Promise(((e,t)=>{this.on("loaded",e),this.on("error",t)})),this.load()}get enabled(){const{config:e}=this;return this.player.isHTML5&&this.player.isVideo&&e.enabled&&(!S.empty(e.publisherId)||S.url(e.tagUrl))}get tagUrl(){const{config:e}=this;if(S.url(e.tagUrl))return e.tagUrl;return`https://go.aniview.com/api/adserver6/vast/?${Ne({AV_PUBLISHERID:"58c25bb0073ef448b1087ad6",AV_CHANNELID:"5a0458dc28a06145e4519d21",AV_URL:window.location.hostname,cb:Date.now(),AV_WIDTH:640,AV_HEIGHT:480,AV_CDIM2:e.publisherId})}`}}function Ge(e=0,t=0,i=255){return Math.min(Math.max(e,t),i)}const Ze=e=>{const t=[];return e.split(/\r\n\r\n|\n\n|\r\r/).forEach((e=>{const i={};e.split(/\r\n|\n|\r/).forEach((e=>{if(S.number(i.startTime)){if(!S.empty(e.trim())&&S.empty(i.text)){const t=e.trim().split("#xywh=");[i.text]=t,t[1]&&([i.x,i.y,i.w,i.h]=t[1].split(","))}}else{const t=e.match(/([0-9]{2})?:?([0-9]{2}):([0-9]{2}).([0-9]{2,3})( ?--> ?)([0-9]{2})?:?([0-9]{2}):([0-9]{2}).([0-9]{2,3})/);t&&(i.startTime=60*Number(t[1]||0)*60+60*Number(t[2])+Number(t[3])+Number(`0.${t[4]}`),i.endTime=60*Number(t[6]||0)*60+60*Number(t[7])+Number(t[8])+Number(`0.${t[9]}`))}})),i.text&&t.push(i)})),t},et=(e,t)=>{const i={};return e>t.width/t.height?(i.width=t.width,i.height=1/e*t.width):(i.height=t.height,i.width=e*t.height),i};class tt{constructor(t){e(this,"load",(()=>{this.player.elements.display.seekTooltip&&(this.player.elements.display.seekTooltip.hidden=this.enabled),this.enabled&&this.getThumbnails().then((()=>{this.enabled&&(this.render(),this.determineContainerAutoSizing(),this.listeners(),this.loaded=!0)}))})),e(this,"getThumbnails",(()=>new Promise((e=>{const{src:t}=this.player.config.previewThumbnails;if(S.empty(t))throw new Error("Missing previewThumbnails.src config attribute");const i=()=>{this.thumbnails.sort(((e,t)=>e.height-t.height)),this.player.debug.log("Preview thumbnails",this.thumbnails),e()};if(S.function(t))t((e=>{this.thumbnails=e,i()}));else{const e=(S.string(t)?[t]:t).map((e=>this.getThumbnail(e)));Promise.all(e).then(i)}})))),e(this,"getThumbnail",(e=>new Promise((t=>{Te(e).then((i=>{const s={frames:Ze(i),height:null,urlPrefix:""};s.frames[0].text.startsWith("/")||s.frames[0].text.startsWith("http://")||s.frames[0].text.startsWith("https://")||(s.urlPrefix=e.substring(0,e.lastIndexOf("/")+1));const n=new Image;n.onload=()=>{s.height=n.naturalHeight,s.width=n.naturalWidth,this.thumbnails.push(s),t()},n.src=s.urlPrefix+s.frames[0].text}))})))),e(this,"startMove",(e=>{if(this.loaded&&S.event(e)&&["touchmove","mousemove"].includes(e.type)&&this.player.media.duration){if("touchmove"===e.type)this.seekTime=this.player.media.duration*(this.player.elements.inputs.seek.value/100);else{var t,i;const s=this.player.elements.progress.getBoundingClientRect(),n=100/s.width*(e.pageX-s.left);this.seekTime=this.player.media.duration*(n/100),this.seekTime<0&&(this.seekTime=0),this.seekTime>this.player.media.duration-1&&(this.seekTime=this.player.media.duration-1),this.mousePosX=e.pageX,this.elements.thumb.time.innerText=Ee(this.seekTime);const a=null===(t=this.player.config.markers)||void 0===t||null===(i=t.points)||void 0===i?void 0:i.find((({time:e})=>e===Math.round(this.seekTime)));a&&this.elements.thumb.time.insertAdjacentHTML("afterbegin",`${a.label}<br>`)}this.showImageAtCurrentTime()}})),e(this,"endMove",(()=>{this.toggleThumbContainer(!1,!0)})),e(this,"startScrubbing",(e=>{(S.nullOrUndefined(e.button)||!1===e.button||0===e.button)&&(this.mouseDown=!0,this.player.media.duration&&(this.toggleScrubbingContainer(!0),this.toggleThumbContainer(!1,!0),this.showImageAtCurrentTime()))})),e(this,"endScrubbing",(()=>{this.mouseDown=!1,Math.ceil(this.lastTime)===Math.ceil(this.player.media.currentTime)?this.toggleScrubbingContainer(!1):G.call(this.player,this.player.media,"timeupdate",(()=>{this.mouseDown||this.toggleScrubbingContainer(!1)}))})),e(this,"listeners",(()=>{this.player.on("play",(()=>{this.toggleThumbContainer(!1,!0)})),this.player.on("seeked",(()=>{this.toggleThumbContainer(!1)})),this.player.on("timeupdate",(()=>{this.lastTime=this.player.media.currentTime}))})),e(this,"render",(()=>{this.elements.thumb.container=$("div",{class:this.player.config.classNames.previewThumbnails.thumbContainer}),this.elements.thumb.imageContainer=$("div",{class:this.player.config.classNames.previewThumbnails.imageContainer}),this.elements.thumb.container.appendChild(this.elements.thumb.imageContainer);const e=$("div",{class:this.player.config.classNames.previewThumbnails.timeContainer});this.elements.thumb.time=$("span",{},"00:00"),e.appendChild(this.elements.thumb.time),this.elements.thumb.imageContainer.appendChild(e),S.element(this.player.elements.progress)&&this.player.elements.progress.appendChild(this.elements.thumb.container),this.elements.scrubbing.container=$("div",{class:this.player.config.classNames.previewThumbnails.scrubbingContainer}),this.player.elements.wrapper.appendChild(this.elements.scrubbing.container)})),e(this,"destroy",(()=>{this.elements.thumb.container&&this.elements.thumb.container.remove(),this.elements.scrubbing.container&&this.elements.scrubbing.container.remove()})),e(this,"showImageAtCurrentTime",(()=>{this.mouseDown?this.setScrubbingContainerSize():this.setThumbContainerSizeAndPos();const e=this.thumbnails[0].frames.findIndex((e=>this.seekTime>=e.startTime&&this.seekTime<=e.endTime)),t=e>=0;let i=0;this.mouseDown||this.toggleThumbContainer(t),t&&(this.thumbnails.forEach(((t,s)=>{this.loadedImages.includes(t.frames[e].text)&&(i=s)})),e!==this.showingThumb&&(this.showingThumb=e,this.loadImage(i)))})),e(this,"loadImage",((e=0)=>{const t=this.showingThumb,i=this.thumbnails[e],{urlPrefix:s}=i,n=i.frames[t],a=i.frames[t].text,l=s+a;if(this.currentImageElement&&this.currentImageElement.dataset.filename===a)this.showImage(this.currentImageElement,n,e,t,a,!1),this.currentImageElement.dataset.index=t,this.removeOldImages(this.currentImageElement);else{this.loadingImage&&this.usingSprites&&(this.loadingImage.onload=null);const i=new Image;i.src=l,i.dataset.index=t,i.dataset.filename=a,this.showingThumbFilename=a,this.player.debug.log(`Loading image: ${l}`),i.onload=()=>this.showImage(i,n,e,t,a,!0),this.loadingImage=i,this.removeOldImages(i)}})),e(this,"showImage",((e,t,i,s,n,a=!0)=>{this.player.debug.log(`Showing thumb: ${n}. num: ${s}. qual: ${i}. newimg: ${a}`),this.setImageSizeAndOffset(e,t),a&&(this.currentImageContainer.appendChild(e),this.currentImageElement=e,this.loadedImages.includes(n)||this.loadedImages.push(n)),this.preloadNearby(s,!0).then(this.preloadNearby(s,!1)).then(this.getHigherQuality(i,e,t,n))})),e(this,"removeOldImages",(e=>{Array.from(this.currentImageContainer.children).forEach((t=>{if("img"!==t.tagName.toLowerCase())return;const i=this.usingSprites?500:1e3;if(t.dataset.index!==e.dataset.index&&!t.dataset.deleting){t.dataset.deleting=!0;const{currentImageContainer:e}=this;setTimeout((()=>{e.removeChild(t),this.player.debug.log(`Removing thumb: ${t.dataset.filename}`)}),i)}}))})),e(this,"preloadNearby",((e,t=!0)=>new Promise((i=>{setTimeout((()=>{const s=this.thumbnails[0].frames[e].text;if(this.showingThumbFilename===s){let n;n=t?this.thumbnails[0].frames.slice(e):this.thumbnails[0].frames.slice(0,e).reverse();let a=!1;n.forEach((e=>{const t=e.text;if(t!==s&&!this.loadedImages.includes(t)){a=!0,this.player.debug.log(`Preloading thumb filename: ${t}`);const{urlPrefix:e}=this.thumbnails[0],s=e+t,n=new Image;n.src=s,n.onload=()=>{this.player.debug.log(`Preloaded thumb filename: ${t}`),this.loadedImages.includes(t)||this.loadedImages.push(t),i()}}})),a||i()}}),300)})))),e(this,"getHigherQuality",((e,t,i,s)=>{if(e<this.thumbnails.length-1){let n=t.naturalHeight;this.usingSprites&&(n=i.h),n<this.thumbContainerHeight&&setTimeout((()=>{this.showingThumbFilename===s&&(this.player.debug.log(`Showing higher quality thumb for: ${s}`),this.loadImage(e+1))}),300)}})),e(this,"toggleThumbContainer",((e=!1,t=!1)=>{const i=this.player.config.classNames.previewThumbnails.thumbContainerShown;this.elements.thumb.container.classList.toggle(i,e),!e&&t&&(this.showingThumb=null,this.showingThumbFilename=null)})),e(this,"toggleScrubbingContainer",((e=!1)=>{const t=this.player.config.classNames.previewThumbnails.scrubbingContainerShown;this.elements.scrubbing.container.classList.toggle(t,e),e||(this.showingThumb=null,this.showingThumbFilename=null)})),e(this,"determineContainerAutoSizing",(()=>{(this.elements.thumb.imageContainer.clientHeight>20||this.elements.thumb.imageContainer.clientWidth>20)&&(this.sizeSpecifiedInCSS=!0)})),e(this,"setThumbContainerSizeAndPos",(()=>{const{imageContainer:e}=this.elements.thumb;if(this.sizeSpecifiedInCSS){if(e.clientHeight>20&&e.clientWidth<20){const t=Math.floor(e.clientHeight*this.thumbAspectRatio);e.style.width=`${t}px`}else if(e.clientHeight<20&&e.clientWidth>20){const t=Math.floor(e.clientWidth/this.thumbAspectRatio);e.style.height=`${t}px`}}else{const t=Math.floor(this.thumbContainerHeight*this.thumbAspectRatio);e.style.height=`${this.thumbContainerHeight}px`,e.style.width=`${t}px`}this.setThumbContainerPos()})),e(this,"setThumbContainerPos",(()=>{const e=this.player.elements.progress.getBoundingClientRect(),t=this.player.elements.container.getBoundingClientRect(),{container:i}=this.elements.thumb,s=t.left-e.left+10,n=t.right-e.left-i.clientWidth-10,a=this.mousePosX-e.left-i.clientWidth/2,l=Ge(a,s,n);i.style.left=`${l}px`,i.style.setProperty("--preview-arrow-offset",a-l+"px")})),e(this,"setScrubbingContainerSize",(()=>{const{width:e,height:t}=et(this.thumbAspectRatio,{width:this.player.media.clientWidth,height:this.player.media.clientHeight});this.elements.scrubbing.container.style.width=`${e}px`,this.elements.scrubbing.container.style.height=`${t}px`})),e(this,"setImageSizeAndOffset",((e,t)=>{if(!this.usingSprites)return;const i=this.thumbContainerHeight/t.h;e.style.height=e.naturalHeight*i+"px",e.style.width=e.naturalWidth*i+"px",e.style.left=`-${t.x*i}px`,e.style.top=`-${t.y*i}px`})),this.player=t,this.thumbnails=[],this.loaded=!1,this.lastMouseMoveTime=Date.now(),this.mouseDown=!1,this.loadedImages=[],this.elements={thumb:{},scrubbing:{}},this.load()}get enabled(){return this.player.isHTML5&&this.player.isVideo&&this.player.config.previewThumbnails.enabled}get currentImageContainer(){return this.mouseDown?this.elements.scrubbing.container:this.elements.thumb.imageContainer}get usingSprites(){return Object.keys(this.thumbnails[0].frames[0]).includes("w")}get thumbAspectRatio(){return this.usingSprites?this.thumbnails[0].frames[0].w/this.thumbnails[0].frames[0].h:this.thumbnails[0].width/this.thumbnails[0].height}get thumbContainerHeight(){if(this.mouseDown){const{height:e}=et(this.thumbAspectRatio,{width:this.player.media.clientWidth,height:this.player.media.clientHeight});return e}return this.sizeSpecifiedInCSS?this.elements.thumb.imageContainer.clientHeight:Math.floor(this.player.media.clientWidth/this.thumbAspectRatio/4)}get currentImageElement(){return this.mouseDown?this.currentScrubbingImageElement:this.currentThumbnailImageElement}set currentImageElement(e){this.mouseDown?this.currentScrubbingImageElement=e:this.currentThumbnailImageElement=e}}const it={insertElements(e,t){S.string(t)?_(e,this.media,{src:t}):S.array(t)&&t.forEach((t=>{_(e,this.media,t)}))},change(e){N(e,"sources.length")?(de.cancelRequests.call(this),this.destroy.call(this,(()=>{this.options.quality=[],O(this.media),this.media=null,S.element(this.elements.container)&&this.elements.container.removeAttribute("class");const{sources:t,type:i}=e,[{provider:s=_e.html5,src:n}]=t,a="html5"===s?i:"div",l="html5"===s?{}:{src:n};Object.assign(this,{provider:s,type:i,supported:K.check(i,s,this.config.playsinline),media:$(a,l)}),this.elements.container.appendChild(this.media),S.boolean(e.autoplay)&&(this.config.autoplay=e.autoplay),this.isHTML5&&(this.config.crossorigin&&this.media.setAttribute("crossorigin",""),this.config.autoplay&&this.media.setAttribute("autoplay",""),S.empty(e.poster)||(this.poster=e.poster),this.config.loop.active&&this.media.setAttribute("loop",""),this.config.muted&&this.media.setAttribute("muted",""),this.config.playsinline&&this.media.setAttribute("playsinline","")),Fe.addStyleHook.call(this),this.isHTML5&&it.insertElements.call(this,"source",t),this.config.title=e.title,Xe.setup.call(this),this.isHTML5&&Object.keys(e).includes("tracks")&&it.insertElements.call(this,"track",e.tracks),(this.isHTML5||this.isEmbed&&!this.supported.ui)&&Fe.build.call(this),this.isHTML5&&this.media.load(),S.empty(e.previewThumbnails)||(Object.assign(this.config.previewThumbnails,e.previewThumbnails),this.previewThumbnails&&this.previewThumbnails.loaded&&(this.previewThumbnails.destroy(),this.previewThumbnails=null),this.config.previewThumbnails.enabled&&(this.previewThumbnails=new tt(this))),this.fullscreen.update()}),!0)):this.debug.warn("Invalid source format")}};class st{constructor(t,i){if(e(this,"play",(()=>S.function(this.media.play)?(this.ads&&this.ads.enabled&&this.ads.managerPromise.then((()=>this.ads.play())).catch((()=>ie(this.media.play()))),this.media.play()):null)),e(this,"pause",(()=>this.playing&&S.function(this.media.pause)?this.media.pause():null)),e(this,"togglePlay",(e=>(S.boolean(e)?e:!this.playing)?this.play():this.pause())),e(this,"stop",(()=>{this.isHTML5?(this.pause(),this.restart()):S.function(this.media.stop)&&this.media.stop()})),e(this,"restart",(()=>{this.currentTime=0})),e(this,"rewind",(e=>{this.currentTime-=S.number(e)?e:this.config.seekTime})),e(this,"forward",(e=>{this.currentTime+=S.number(e)?e:this.config.seekTime})),e(this,"increaseVolume",(e=>{const t=this.media.muted?0:this.volume;this.volume=t+(S.number(e)?e:0)})),e(this,"decreaseVolume",(e=>{this.increaseVolume(-e)})),e(this,"airplay",(()=>{K.airplay&&this.media.webkitShowPlaybackTargetPicker()})),e(this,"toggleControls",(e=>{if(this.supported.ui&&!this.isAudio){const t=F(this.elements.container,this.config.classNames.hideControls),i=void 0===e?void 0:!e,s=R(this.elements.container,this.config.classNames.hideControls,i);if(s&&S.array(this.config.controls)&&this.config.controls.includes("settings")&&!S.empty(this.config.settings)&&Pe.toggleMenu.call(this,!1),s!==t){const e=s?"controlshidden":"controlsshown";Z.call(this,this.media,e)}return!s}return!1})),e(this,"on",((e,t)=>{X.call(this,this.elements.container,e,t)})),e(this,"once",((e,t)=>{G.call(this,this.elements.container,e,t)})),e(this,"off",((e,t)=>{J(this.elements.container,e,t)})),e(this,"destroy",((e,t=!1)=>{if(!this.ready)return;const i=()=>{document.body.style.overflow="",this.embed=null,t?(Object.keys(this.elements).length&&(O(this.elements.buttons.play),O(this.elements.captions),O(this.elements.controls),O(this.elements.wrapper),this.elements.buttons.play=null,this.elements.captions=null,this.elements.controls=null,this.elements.wrapper=null),S.function(e)&&e()):(ee.call(this),de.cancelRequests.call(this),q(this.elements.original,this.elements.container),Z.call(this,this.elements.original,"destroyed",!0),S.function(e)&&e.call(this.elements.original),this.ready=!1,setTimeout((()=>{this.elements=null,this.media=null}),200))};this.stop(),clearTimeout(this.timers.loading),clearTimeout(this.timers.controls),clearTimeout(this.timers.resized),this.isHTML5?(Fe.toggleNativeControls.call(this,!0),i()):this.isYouTube?(clearInterval(this.timers.buffering),clearInterval(this.timers.playing),null!==this.embed&&S.function(this.embed.destroy)&&this.embed.destroy(),i()):this.isVimeo&&(null!==this.embed&&this.embed.unload().then(i),setTimeout(i,200))})),e(this,"supports",(e=>K.mime.call(this,e))),this.timers={},this.ready=!1,this.loading=!1,this.failed=!1,this.touch=K.touch,this.media=t,S.string(this.media)&&(this.media=document.querySelectorAll(this.media)),(window.jQuery&&this.media instanceof jQuery||S.nodeList(this.media)||S.array(this.media))&&(this.media=this.media[0]),this.config=x({},Le,st.defaults,i||{},(()=>{try{return JSON.parse(this.media.getAttribute("data-plyr-config"))}catch(e){return{}}})()),this.elements={container:null,fullscreen:null,captions:null,buttons:{},display:{},progress:{},inputs:{},settings:{popup:null,menu:null,panels:{},buttons:{}}},this.captions={active:null,currentTrack:-1,meta:new WeakMap},this.fullscreen={active:!1},this.options={speed:[],quality:[]},this.debug=new De(this.config.debug),this.debug.log("Config",this.config),this.debug.log("Support",K),S.nullOrUndefined(this.media)||!S.element(this.media))return void this.debug.error("Setup failed: no suitable element passed");if(this.media.plyr)return void this.debug.warn("Target already setup");if(!this.config.enabled)return void this.debug.error("Setup failed: disabled by config");if(!K.check().api)return void this.debug.error("Setup failed: no support");const s=this.media.cloneNode(!0);s.autoplay=!1,this.elements.original=s;const n=this.media.tagName.toLowerCase();let a=null,l=null;switch(n){case"div":if(a=this.media.querySelector("iframe"),S.element(a)){if(l=Me(a.getAttribute("src")),this.provider=function(e){return/^(https?:\/\/)?(www\.)?(youtube\.com|youtube-nocookie\.com|youtu\.?be)\/.+$/.test(e)?_e.youtube:/^https?:\/\/player.vimeo.com\/video\/\d{0,9}(?=\b|\/)/.test(e)?_e.vimeo:null}(l.toString()),this.elements.container=this.media,this.media=a,this.elements.container.className="",l.search.length){const e=["1","true"];e.includes(l.searchParams.get("autoplay"))&&(this.config.autoplay=!0),e.includes(l.searchParams.get("loop"))&&(this.config.loop.active=!0),this.isYouTube?(this.config.playsinline=e.includes(l.searchParams.get("playsinline")),this.config.youtube.hl=l.searchParams.get("hl")):this.config.playsinline=!0}}else this.provider=this.media.getAttribute(this.config.attributes.embed.provider),this.media.removeAttribute(this.config.attributes.embed.provider);if(S.empty(this.provider)||!Object.values(_e).includes(this.provider))return void this.debug.error("Setup failed: Invalid provider");this.type=je;break;case"video":case"audio":this.type=n,this.provider=_e.html5,this.media.hasAttribute("crossorigin")&&(this.config.crossorigin=!0),this.media.hasAttribute("autoplay")&&(this.config.autoplay=!0),(this.media.hasAttribute("playsinline")||this.media.hasAttribute("webkit-playsinline"))&&(this.config.playsinline=!0),this.media.hasAttribute("muted")&&(this.config.muted=!0),this.media.hasAttribute("loop")&&(this.config.loop.active=!0);break;default:return void this.debug.error("Setup failed: unsupported type")}this.supported=K.check(this.type,this.provider),this.supported.api?(this.eventListeners=[],this.listeners=new Ve(this),this.storage=new we(this),this.media.plyr=this,S.element(this.elements.container)||(this.elements.container=$("div"),L(this.media,this.elements.container)),Fe.migrateStyles.call(this),Fe.addStyleHook.call(this),Xe.setup.call(this),this.config.debug&&X.call(this,this.elements.container,this.config.events.join(" "),(e=>{this.debug.log(`event: ${e.type}`)})),this.fullscreen=new He(this),(this.isHTML5||this.isEmbed&&!this.supported.ui)&&Fe.build.call(this),this.listeners.container(),this.listeners.global(),this.config.ads.enabled&&(this.ads=new Je(this)),this.isHTML5&&this.config.autoplay&&this.once("canplay",(()=>ie(this.play()))),this.lastSeekTime=0,this.config.previewThumbnails.enabled&&(this.previewThumbnails=new tt(this))):this.debug.error("Setup failed: no support")}get isHTML5(){return this.provider===_e.html5}get isEmbed(){return this.isYouTube||this.isVimeo}get isYouTube(){return this.provider===_e.youtube}get isVimeo(){return this.provider===_e.vimeo}get isVideo(){return this.type===je}get isAudio(){return this.type===Oe}get playing(){return Boolean(this.ready&&!this.paused&&!this.ended)}get paused(){return Boolean(this.media.paused)}get stopped(){return Boolean(this.paused&&0===this.currentTime)}get ended(){return Boolean(this.media.ended)}set currentTime(e){if(!this.duration)return;const t=S.number(e)&&e>0;this.media.currentTime=t?Math.min(e,this.duration):0,this.debug.log(`Seeking to ${this.currentTime} seconds`)}get currentTime(){return Number(this.media.currentTime)}get buffered(){const{buffered:e}=this.media;return S.number(e)?e:e&&e.length&&this.duration>0?e.end(0)/this.duration:0}get seeking(){return Boolean(this.media.seeking)}get duration(){const e=parseFloat(this.config.duration),t=(this.media||{}).duration,i=S.number(t)&&t!==1/0?t:0;return e||i}set volume(e){let t=e;S.string(t)&&(t=Number(t)),S.number(t)||(t=this.storage.get("volume")),S.number(t)||({volume:t}=this.config),t>1&&(t=1),t<0&&(t=0),this.config.volume=t,this.media.volume=t,!S.empty(e)&&this.muted&&t>0&&(this.muted=!1)}get volume(){return Number(this.media.volume)}set muted(e){let t=e;S.boolean(t)||(t=this.storage.get("muted")),S.boolean(t)||(t=this.config.muted),this.config.muted=t,this.media.muted=t}get muted(){return Boolean(this.media.muted)}get hasAudio(){return!this.isHTML5||(!!this.isAudio||(Boolean(this.media.mozHasAudio)||Boolean(this.media.webkitAudioDecodedByteCount)||Boolean(this.media.audioTracks&&this.media.audioTracks.length)))}set speed(e){let t=null;S.number(e)&&(t=e),S.number(t)||(t=this.storage.get("speed")),S.number(t)||(t=this.config.speed.selected);const{minimumSpeed:i,maximumSpeed:s}=this;t=Ge(t,i,s),this.config.speed.selected=t,setTimeout((()=>{this.media&&(this.media.playbackRate=t)}),0)}get speed(){return Number(this.media.playbackRate)}get minimumSpeed(){return this.isYouTube?Math.min(...this.options.speed):this.isVimeo?.5:.0625}get maximumSpeed(){return this.isYouTube?Math.max(...this.options.speed):this.isVimeo?2:16}set quality(e){const t=this.config.quality,i=this.options.quality;if(!i.length)return;let s=[!S.empty(e)&&Number(e),this.storage.get("quality"),t.selected,t.default].find(S.number),n=!0;if(!i.includes(s)){const e=ne(i,s);this.debug.warn(`Unsupported quality option: ${s}, using ${e} instead`),s=e,n=!1}t.selected=s,this.media.quality=s,n&&this.storage.set({quality:s})}get quality(){return this.media.quality}set loop(e){const t=S.boolean(e)?e:this.config.loop.active;this.config.loop.active=t,this.media.loop=t}get loop(){return Boolean(this.media.loop)}set source(e){it.change.call(this,e)}get source(){return this.media.currentSrc}get download(){const{download:e}=this.config.urls;return S.url(e)?e:this.source}set download(e){S.url(e)&&(this.config.urls.download=e,Pe.setDownloadUrl.call(this))}set poster(e){this.isVideo?Fe.setPoster.call(this,e,!1).catch((()=>{})):this.debug.warn("Poster can only be set for video")}get poster(){return this.isVideo?this.media.getAttribute("poster")||this.media.getAttribute("data-poster"):null}get ratio(){if(!this.isVideo)return null;const e=oe(ce.call(this));return S.array(e)?e.join(":"):e}set ratio(e){this.isVideo?S.string(e)&&re(e)?(this.config.ratio=oe(e),ue.call(this)):this.debug.error(`Invalid aspect ratio specified (${e})`):this.debug.warn("Aspect ratio can only be set for video")}set autoplay(e){this.config.autoplay=S.boolean(e)?e:this.config.autoplay}get autoplay(){return Boolean(this.config.autoplay)}toggleCaptions(e){xe.toggle.call(this,e,!1)}set currentTrack(e){xe.set.call(this,e,!1),xe.setup.call(this)}get currentTrack(){const{toggled:e,currentTrack:t}=this.captions;return e?t:-1}set language(e){xe.setLanguage.call(this,e,!1)}get language(){return(xe.getCurrentTrack.call(this)||{}).language}set pip(e){if(!K.pip)return;const t=S.boolean(e)?e:!this.pip;S.function(this.media.webkitSetPresentationMode)&&this.media.webkitSetPresentationMode(t?Ie:$e),S.function(this.media.requestPictureInPicture)&&(!this.pip&&t?this.media.requestPictureInPicture():this.pip&&!t&&document.exitPictureInPicture())}get pip(){return K.pip?S.empty(this.media.webkitPresentationMode)?this.media===document.pictureInPictureElement:this.media.webkitPresentationMode===Ie:null}setPreviewThumbnails(e){this.previewThumbnails&&this.previewThumbnails.loaded&&(this.previewThumbnails.destroy(),this.previewThumbnails=null),Object.assign(this.config.previewThumbnails,e),this.config.previewThumbnails.enabled&&(this.previewThumbnails=new tt(this))}static supported(e,t){return K.check(e,t)}static loadSprite(e,t){return ke(e,t)}static setup(e,t={}){let i=null;return S.string(e)?i=Array.from(document.querySelectorAll(e)):S.nodeList(e)?i=Array.from(e):S.array(e)&&(i=e.filter(S.element)),S.empty(i)?null:i.map((e=>new st(e,t)))}}var nt;return st.defaults=(nt=Le,JSON.parse(JSON.stringify(nt))),st}));
+//# sourceMappingURL=plyr.min.js.map
+
+
+/***/ }),
+
+/***/ 4291:
+/***/ (function(module, exports) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*Copyright (c) 2020 Jason Zissman
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+(() => {
+	((root, factory) => {
+		if ( true && module.exports) {
+			// CommonJS
+			return module.exports = factory();
+		} else if (true) {
+			// AMD
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (() => {
+				return (root.TimeMe = factory());
+			}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {}
+	})(this, () => {
+
+		let TimeMe = {
+
+			startStopTimes: {},
+			idleTimeoutMs: 30 * 1000,
+			currentIdleTimeMs: 0,
+			checkIdleStateRateMs: 250,
+			isUserCurrentlyOnPage: true, 
+			isUserCurrentlyIdle: false, 
+			currentPageName: "default-page-name",
+			timeElapsedCallbacks: [],
+			userLeftCallbacks: [],
+			userReturnCallbacks: [],
+
+			trackTimeOnElement: (elementId) => {
+				let element = document.getElementById(elementId);
+				if (element) {
+					element.addEventListener("mouseover", () => {
+						TimeMe.startTimer(elementId);
+					});
+					element.addEventListener("mousemove", () => {
+						TimeMe.startTimer(elementId);
+					});
+					element.addEventListener("mouseleave", () => {
+						TimeMe.stopTimer(elementId);
+					});
+					element.addEventListener("keypress", () => {
+						TimeMe.startTimer(elementId);
+					});
+					element.addEventListener("focus", () => {
+						TimeMe.startTimer(elementId);
+					});
+				}
+			},
+
+			getTimeOnElementInSeconds: (elementId) => {
+				let time = TimeMe.getTimeOnPageInSeconds(elementId);
+				if (time) {
+					return time;
+				} else {
+					return 0;
+				}
+			},
+
+			// startTime is optional. If provided, must be of type Date(). By providing
+			// startTime, you are overriding the internal timing mechanism and manually
+			// indicating the start time.
+			startTimer: (pageName, startTime) => {
+				if (!pageName) {
+					pageName = TimeMe.currentPageName;
+				}
+
+				if (TimeMe.startStopTimes[pageName] === undefined) {
+					TimeMe.startStopTimes[pageName] = [];
+				} else {
+					let arrayOfTimes = TimeMe.startStopTimes[pageName];
+					let latestStartStopEntry = arrayOfTimes[arrayOfTimes.length - 1];
+					if (latestStartStopEntry !== undefined && latestStartStopEntry.stopTime === undefined) {
+						// Can't start new timer until previous finishes.
+						return;
+					}
+				}
+				TimeMe.startStopTimes[pageName].push({
+					"startTime": startTime || new Date(),
+					"stopTime": undefined
+				});				
+			},
+
+			stopAllTimers: () => {
+				let pageNames = Object.keys(TimeMe.startStopTimes);
+				for (let i = 0; i < pageNames.length; i++) {
+					TimeMe.stopTimer(pageNames[i]);
+				}
+			},
+
+			// stopTime is optional. If provided, must be of type Date(). By providing
+			// stopTime, you are overriding the internal timing mechanism and manually
+			// indicating the stop time.
+			stopTimer: (pageName, stopTime) => {
+				if (!pageName) {
+					pageName = TimeMe.currentPageName;
+				}
+				let arrayOfTimes = TimeMe.startStopTimes[pageName];
+				if (arrayOfTimes === undefined || arrayOfTimes.length === 0) {
+					// Can't stop timer before you've started it.
+					return;
+				}
+				if (arrayOfTimes[arrayOfTimes.length - 1].stopTime === undefined) {
+					arrayOfTimes[arrayOfTimes.length - 1].stopTime = stopTime || new Date();
+				}
+			},
+
+			getTimeOnCurrentPageInSeconds: () => {
+				return TimeMe.getTimeOnPageInSeconds(TimeMe.currentPageName);
+			},
+
+			getTimeOnPageInSeconds: (pageName) => {
+				let timeInMs = TimeMe.getTimeOnPageInMilliseconds(pageName);
+				if (timeInMs === undefined) {
+					return undefined;
+				} else {
+					return timeInMs / 1000;
+				}
+			},
+
+			getTimeOnCurrentPageInMilliseconds: () => {
+				return TimeMe.getTimeOnPageInMilliseconds(TimeMe.currentPageName);
+			},
+
+			getTimeOnPageInMilliseconds: (pageName) => {
+
+				let totalTimeOnPage = 0;
+
+				let arrayOfTimes = TimeMe.startStopTimes[pageName];
+				if (arrayOfTimes === undefined) {
+					// Can't get time on page before you've started the timer.
+					return;
+				}
+
+				let timeSpentOnPageInSeconds = 0;
+				for (let i = 0; i < arrayOfTimes.length; i++) {
+					let startTime = arrayOfTimes[i].startTime;
+					let stopTime = arrayOfTimes[i].stopTime;
+					if (stopTime === undefined) {
+						stopTime = new Date();
+					}
+					let difference = stopTime - startTime;
+					timeSpentOnPageInSeconds += (difference);
+				}
+
+				totalTimeOnPage = Number(timeSpentOnPageInSeconds);
+				return totalTimeOnPage;
+			},
+
+			getTimeOnAllPagesInSeconds: () => {
+				let allTimes = [];
+				let pageNames = Object.keys(TimeMe.startStopTimes);
+				for (let i = 0; i < pageNames.length; i++) {
+					let pageName = pageNames[i];
+					let timeOnPage = TimeMe.getTimeOnPageInSeconds(pageName);
+					allTimes.push({
+						"pageName": pageName,
+						"timeOnPage": timeOnPage
+					});
+				}
+				return allTimes;
+			},
+
+			setIdleDurationInSeconds: (duration) => {
+				let durationFloat = parseFloat(duration);
+				if (isNaN(durationFloat) === false) {
+					TimeMe.idleTimeoutMs = duration * 1000;
+				} else {
+					throw {
+						name: "InvalidDurationException",
+						message: "An invalid duration time (" + duration + ") was provided."
+					};
+				}
+			},
+
+			setCurrentPageName: (pageName) => {
+				TimeMe.currentPageName = pageName;
+			},
+
+			resetRecordedPageTime: (pageName) => {
+				delete TimeMe.startStopTimes[pageName];
+			},
+
+			resetAllRecordedPageTimes: () => {
+				let pageNames = Object.keys(TimeMe.startStopTimes);
+				for (let i = 0; i < pageNames.length; i++) {
+					TimeMe.resetRecordedPageTime(pageNames[i]);
+				}
+			},
+			userActivityDetected: () => {
+				if (TimeMe.isUserCurrentlyIdle) {
+					TimeMe.triggerUserHasReturned();
+				}
+				TimeMe.resetIdleCountdown();
+			},
+			resetIdleCountdown: () => {
+				TimeMe.isUserCurrentlyIdle = false;
+				TimeMe.currentIdleTimeMs = 0;
+			},
+
+			callWhenUserLeaves: (callback, numberOfTimesToInvoke) => {
+				TimeMe.userLeftCallbacks.push({
+					callback: callback,
+					numberOfTimesToInvoke: numberOfTimesToInvoke
+				})
+			},
+
+			callWhenUserReturns: (callback, numberOfTimesToInvoke) => {
+				TimeMe.userReturnCallbacks.push({
+					callback: callback,
+					numberOfTimesToInvoke: numberOfTimesToInvoke
+				})
+			},
+
+			triggerUserHasReturned: () => {
+				if (!TimeMe.isUserCurrentlyOnPage) {
+					TimeMe.isUserCurrentlyOnPage = true;
+					TimeMe.resetIdleCountdown();
+					for (let i = 0; i < TimeMe.userReturnCallbacks.length; i++) {
+						let userReturnedCallback = TimeMe.userReturnCallbacks[i];
+						let numberTimes = userReturnedCallback.numberOfTimesToInvoke;
+						if (isNaN(numberTimes) || (numberTimes === undefined) || numberTimes > 0) {
+							userReturnedCallback.numberOfTimesToInvoke -= 1;
+							userReturnedCallback.callback();
+						}
+					}
+				}
+				TimeMe.startTimer();
+			},
+			// TODO - we are muddying the waters in between
+			// 'user left page' and 'user gone idle'. Really should be
+			// two separate concepts entirely. Need to break this into smaller  functions
+			// for either scenario.
+			triggerUserHasLeftPageOrGoneIdle: () => {
+				if (TimeMe.isUserCurrentlyOnPage) {
+					TimeMe.isUserCurrentlyOnPage = false;					
+					for (let i = 0; i < TimeMe.userLeftCallbacks.length; i++) {
+						let userHasLeftCallback = TimeMe.userLeftCallbacks[i];
+						let numberTimes = userHasLeftCallback.numberOfTimesToInvoke;
+						if (isNaN(numberTimes) || (numberTimes === undefined) || numberTimes > 0) {
+							userHasLeftCallback.numberOfTimesToInvoke -= 1;
+							userHasLeftCallback.callback();
+						}
+					}
+				}
+				TimeMe.stopAllTimers();
+			},
+
+			callAfterTimeElapsedInSeconds: (timeInSeconds, callback) => {
+				TimeMe.timeElapsedCallbacks.push({
+					timeInSeconds: timeInSeconds,
+					callback: callback,
+					pending: true
+				});
+			},
+
+			checkIdleState: () => {
+				for (let i = 0; i < TimeMe.timeElapsedCallbacks.length; i++) {
+					if (TimeMe.timeElapsedCallbacks[i].pending && TimeMe.getTimeOnCurrentPageInSeconds() > TimeMe.timeElapsedCallbacks[i].timeInSeconds) {
+						TimeMe.timeElapsedCallbacks[i].callback();
+						TimeMe.timeElapsedCallbacks[i].pending = false;
+					}
+				}
+				if (TimeMe.isUserCurrentlyIdle === false && TimeMe.currentIdleTimeMs > TimeMe.idleTimeoutMs) {
+					TimeMe.isUserCurrentlyIdle = true;
+					TimeMe.triggerUserHasLeftPageOrGoneIdle();
+				} else {
+					TimeMe.currentIdleTimeMs += TimeMe.checkIdleStateRateMs;
+				}
+			},
+
+			visibilityChangeEventName: undefined,
+			hiddenPropName: undefined,
+
+			listenForVisibilityEvents: (trackWhenUserLeavesPage, trackWhenUserGoesIdle) => {
+
+				if (trackWhenUserLeavesPage) {
+					TimeMe.listenForUserLeavesOrReturnsEvents();
+				}
+
+				if (trackWhenUserGoesIdle) {
+					TimeMe.listForIdleEvents();
+				}
+
+			},
+
+			listenForUserLeavesOrReturnsEvents: () => {
+				if (typeof document.hidden !== "undefined") {
+					TimeMe.hiddenPropName = "hidden";
+					TimeMe.visibilityChangeEventName = "visibilitychange";
+				} else if (typeof document.mozHidden !== "undefined") {
+					TimeMe.hiddenPropName = "mozHidden";
+					TimeMe.visibilityChangeEventName = "mozvisibilitychange";
+				} else if (typeof document.msHidden !== "undefined") {
+					TimeMe.hiddenPropName = "msHidden";
+					TimeMe.visibilityChangeEventName = "msvisibilitychange";
+				} else if (typeof document.webkitHidden !== "undefined") {
+					TimeMe.hiddenPropName = "webkitHidden";
+					TimeMe.visibilityChangeEventName = "webkitvisibilitychange";
+				}
+
+				document.addEventListener(TimeMe.visibilityChangeEventName, () => {
+					if (document[TimeMe.hiddenPropName]) {
+						TimeMe.triggerUserHasLeftPageOrGoneIdle();
+					} else {
+						TimeMe.triggerUserHasReturned();
+					}
+				}, false);
+
+				window.addEventListener('blur', () => {
+					TimeMe.triggerUserHasLeftPageOrGoneIdle();
+				});
+
+				window.addEventListener('focus', () => {
+					TimeMe.triggerUserHasReturned();
+				});
+			},
+
+			listForIdleEvents: () => {
+				document.addEventListener("mousemove", () => { TimeMe.userActivityDetected(); });
+				document.addEventListener("keyup", () => { TimeMe.userActivityDetected(); });
+				document.addEventListener("touchstart", () => { TimeMe.userActivityDetected(); });
+				window.addEventListener("scroll", () => { TimeMe.userActivityDetected(); });
+
+				setInterval(() => {
+					if (TimeMe.isUserCurrentlyIdle !== true) {
+						TimeMe.checkIdleState();
+					}
+				}, TimeMe.checkIdleStateRateMs);
+			},
+
+			websocket: undefined,
+
+			websocketHost: undefined,
+
+			setUpWebsocket: (websocketOptions) => {
+				if (window.WebSocket && websocketOptions) {
+					let websocketHost = websocketOptions.websocketHost; // "ws://hostname:port"
+					try {
+						TimeMe.websocket = new WebSocket(websocketHost);
+						window.onbeforeunload = () => {
+							TimeMe.sendCurrentTime(websocketOptions.appId);
+						};
+						TimeMe.websocket.onopen = () => {
+							TimeMe.sendInitWsRequest(websocketOptions.appId);
+						}
+						TimeMe.websocket.onerror = (error) => {
+							if (console) {
+								console.log("Error occurred in websocket connection: " + error);
+							}
+						}
+						TimeMe.websocket.onmessage = (event) => {
+							if (console) {
+								console.log(event.data);
+							}
+						}
+					} catch (error) {
+						if (console) {
+							console.error("Failed to connect to websocket host.  Error:" + error);
+						}
+					}
+				}
+			},
+
+			websocketSend: (data) => {
+				TimeMe.websocket.send(JSON.stringify(data));
+			},
+
+			sendCurrentTime: (appId) => {
+				let timeSpentOnPage = TimeMe.getTimeOnCurrentPageInMilliseconds();
+				let data = {
+					type: "INSERT_TIME",
+					appId: appId,
+					timeOnPageMs: timeSpentOnPage,
+					pageName: TimeMe.currentPageName
+				};
+				TimeMe.websocketSend(data);
+			},
+			sendInitWsRequest: (appId) => {
+				let data = {
+					type: "INIT",
+					appId: appId
+				};
+				TimeMe.websocketSend(data);
+			},
+
+			initialize: (options) => {
+
+				let idleTimeoutInSeconds = TimeMe.idleTimeoutMs || 30;
+				let currentPageName = TimeMe.currentPageName || "default-page-name";
+				let websocketOptions = undefined;
+				let initialStartTime = undefined;
+				let trackWhenUserLeavesPage = true;
+				let trackWhenUserGoesIdle = true;
+
+				if (options) {
+					idleTimeoutInSeconds = options.idleTimeoutInSeconds || idleTimeoutInSeconds;
+					currentPageName = options.currentPageName || currentPageName;
+					websocketOptions = options.websocketOptions;
+					initialStartTime = options.initialStartTime;
+
+					if (options.trackWhenUserLeavesPage === false) {
+						trackWhenUserLeavesPage = false;
+					}
+					if (options.trackWhenUserGoesIdle === false) {
+						trackWhenUserGoesIdle = false;
+					}
+				}
+
+				TimeMe.setIdleDurationInSeconds(idleTimeoutInSeconds)
+				TimeMe.setCurrentPageName(currentPageName)
+				TimeMe.setUpWebsocket(websocketOptions)
+				TimeMe.listenForVisibilityEvents(trackWhenUserLeavesPage, trackWhenUserGoesIdle);
+
+				// TODO - only do this if page currently visible.
+
+				TimeMe.startTimer(undefined, initialStartTime);
+			}
+		};
+		return TimeMe;
+	});
+}).call(this);
+
+
+/***/ }),
+
+/***/ 4842:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/*!
+ * Unidragger v3.0.1
+ * Draggable base class
+ * MIT license
+ */
+
+( function( window, factory ) {
+  // universal module definition
+  if (  true && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        window,
+        __webpack_require__(7158),
+    );
+  } else {
+    // browser global
+    window.Unidragger = factory(
+        window,
+        window.EvEmitter,
+    );
+  }
+
+}( typeof window != 'undefined' ? window : this, function factory( window, EvEmitter ) {
+
+function Unidragger() {}
+
+// inherit EvEmitter
+let proto = Unidragger.prototype = Object.create( EvEmitter.prototype );
+
+// ----- bind start ----- //
+
+// trigger handler methods for events
+proto.handleEvent = function( event ) {
+  let method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+let startEvent, activeEvents;
+if ( 'ontouchstart' in window ) {
+  // HACK prefer Touch Events as you can preventDefault on touchstart to
+  // disable scroll in iOS & mobile Chrome metafizzy/flickity#1177
+  startEvent = 'touchstart';
+  activeEvents = [ 'touchmove', 'touchend', 'touchcancel' ];
+} else if ( window.PointerEvent ) {
+  // Pointer Events
+  startEvent = 'pointerdown';
+  activeEvents = [ 'pointermove', 'pointerup', 'pointercancel' ];
+} else {
+  // mouse events
+  startEvent = 'mousedown';
+  activeEvents = [ 'mousemove', 'mouseup' ];
+}
+
+// prototype so it can be overwriteable by Flickity
+proto.touchActionValue = 'none';
+
+proto.bindHandles = function() {
+  this._bindHandles( 'addEventListener', this.touchActionValue );
+};
+
+proto.unbindHandles = function() {
+  this._bindHandles( 'removeEventListener', '' );
+};
+
+/**
+ * Add or remove start event
+ * @param {String} bindMethod - addEventListener or removeEventListener
+ * @param {String} touchAction - value for touch-action CSS property
+ */
+proto._bindHandles = function( bindMethod, touchAction ) {
+  this.handles.forEach( ( handle ) => {
+    handle[ bindMethod ]( startEvent, this );
+    handle[ bindMethod ]( 'click', this );
+    // touch-action: none to override browser touch gestures. metafizzy/flickity#540
+    if ( window.PointerEvent ) handle.style.touchAction = touchAction;
+  } );
+};
+
+proto.bindActivePointerEvents = function() {
+  activeEvents.forEach( ( eventName ) => {
+    window.addEventListener( eventName, this );
+  } );
+};
+
+proto.unbindActivePointerEvents = function() {
+  activeEvents.forEach( ( eventName ) => {
+    window.removeEventListener( eventName, this );
+  } );
+};
+
+// ----- event handler helpers ----- //
+
+// trigger method with matching pointer
+proto.withPointer = function( methodName, event ) {
+  if ( event.pointerId === this.pointerIdentifier ) {
+    this[ methodName ]( event, event );
+  }
+};
+
+// trigger method with matching touch
+proto.withTouch = function( methodName, event ) {
+  let touch;
+  for ( let changedTouch of event.changedTouches ) {
+    if ( changedTouch.identifier === this.pointerIdentifier ) {
+      touch = changedTouch;
+    }
+  }
+  if ( touch ) this[ methodName ]( event, touch );
+};
+
+// ----- start event ----- //
+
+proto.onmousedown = function( event ) {
+  this.pointerDown( event, event );
+};
+
+proto.ontouchstart = function( event ) {
+  this.pointerDown( event, event.changedTouches[0] );
+};
+
+proto.onpointerdown = function( event ) {
+  this.pointerDown( event, event );
+};
+
+// nodes that have text fields
+const cursorNodes = [ 'TEXTAREA', 'INPUT', 'SELECT', 'OPTION' ];
+// input types that do not have text fields
+const clickTypes = [ 'radio', 'checkbox', 'button', 'submit', 'image', 'file' ];
+
+/**
+ * any time you set `event, pointer` it refers to:
+ * @param {Event} event
+ * @param {Event | Touch} pointer
+ */
+proto.pointerDown = function( event, pointer ) {
+  // dismiss multi-touch taps, right clicks, and clicks on text fields
+  let isCursorNode = cursorNodes.includes( event.target.nodeName );
+  let isClickType = clickTypes.includes( event.target.type );
+  let isOkayElement = !isCursorNode || isClickType;
+  let isOkay = !this.isPointerDown && !event.button && isOkayElement;
+  if ( !isOkay ) return;
+
+  this.isPointerDown = true;
+  // save pointer identifier to match up touch events
+  this.pointerIdentifier = pointer.pointerId !== undefined ?
+    // pointerId for pointer events, touch.indentifier for touch events
+    pointer.pointerId : pointer.identifier;
+  // track position for move
+  this.pointerDownPointer = {
+    pageX: pointer.pageX,
+    pageY: pointer.pageY,
+  };
+
+  this.bindActivePointerEvents();
+  this.emitEvent( 'pointerDown', [ event, pointer ] );
+};
+
+// ----- move ----- //
+
+proto.onmousemove = function( event ) {
+  this.pointerMove( event, event );
+};
+
+proto.onpointermove = function( event ) {
+  this.withPointer( 'pointerMove', event );
+};
+
+proto.ontouchmove = function( event ) {
+  this.withTouch( 'pointerMove', event );
+};
+
+proto.pointerMove = function( event, pointer ) {
+  let moveVector = {
+    x: pointer.pageX - this.pointerDownPointer.pageX,
+    y: pointer.pageY - this.pointerDownPointer.pageY,
+  };
+  this.emitEvent( 'pointerMove', [ event, pointer, moveVector ] );
+  // start drag if pointer has moved far enough to start drag
+  let isDragStarting = !this.isDragging && this.hasDragStarted( moveVector );
+  if ( isDragStarting ) this.dragStart( event, pointer );
+  if ( this.isDragging ) this.dragMove( event, pointer, moveVector );
+};
+
+// condition if pointer has moved far enough to start drag
+proto.hasDragStarted = function( moveVector ) {
+  return Math.abs( moveVector.x ) > 3 || Math.abs( moveVector.y ) > 3;
+};
+
+// ----- drag ----- //
+
+proto.dragStart = function( event, pointer ) {
+  this.isDragging = true;
+  this.isPreventingClicks = true; // set flag to prevent clicks
+  this.emitEvent( 'dragStart', [ event, pointer ] );
+};
+
+proto.dragMove = function( event, pointer, moveVector ) {
+  this.emitEvent( 'dragMove', [ event, pointer, moveVector ] );
+};
+
+// ----- end ----- //
+
+proto.onmouseup = function( event ) {
+  this.pointerUp( event, event );
+};
+
+proto.onpointerup = function( event ) {
+  this.withPointer( 'pointerUp', event );
+};
+
+proto.ontouchend = function( event ) {
+  this.withTouch( 'pointerUp', event );
+};
+
+proto.pointerUp = function( event, pointer ) {
+  this.pointerDone();
+  this.emitEvent( 'pointerUp', [ event, pointer ] );
+
+  if ( this.isDragging ) {
+    this.dragEnd( event, pointer );
+  } else {
+    // pointer didn't move enough for drag to start
+    this.staticClick( event, pointer );
+  }
+};
+
+proto.dragEnd = function( event, pointer ) {
+  this.isDragging = false; // reset flag
+  // re-enable clicking async
+  setTimeout( () => delete this.isPreventingClicks );
+
+  this.emitEvent( 'dragEnd', [ event, pointer ] );
+};
+
+// triggered on pointer up & pointer cancel
+proto.pointerDone = function() {
+  this.isPointerDown = false;
+  delete this.pointerIdentifier;
+  this.unbindActivePointerEvents();
+  this.emitEvent('pointerDone');
+};
+
+// ----- cancel ----- //
+
+proto.onpointercancel = function( event ) {
+  this.withPointer( 'pointerCancel', event );
+};
+
+proto.ontouchcancel = function( event ) {
+  this.withTouch( 'pointerCancel', event );
+};
+
+proto.pointerCancel = function( event, pointer ) {
+  this.pointerDone();
+  this.emitEvent( 'pointerCancel', [ event, pointer ] );
+};
+
+// ----- click ----- //
+
+// handle all clicks and prevent clicks when dragging
+proto.onclick = function( event ) {
+  if ( this.isPreventingClicks ) event.preventDefault();
+};
+
+// triggered after pointer down & up with no/tiny movement
+proto.staticClick = function( event, pointer ) {
+  // ignore emulated mouse up clicks
+  let isMouseup = event.type === 'mouseup';
+  if ( isMouseup && this.isIgnoringMouseUp ) return;
+
+  this.emitEvent( 'staticClick', [ event, pointer ] );
+
+  // set flag for emulated clicks 300ms after touchend
+  if ( isMouseup ) {
+    this.isIgnoringMouseUp = true;
+    // reset flag after 400ms
+    setTimeout( () => {
+      delete this.isIgnoringMouseUp;
+    }, 400 );
+  }
+};
+
+// -----  ----- //
+
+return Unidragger;
+
+} ) );
+
+
+/***/ }),
+
+/***/ 7529:
+/***/ (function(module) {
+
+module.exports = extend
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+function extend() {
+    var target = {}
+
+    for (var i = 0; i < arguments.length; i++) {
+        var source = arguments[i]
+
+        for (var key in source) {
+            if (hasOwnProperty.call(source, key)) {
+                target[key] = source[key]
+            }
+        }
+    }
+
+    return target
+}
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/create fake namespace object */
+/******/ 	!function() {
+/******/ 		var getProto = Object.getPrototypeOf ? function(obj) { return Object.getPrototypeOf(obj); } : function(obj) { return obj.__proto__; };
+/******/ 		var leafPrototypes;
+/******/ 		// create a fake namespace object
+/******/ 		// mode & 1: value is a module id, require it
+/******/ 		// mode & 2: merge all properties of value into the ns
+/******/ 		// mode & 4: return value when already ns object
+/******/ 		// mode & 16: return value when it's Promise-like
+/******/ 		// mode & 8|1: behave like require
+/******/ 		__webpack_require__.t = function(value, mode) {
+/******/ 			if(mode & 1) value = this(value);
+/******/ 			if(mode & 8) return value;
+/******/ 			if(typeof value === 'object' && value) {
+/******/ 				if((mode & 4) && value.__esModule) return value;
+/******/ 				if((mode & 16) && typeof value.then === 'function') return value;
+/******/ 			}
+/******/ 			var ns = Object.create(null);
+/******/ 			__webpack_require__.r(ns);
+/******/ 			var def = {};
+/******/ 			leafPrototypes = leafPrototypes || [null, getProto({}), getProto([]), getProto(getProto)];
+/******/ 			for(var current = mode & 2 && value; typeof current == 'object' && !~leafPrototypes.indexOf(current); current = getProto(current)) {
+/******/ 				Object.getOwnPropertyNames(current).forEach(function(key) { def[key] = function() { return value[key]; }; });
+/******/ 			}
+/******/ 			def['default'] = function() { return value; };
+/******/ 			__webpack_require__.d(ns, def);
+/******/ 			return ns;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/ensure chunk */
+/******/ 	!function() {
+/******/ 		__webpack_require__.f = {};
+/******/ 		// This file contains only the entry chunk.
+/******/ 		// The chunk loading function for additional chunks
+/******/ 		__webpack_require__.e = function(chunkId) {
+/******/ 			return Promise.all(Object.keys(__webpack_require__.f).reduce(function(promises, key) {
+/******/ 				__webpack_require__.f[key](chunkId, promises);
+/******/ 				return promises;
+/******/ 			}, []));
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/get javascript chunk filename */
+/******/ 	!function() {
+/******/ 		// This function allow to reference async chunks
+/******/ 		__webpack_require__.u = function(chunkId) {
+/******/ 			// return url for filenames based on template
+/******/ 			return "styleguide/chunk/" + chunkId + "." + "166d38bbfaf45ea97b09" + ".js";
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/get mini-css chunk filename */
+/******/ 	!function() {
+/******/ 		// This function allow to reference async chunks
+/******/ 		__webpack_require__.miniCssF = function(chunkId) {
+/******/ 			// return url for filenames based on template
+/******/ 			return undefined;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	!function() {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/load script */
+/******/ 	!function() {
+/******/ 		var inProgress = {};
+/******/ 		var dataWebpackPrefix = "abebooks-theme-default:";
+/******/ 		// loadScript function to load a script via script tag
+/******/ 		__webpack_require__.l = function(url, done, key, chunkId) {
+/******/ 			if(inProgress[url]) { inProgress[url].push(done); return; }
+/******/ 			var script, needAttach;
+/******/ 			if(key !== undefined) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				for(var i = 0; i < scripts.length; i++) {
+/******/ 					var s = scripts[i];
+/******/ 					if(s.getAttribute("src") == url || s.getAttribute("data-webpack") == dataWebpackPrefix + key) { script = s; break; }
+/******/ 				}
+/******/ 			}
+/******/ 			if(!script) {
+/******/ 				needAttach = true;
+/******/ 				script = document.createElement('script');
+/******/ 		
+/******/ 				script.charset = 'utf-8';
+/******/ 				script.timeout = 120;
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 				script.setAttribute("data-webpack", dataWebpackPrefix + key);
+/******/ 				script.src = url;
+/******/ 			}
+/******/ 			inProgress[url] = [done];
+/******/ 			var onScriptComplete = function(prev, event) {
+/******/ 				// avoid mem leaks in IE.
+/******/ 				script.onerror = script.onload = null;
+/******/ 				clearTimeout(timeout);
+/******/ 				var doneFns = inProgress[url];
+/******/ 				delete inProgress[url];
+/******/ 				script.parentNode && script.parentNode.removeChild(script);
+/******/ 				doneFns && doneFns.forEach(function(fn) { return fn(event); });
+/******/ 				if(prev) return prev(event);
+/******/ 			}
+/******/ 			;
+/******/ 			var timeout = setTimeout(onScriptComplete.bind(null, undefined, { type: 'timeout', target: script }), 120000);
+/******/ 			script.onerror = onScriptComplete.bind(null, script.onerror);
+/******/ 			script.onload = onScriptComplete.bind(null, script.onload);
+/******/ 			needAttach && document.head.appendChild(script);
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	!function() {
+/******/ 		__webpack_require__.p = "/";
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	!function() {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			760: 0
+/******/ 		};
+/******/ 		
+/******/ 		__webpack_require__.f.j = function(chunkId, promises) {
+/******/ 				// JSONP chunk loading for javascript
+/******/ 				var installedChunkData = __webpack_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
+/******/ 				if(installedChunkData !== 0) { // 0 means "already installed".
+/******/ 		
+/******/ 					// a Promise means "currently loading".
+/******/ 					if(installedChunkData) {
+/******/ 						promises.push(installedChunkData[2]);
+/******/ 					} else {
+/******/ 						if(true) { // all chunks have JS
+/******/ 							// setup Promise in chunk cache
+/******/ 							var promise = new Promise(function(resolve, reject) { installedChunkData = installedChunks[chunkId] = [resolve, reject]; });
+/******/ 							promises.push(installedChunkData[2] = promise);
+/******/ 		
+/******/ 							// start chunk loading
+/******/ 							var url = __webpack_require__.p + __webpack_require__.u(chunkId);
+/******/ 							// create error before stack unwound to get useful stacktrace later
+/******/ 							var error = new Error();
+/******/ 							var loadingEnded = function(event) {
+/******/ 								if(__webpack_require__.o(installedChunks, chunkId)) {
+/******/ 									installedChunkData = installedChunks[chunkId];
+/******/ 									if(installedChunkData !== 0) installedChunks[chunkId] = undefined;
+/******/ 									if(installedChunkData) {
+/******/ 										var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 										var realSrc = event && event.target && event.target.src;
+/******/ 										error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+/******/ 										error.name = 'ChunkLoadError';
+/******/ 										error.type = errorType;
+/******/ 										error.request = realSrc;
+/******/ 										installedChunkData[1](error);
+/******/ 									}
+/******/ 								}
+/******/ 							};
+/******/ 							__webpack_require__.l(url, loadingEnded, "chunk-" + chunkId, chunkId);
+/******/ 						} else installedChunks[chunkId] = 0;
+/******/ 					}
+/******/ 				}
+/******/ 		};
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		// no on chunks loaded
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = function(parentChunkLoadingFunction, data) {
+/******/ 			var chunkIds = data[0];
+/******/ 			var moreModules = data[1];
+/******/ 			var runtime = data[2];
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some(function(id) { return installedChunks[id] !== 0; })) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 		
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunkabebooks_theme_default"] = self["webpackChunkabebooks_theme_default"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+!function() {
+"use strict";
+
+// UNUSED EXPORTS: default
+
+;// CONCATENATED MODULE: ./styleguide/util/formatSeconds.js
+const formatSeconds = time => {
+  const hours = Math.floor(time / 3600);
+  const minutes = Math.floor(time % 3600 / 60);
+  const seconds = Math.floor(time % 60);
+  let output = '';
+  if (hours > 0) {
+    output += `${hours}:${minutes < 10 ? '0' : ''}`;
+  }
+  output += `${minutes}:${seconds < 10 ? '0' : ''}`;
+  output += `${seconds}`;
+  return output;
+};
+;// CONCATENATED MODULE: ./styleguide/core/audio/AudioPlayer.js
+
+const updateEvents = ['timeupdate', 'loadedmetadata', 'ended', 'seeked', 'play', 'pause', 'volumechange'];
+const skipInterval = 30;
+class AudioPlayer extends HTMLElement {
+  connectedCallback() {
+    this.player = this.querySelector('audio');
+    this.timeEl = this.querySelector('.HTML5AudioPlayer-time');
+    this.seekInput = this.querySelector('[data-change="seek"]');
+    this.progressEl = this.querySelector('.HTML5AudioPlayer-seekTrackProgress');
+    this.addEventListener('click', this);
+    this.addEventListener('input', this);
+    this.addEventListener('change', this);
+    this.player.addEventListener('play', this);
+    this.player.addEventListener('pause', this);
+    this.player.addEventListener('loadedmetadata', this);
+    this.player.addEventListener('timeupdate', this);
+  }
+  handleEvent(event) {
+    if (event.target.matches('[data-click="togglePlayback"]')) {
+      this.player.paused ? this.player.play() : this.player.pause();
+    }
+    if (event.target.matches('[data-click="toggleMute"]')) {
+      this.player.muted = !this.player.muted;
+    }
+    if (event.target.matches('[data-click="rewind"]')) {
+      this.player.currentTime = this.player.currentTime - skipInterval;
+    }
+    if (event.target.matches('[data-click="forward"]')) {
+      this.player.currentTime = this.player.currentTime + skipInterval;
+    }
+    if (event.type === 'input' && event.target.matches('[data-change="seek"]')) {
+      this.seeking = true;
+    }
+    if (event.type === 'change' && event.target.matches('[data-change="seek"]')) {
+      this.seeking = false;
+      this.player.currentTime = this.player.duration * event.target.value / 100;
+    }
+    if (updateEvents.indexOf(event.type) >= 0) {
+      this.render();
+    }
+  }
+  set playing(bool) {
+    bool ? this.setAttribute('playing', '') : this.removeAttribute('playing');
+  }
+  set muted(bool) {
+    bool ? this.setAttribute('muted', '') : this.removeAttribute('muted');
+  }
+  render() {
+    this.timeEl.innerHTML = `${formatSeconds(this.player.currentTime)} / ${formatSeconds(this.player.duration)}`;
+    this.muted = this.player.muted;
+    this.playing = !this.player.paused;
+    this.progressEl.style.width = `${this.player.currentTime / this.player.duration * 100}%`;
+    if (!this.seeking) {
+      this.seekInput.value = this.player.currentTime / this.player.duration * 100;
+    }
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/banner/Banner.js
+class Banner extends HTMLElement {
+  connectedCallback() {
+    this.closeButton = this.querySelector('[data-toggle-trigger]');
+    this.checkSessionStorage();
+  }
+  checkSessionStorage() {
+    if (sessionStorage.getItem('bannerStatus') !== 'noShow') {
+      this.setAttribute('data-show', '');
+      this.closeButton.addEventListener('click', () => {
+        this.removeAttribute('data-show');
+        sessionStorage.setItem('bannerStatus', 'noShow');
+      });
+    }
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/global/CustomDropdown.js
+/* eslint-disable no-undef, camelcase */
+
+class CustomDropdown extends HTMLElement {
+  connectedCallback() {
+    this.el = this;
+    this.init();
+  }
+  init() {
+    this.el.addEventListener('click', e => {
+      if (!this.el.getAttribute('dropdown-open') || this.el.getAttribute('dropdown-open').toString() === 'false') {
+        this.hideAllDropdowns();
+        this.toggleDropdownItems('show');
+      } else {
+        this.hideAllDropdowns();
+      }
+    });
+    this.el.setAttribute('listener-active', true);
+    document.addEventListener('click', e => {
+      let path = e.path || e.composedPath && e.composedPath();
+      let dropdownClicked = false;
+      let i;
+      for (i = 0; i < path.length; i++) {
+        let element = path[i];
+        if (element.classList && element.classList.toString().indexOf('CustomDropdown') !== -1) {
+          dropdownClicked = true;
+        }
+      }
+      if (!dropdownClicked) {
+        this.hideAllDropdowns();
+      }
+    });
+  }
+  toggleDropdownItems(method) {
+    let isDropdownOpen = method === 'show';
+    this.el.setAttribute('dropdown-open', isDropdownOpen);
+  }
+  hideAllDropdowns() {
+    this.toggleDropdownItems('hide');
+  }
+}
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/defineProperty.js
+var defineProperty = __webpack_require__(9713);
+var defineProperty_default = /*#__PURE__*/__webpack_require__.n(defineProperty);
+;// CONCATENATED MODULE: ./styleguide/util/Throttle.js
+function throttle(interval, throttledFunction) {
+  if (interval <= 0) {
+    return throttledFunction;
+  }
+  let lastTrigger = 0;
+  let timeout;
+  let lastArguments;
+  return function () {
+    lastArguments = arguments;
+
+    // Already scheduled to run.
+    if (timeout) {
+      return;
+    }
+    let context = this;
+    let now = +Date.now();
+    let delay = interval - now + lastTrigger;
+
+    // Waited long enough so execute.
+    if (delay <= 0) {
+      lastTrigger = now;
+      throttledFunction.apply(context, lastArguments);
+
+      // Schedule for later.
+    } else {
+      timeout = setTimeout(function () {
+        lastTrigger = now;
+        timeout = null;
+        throttledFunction.apply(context, lastArguments);
+      }, delay);
+    }
+  };
+}
+;// CONCATENATED MODULE: ./styleguide/core/carousel/CarouselScrollingIOSHack.js
+function carouselScrollingIOSHack() {
+  const iOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent) && !window.MSStream;
+  if (this.flickity && iOS && !this.carouselScrollingIOSHackSet) {
+    // TVAZ-747, MFRM-338 ios bug
+    this.carouselScrollingIOSHackSet = true;
+    let startX = 0;
+    this.el.ontouchstart = function (e) {
+      startX = e.touches[0].clientX;
+    };
+    this.el.ontouchmove = function (e) {
+      if (Math.abs(e.touches[0].clientX - startX) > 5 && e.cancelable) {
+        e.preventDefault();
+      }
+    };
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/carousel/CarouselAbstract.js
+
+
+// import Flickity from 'flickity'
+
+const DEFAULT_FLICKITY_OPTIONS = {
+  adaptiveHeight: false,
+  imagesLoaded: true,
+  cellAlign: 'left',
+  selectedAttraction: 0.15,
+  friction: 0.9,
+  dragThreshold: 10
+};
+const DEFAULT_BREAKPOINT_OPTIONS = {
+  mobile: ['mq-xs', 'mq-sm', 'mq-md'],
+  desktop: ['mq-lg', 'mq-hk', 'mq-xl']
+};
+class Carousel {
+  constructor(el) {
+    let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+      flickity: {},
+      breakpoints: {}
+    };
+    this.el = el;
+    const defaultFlickityOptions = {
+      ...DEFAULT_FLICKITY_OPTIONS,
+      ...options.flickity.default
+    };
+    this.options = {
+      flickity: {
+        default: defaultFlickityOptions,
+        mobile: {
+          ...defaultFlickityOptions,
+          ...options.flickity.mobile
+        },
+        desktop: {
+          ...defaultFlickityOptions,
+          ...options.flickity.desktop
+        }
+      },
+      breakpoints: {
+        ...DEFAULT_BREAKPOINT_OPTIONS,
+        ...options.breakpoints
+      }
+    };
+    this.init();
+  }
+  init() {
+    this.carousel = this.el.querySelector(Carousel.selectors.slides);
+    this.mobileDisable = this.carousel.getAttribute(Carousel.selectors.mobileDisabled);
+    try {
+      this.desktopDisable = this.carousel.getAttribute(Carousel.selectors.desktopDisabled);
+    } catch (e) {
+      return;
+    }
+    this.carouselItems.forEach(item => item.addEventListener('load', this.resizeCarousel));
+
+    // waiting until window load to trigger carousels. They still look good before
+    // window load, and we have run into race condition and image issues sometimes
+    // when we kick it off too fast
+    if (document.readyState === 'complete') {
+      this.handleWindowLoad();
+    } else {
+      window.addEventListener('load', () => this.handleWindowLoad());
+    }
+
+    // on resize, we recheck our options against media queries and rebuild the entire
+    // carousel if we changed options
+    window.addEventListener('resize', throttle(250, () => {
+      this.handleOptions();
+      this.rebuildCarouselIfChanged();
+    }));
+    this.el.addEventListener('click', _ref => {
+      let {
+        target
+      } = _ref;
+      if (this.flickity && target.matches('[data-click="next"]')) {
+        this.flickity.next();
+      }
+      if (this.flickity && target.matches('[data-click="previous"]')) {
+        this.flickity.previous();
+      }
+    });
+  }
+
+  // for accessibility, since flickity does not do this for us. We want anything hidden
+  // to be tabindex -1 along with aria-hidden, as tab navigation can jump into hidden
+  // carousel slides if there are links there
+  setTabIndexing() {
+    const focusableElements = this.flickity.element.querySelectorAll('a[href], button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])');
+    focusableElements.forEach(elem => {
+      const isHidden = !!elem.closest('[aria-hidden="true"]');
+      elem.setAttribute('tabindex', isHidden ? '-1' : '0');
+    });
+  }
+  handleCellSelect() {
+    this.setTabIndexing();
+    this.updateCounter();
+    this.el.querySelectorAll('[data-click="previous"]').forEach(previousButton => {
+      if (this.flickityOptions.wrapAround) return;
+      const index = this.flickity.selectedIndex - 1;
+      previousButton.disabled = !this.flickity.cells[index];
+    });
+    this.el.querySelectorAll('[data-click="next"]').forEach(nextButton => {
+      if (this.flickityOptions.wrapAround) return;
+      const index = this.flickity.selectedIndex + 1;
+      nextButton.disabled = !this.flickity.cells[index];
+    });
+  }
+  handleWindowLoad() {
+    this.handleOptions();
+    this.initCarousel();
+  }
+  updateCounter() {
+    this.el.querySelectorAll('[class$="-currentIndex"]').forEach(countEl => {
+      countEl.textContent = this.flickity.selectedIndex + 1;
+    });
+  }
+  getMediaQuery() {
+    let mqValue = window.getComputedStyle(document.querySelector('body'), '::before').getPropertyValue('content') || false;
+    if (mqValue) {
+      return mqValue.replace(/["']/g, '');
+    } else {
+      return false;
+    }
+  }
+
+  // we set or reset options here based on the current media query
+  // if a conditional has mq specific options, we check to see if the mq
+  // changed, and if it did, we set a global changed var so that we
+  // can rebuild the carousel
+
+  handleOptions() {
+    this.didMQChange() ? this.optionsChanged = true : this.optionsChanged = false;
+  }
+  didMQChange() {
+    this.changedBreakpoints = false;
+    if (this.getMediaQuery() === 'mq-xs') {
+      if (this.breakpoint !== 'xs') {
+        this.changedBreakpoints = true;
+        this.breakpoint = 'xs';
+        this.flickityOptions = this.options.flickity.mobile || this.options.flickity.default;
+      }
+    }
+    if (this.getMediaQuery() === 'mq-sm') {
+      if (this.breakpoint !== 'sm') {
+        this.changedBreakpoints = true;
+        this.breakpoint = 'sm';
+        this.flickityOptions = this.options.flickity.mobile || this.options.flickity.default;
+      }
+    }
+    if (this.getMediaQuery() === 'mq-md') {
+      if (this.breakpoint !== 'md') {
+        this.changedBreakpoints = true;
+        this.breakpoint = 'md';
+        this.flickityOptions = this.options.flickity.mobile || this.options.flickity.default;
+      }
+    }
+    if (this.getMediaQuery() === 'mq-lg') {
+      if (this.breakpoint !== 'lg') {
+        this.changedBreakpoints = true;
+        this.breakpoint = 'lg';
+        this.flickityOptions = this.options.flickity.desktop || this.options.flickity.default;
+      }
+    }
+    if (this.getMediaQuery() === 'mq-hk') {
+      if (this.breakpoint !== 'hk') {
+        this.changedBreakpoints = true;
+        this.breakpoint = 'hk';
+        this.flickityOptions = this.options.flickity.desktop || this.options.flickity.default;
+      }
+    }
+    if (this.getMediaQuery() === 'mq-xl') {
+      if (this.breakpoint !== 'xl') {
+        this.changedBreakpoints = true;
+        this.breakpoint = 'xl';
+        this.flickityOptions = this.options.flickity.desktop || this.options.flickity.default;
+      }
+    }
+    return this.changedBreakpoints;
+  }
+  rebuildCarouselIfChanged() {
+    if (this.optionsChanged) {
+      this.destroyCarousel();
+      this.initCarousel();
+    }
+  }
+  destroyCarousel() {
+    if (this.flickity) {
+      this.flickity.destroy();
+      this.el.removeAttribute('data-flickity-enabled');
+    }
+  }
+  resizeCarousel() {
+    this.flickity.resize();
+  }
+  get carouselItems() {
+    return [...(this.el.querySelectorAll(Carousel.selectors.slide) || [])];
+  }
+  async initCarousel() {
+    const {
+      default: Flickity
+    } = await Promise.resolve(/* import() */).then(__webpack_require__.t.bind(__webpack_require__, 2442, 23));
+    if (this.el.scrollWidth <= this.el.clientWidth) return;
+    this.flickity = new Flickity(this.carousel, this.flickityOptions);
+    this.el.setAttribute(Carousel.selectors.carouselEnabled, '');
+    this.flickity.on('cellSelect', () => {
+      this.handleCellSelect();
+    });
+    this.resizeCarousel();
+    carouselScrollingIOSHack.call(this);
+  }
+}
+defineProperty_default()(Carousel, "selectors", {
+  slide: '[data-slide]',
+  slides: '[data-slides]',
+  flickityEnabled: '.flickity-enabled',
+  desktopDisabled: 'data-disable-desktop',
+  mobileDisabled: 'data-disable-mobile',
+  enhancement: 'CarouselEnhancement',
+  carouselEnabled: 'data-flickity-enabled'
+});
+;// CONCATENATED MODULE: ./styleguide/core/carousel/EnhancementCarousel.js
+
+class EnhancementCarousel extends HTMLElement {
+  get fullscreen() {
+    return this.hasAttribute('fullscreen');
+  }
+  set fullscreen(bool) {
+    bool ? this.setAttribute('fullscreen', '') : this.removeAttribute('fullscreen');
+  }
+  connectedCallback() {
+    this.createCarousel();
+    this.registerEvents();
+  }
+  createCarousel() {
+    this.carousel = new Carousel(this, {
+      flickity: {
+        default: {
+          lazyLoad: true,
+          pageDots: false,
+          wrapAround: false,
+          groupCells: false,
+          autoPlay: false,
+          prevNextButtons: false,
+          contain: true,
+          on: {
+            staticClick: () => {
+              this.onStaticClick();
+            },
+            change: index => {
+              this.onSlideChange(index);
+            }
+          }
+        },
+        desktop: {
+          prevNextButtons: false,
+          pageDots: false
+        }
+      }
+    });
+  }
+  disconnectedCallback() {
+    this.carousel.destroyCarousel();
+  }
+  enterFullscreen() {
+    document.documentElement.style.setProperty('overflow', 'hidden');
+    this._placeholder = document.createElement('div');
+    this._placeholder.style.height = `${this.clientHeight}px`;
+    this.parentNode.insertBefore(this._placeholder, this);
+    this.fullscreen = true;
+    this.carousel.destroyCarousel();
+    this.carousel.initCarousel();
+  }
+  exitFullscreen() {
+    document.documentElement.style.removeProperty('overflow');
+    if (this._placeholder) {
+      this.parentNode.removeChild(this._placeholder);
+      delete this._placeholder;
+    }
+    this.fullscreen = false;
+    this.carousel.destroyCarousel();
+    this.carousel.initCarousel();
+  }
+  handleEvent(event) {
+    if (event.type === 'keydown' && event.key === 'Escape' && this.fullscreen) {
+      this.exitFullscreen();
+    }
+    if (event.type === 'click' && this.fullscreen && event.target.matches(`[data-click='exit-fullscreen']`) || event.target.closest(`[data-click='exit-fullscreen']`)) {
+      this.exitFullscreen();
+      event.preventDefault();
+    }
+  }
+  onStaticClick() {
+    if (!this.fullscreen) {
+      this.enterFullscreen();
+    }
+  }
+  onSlideChange(index) {
+    const slideInfo = this.carousel.flickity.selectedSlide.cells[0].element.querySelector('.CarouselSlide-info').cloneNode(true);
+    const carouselInfo = this.querySelector('.EnhancementCarousel-info');
+    carouselInfo.innerHTML = '';
+    carouselInfo.appendChild(slideInfo);
+    this.preloadImage(index + 1);
+    this.updateCounter();
+  }
+  updateCounter() {
+    this.querySelectorAll('[class$="-currentIndex"]').forEach(countEl => {
+      countEl.textContent = this.carousel.flickity.selectedIndex + 1;
+    });
+  }
+  registerEvents() {
+    window.addEventListener('keydown', this);
+    this.addEventListener('click', this);
+  }
+  preloadImage(slideIndex) {
+    let slideElement;
+    try {
+      slideElement = this.carousel.flickity.cells[slideIndex].element;
+    } catch (error) {}
+    if (slideElement) {
+      const lazyImages = slideElement.querySelectorAll('[data-lazy-load="true"]');
+      lazyImages.forEach(image => {
+        if (image.dataset.src) {
+          image.src = image.dataset.src;
+          image.removeAttribute('data-src');
+        }
+        if (image.dataset.srcset) {
+          image.srcset = image.dataset.srcset;
+          image.removeAttribute('data-srcset');
+        }
+        image.removeAttribute('data-lazy-load');
+      });
+    }
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/directory/EcommerceList.js
+class EcommerceList extends window.HTMLElement {
+  connectedCallback() {
+    this.URI = this.getAttribute('data-cart-uri') || '/servlet/ShopBasketPL';
+    this.init();
+  }
+  init() {
+    const quantityEls = this.querySelectorAll('.Select-select');
+    this.querySelector('.EcommerceList-button').addEventListener('click', () => {
+      let url = this.buildBasketUrl(quantityEls);
+      if (url) {
+        window.location.href = url;
+      }
+    });
+    quantityEls.forEach(item => {
+      this.updateTotal(item);
+      item.addEventListener('change', element => {
+        this.updateTotal(element.target);
+      });
+    });
+  }
+  updateTotal(selectBox) {
+    const select = selectBox;
+    const price = select.options[select.selectedIndex].getAttribute('data-price');
+    const targetEl = select.closest('[data-quantity]').querySelector('.price');
+    if (targetEl) {
+      targetEl.textContent = price;
+    }
+  }
+  buildBasketUrl(quantityEls) {
+    const items = [];
+    quantityEls.forEach(element => {
+      const id = element.getAttribute('id');
+      const quantity = element.value;
+      let i;
+      for (i = 0; i < quantity; i++) {
+        items.push(id);
+      }
+    });
+    if (items.length > 0) {
+      return this.URI += '?ac=a&ik=' + items.join('&ik=');
+    }
+    return this.URI;
+  }
+  disconnectedCallback() {
+    this.querySelector('.EcommerceList-button').removeEventListener('click', this);
+    this.querySelectorAll('.Select-select').forEach(item => {
+      item.removeEventListener('change', this);
+    });
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/form/input/Input.js
+class Input extends HTMLElement {
+  set error(bool) {
+    bool ? this.setAttribute('has-error', '') : this.removeAttribute('has-error');
+  }
+  set errorMessage(message) {
+    const errorsElement = this.querySelector('[class*="-errors"]');
+    if (errorsElement) {
+      errorsElement.innerText = message;
+    }
+  }
+  get input() {
+    return this.querySelector('input');
+  }
+  bindEvents() {
+    this.addEventListener('focusout', this);
+    this.addEventListener('change', this);
+  }
+  connectedCallback() {
+    this.bindEvents();
+  }
+  handleEvent(event) {
+    if (['focusout', 'change'].includes(event.type)) {
+      this.validate();
+    }
+  }
+  validate() {
+    const validity = this.input.validity;
+    if (validity.valid) {
+      this.errorMessage = '';
+      this.error = false;
+      return;
+    }
+    for (const key in validity) {
+      if (validity[key]) {
+        this.errorMessage = this.dataset[key];
+        this.error = true;
+        return;
+      }
+    }
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/form/input/CaptchaInput.js
+
+class CaptchaInput extends Input {
+  get input() {}
+  get captcha() {
+    return this.querySelector('ps-google-captcha');
+  }
+  get valid() {
+    return this.captcha.valid;
+  }
+  validate() {
+    this.error = !this.valid;
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/form/input/EmailInput.js
+
+class EmailInput extends Input {}
+;// CONCATENATED MODULE: ./styleguide/core/form/input/FileInput.js
+
+class FileInput extends Input {
+  connectedCallback() {
+    super.connectedCallback();
+    this.button.addEventListener('click', () => {
+      this.input.click();
+    });
+    this.addEventListener('change', () => {
+      this.files = this.input.files;
+      const fileList = this.files.map(file => {
+        return `${file.name}`;
+      }).join(', ');
+      const fileListEl = this.querySelector('.FileInput-fileList');
+      if (fileList) {
+        fileListEl.innerText = fileList;
+      } else {
+        fileListEl.innerText = this.dataset['noFileChosen'];
+      }
+    });
+  }
+  set files(fileList) {
+    this._files = Array.from(fileList);
+    this.hasFiles = !!this._files;
+  }
+  get files() {
+    return this._files;
+  }
+  set hasFiles(bool) {
+    bool ? this.setAttribute('has-files', '') : this.removeAttribute('has-files');
+  }
+  get button() {
+    return this.querySelector('button');
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/form/Form.js
+class Form extends HTMLElement {
+  get formId() {
+    return this.getAttribute('data-form-id');
+  }
+  get form() {
+    return this.querySelector('form');
+  }
+  get captcha() {
+    return this.querySelector('ps-captcha-input');
+  }
+  get submitsInline() {
+    return this.hasAttribute('submits-inline');
+  }
+  set submitting(bool) {
+    bool ? this.setAttribute('submitting', '') : this.removeAttribute('submitting');
+  }
+  get submitting() {
+    return this.hasAttribute('submitting');
+  }
+  connectedCallback() {
+    this.addEventListener('submit', this);
+    this.form.setAttribute('novalidate', '');
+  }
+  handleEvent(event) {
+    if (event.type === 'submit') {
+      event.preventDefault();
+      if (this.submitting) {
+        return;
+      }
+      if (!this.isValid()) {
+        return;
+      }
+      this.submitForm();
+    }
+  }
+  isValid() {
+    const invalidInput = [...this.form.elements].find(input => {
+      return !input.validity.valid;
+    });
+    if (invalidInput) {
+      return false;
+    }
+    if (this.captcha && !this.captcha.valid) {
+      return false;
+    }
+    return true;
+  }
+  submitForm() {
+    this.submitting = true;
+    if (this.submitsInline) {
+      this.submitInline();
+    } else {
+      this.form.submit();
+    }
+  }
+  submitInline() {
+    const apiUrl = this.form.getAttribute('action') || '';
+    const method = this.form.getAttribute('method') || 'POST';
+    const data = new FormData(this.form);
+    fetch(apiUrl, {
+      credentials: 'include',
+      method: method,
+      body: data
+    }).then(response => response.text()).then(response => this.handleSubmitResponse(response)).catch(error => {
+      console.log('Form Error: ' + error);
+    }).finally(() => {
+      this.submitting = false;
+    });
+  }
+  handleSubmitResponse(text) {
+    const parser = new DOMParser();
+    const newDocument = parser.parseFromString(text, 'text/html');
+    const responseForm = newDocument.documentElement.querySelector(`[data-form-id="${this.formId}"]`);
+    this.parentElement.replaceChild(responseForm, this);
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/form/input/GoogleCaptcha.js
+const RECAPTCHA_LIBRARY = 'https://www.google.com/recaptcha/api.js?onload=onGrecaptchaLoadCallback&render=explicit';
+const READY_EVENT = 'grecaptcha:ready';
+window.onGrecaptchaLoadCallback = () => {
+  document.body.dispatchEvent(new Event(READY_EVENT));
+};
+class GoogleCaptcha extends HTMLElement {
+  connectedCallback() {
+    this.load();
+  }
+  get sitekey() {
+    return this.dataset.sitekey;
+  }
+  get valid() {
+    if (window.grecaptcha) {
+      return !!window.grecaptcha.getResponse();
+    }
+    return false;
+  }
+  load() {
+    const script = [...document.querySelectorAll('script')].find(script => script.src === RECAPTCHA_LIBRARY);
+    if (!script) {
+      const scriptTag = document.createElement('script');
+      scriptTag.setAttribute('src', RECAPTCHA_LIBRARY);
+      document.querySelector('head').appendChild(scriptTag);
+    }
+    if (window.grecaptcha) {
+      this.render();
+    } else {
+      document.body.addEventListener(READY_EVENT, () => this.render());
+    }
+  }
+  render() {
+    const container = document.createElement('div');
+    this.appendChild(container);
+    window.grecaptcha.render(container, {
+      sitekey: this.sitekey
+    });
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/form/input/PasswordInput.js
+
+class PasswordInput extends Input {}
+;// CONCATENATED MODULE: ./styleguide/core/form/input/PhoneNumberInput.js
+
+class PhoneNumberInput extends Input {}
+;// CONCATENATED MODULE: ./styleguide/core/form/select/Select.js
+
+class Select extends Input {
+  get input() {
+    return this.querySelector('select');
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/form/input/TextInput.js
+
+class TextInput extends Input {}
+;// CONCATENATED MODULE: ./styleguide/core/form/input/TextArea.js
+
+class TextArea extends Input {
+  get input() {
+    return this.querySelector('textarea');
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/form/All.js
+
+
+
+
+
+
+
+
+
+
+
+;// CONCATENATED MODULE: ./styleguide/util/MediaQuery.js
+const MediaQuery_DEFAULT_BREAKPOINT_OPTIONS = {
+  mobile: ['mq-xs', 'mq-sm', 'mq-md'],
+  desktop: ['mq-lg', 'mq-hk', 'mq-xl']
+};
+function getMediaQuery() {
+  let mqValue = window.getComputedStyle(document.body, '::before').getPropertyValue('content') || false;
+  if (mqValue) {
+    return mqValue.replace(/["']/g, '');
+  } else {
+    return 'false';
+  }
+}
+function didMQChange() {
+  let changedBreakpoints = false;
+  let breakpoint = '';
+  if (getMediaQuery() === 'mq-xs') {
+    if (breakpoint !== 'xs') {
+      changedBreakpoints = true;
+      breakpoint = 'xs';
+    }
+  }
+  if (getMediaQuery() === 'mq-sm') {
+    if (breakpoint !== 'sm') {
+      changedBreakpoints = true;
+      breakpoint = 'sm';
+    }
+  }
+  if (getMediaQuery() === 'mq-md') {
+    if (breakpoint !== 'md') {
+      changedBreakpoints = true;
+      breakpoint = 'md';
+    }
+  }
+  if (getMediaQuery() === 'mq-lg') {
+    if (breakpoint !== 'lg') {
+      changedBreakpoints = true;
+      breakpoint = 'lg';
+    }
+  }
+  if (getMediaQuery() === 'mq-hk') {
+    if (breakpoint !== 'hk') {
+      changedBreakpoints = true;
+      breakpoint = 'hk';
+    }
+  }
+  if (getMediaQuery() === 'mq-xl') {
+    if (breakpoint !== 'xl') {
+      changedBreakpoints = true;
+      breakpoint = 'xl';
+    }
+  }
+  return changedBreakpoints;
+}
+;// CONCATENATED MODULE: ./styleguide/core/list/ListCarouselG.js
+/* global HTMLElement */
+// import Flickity from 'flickity-as-nav-for'
+
+class ListCarouselG extends HTMLElement {
+  get mediaAlignment() {
+    if (this.getAttribute('data-media-horizontal') === 'left') {
+      return 'right';
+    } else {
+      return 'left';
+    }
+  }
+  get rootSelector() {
+    if (this.getAttribute('data-selector')) {
+      return this.getAttribute('data-selector');
+    } else {
+      return this.className;
+    }
+  }
+  get carouselText() {
+    return this.querySelector(`.${this.rootSelector}-text`);
+  }
+  get carouselGallery() {
+    return this.querySelector(`.${this.rootSelector}-gallery`);
+  }
+  get carouselGalleryItems() {
+    return this.carouselGallery.querySelectorAll(`.${this.rootSelector}-gallery-item`);
+  }
+  connectedCallback() {
+    window.addEventListener('load', () => {
+      this.initCarousel();
+    });
+  }
+  async initCarousel() {
+    const {
+      default: Flickity
+    } = await __webpack_require__.e(/* import() */ 541).then(__webpack_require__.t.bind(__webpack_require__, 7541, 23));
+    this.handleOptions();
+    this.flickity = new Flickity(this.carouselText, this.textOptions);
+    this.flickityNav = new Flickity(this.carouselGallery, this.galleryOptions);
+    this.setAttribute('data-flickity-enabled', 'true');
+    this.setTabIndexing();
+    this.handleSlideChange();
+    // this.resizeCarousel()
+  }
+
+  handleOptions() {
+    this.galleryOptions = {
+      adaptiveHeight: true,
+      wrapAround: true,
+      pageDots: false,
+      prevNextButtons: this.carouselGalleryItems.length > 1,
+      cellAlign: this.mediaAlignment,
+      autoPlay: this.hasAttribute('data-enable-carousel-autoplay') ? 6000 : false
+    };
+    if (MediaQuery_DEFAULT_BREAKPOINT_OPTIONS.mobile.includes(getMediaQuery())) {
+      this.galleryOptions.cellAlign = 'center';
+    }
+    this.textOptions = {
+      pageDots: false,
+      draggable: false,
+      groupCells: false,
+      adaptiveHeight: true,
+      prevNextButtons: false,
+      asNavFor: this.carouselGallery,
+      wrapAround: true,
+      on: {
+        ready: () => setTimeout(this.addDataTags.bind(this), 1)
+      }
+    };
+  }
+  handleSlideChange() {
+    this.flickity.on('change', index => {
+      this.setTabIndexing();
+      this.updatePrevCardDataTag(index);
+    });
+  }
+  addDataTags() {
+    const btnPrevNext = this.carouselGallery.querySelectorAll('.flickity-prev-next-button');
+    btnPrevNext.forEach(button => {
+      const action = button.classList.contains('previous') ? 'previous' : 'next';
+      button.setAttribute('data-csa-c-type', 'action');
+      button.setAttribute('data-csa-c-action', `${action}-carousel-card`);
+    });
+    this.updatePrevCardDataTag(this.flickity.selectedIndex);
+  }
+  updatePrevCardDataTag(prevIndex) {
+    const btnPrevious = this.carouselGallery.querySelector('.flickity-prev-next-button.previous');
+    if (!btnPrevious) return;
+    btnPrevious.setAttribute('data-csa-c-previous-carousel-card', prevIndex > 0 ? prevIndex : this.flickity.slides.length);
+  }
+  setTabIndexing() {
+    const focusableElements = this.flickity.element.querySelectorAll('a[href], button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])');
+    focusableElements.forEach(elem => {
+      const isHidden = !!elem.closest('[aria-hidden="true"]');
+      elem.setAttribute('tabindex', isHidden ? '-1' : '0');
+    });
+  }
+  destroyCarousel() {
+    if (this.flickity) {
+      this.flickity.destroy();
+      this.removeAttribute('data-flickity-enabled');
+    }
+  }
+  disconnectedCallback() {
+    this.flickity.destroyCarousel();
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/list/ListLoadMore.js
+const DEFAULTS = {
+  selItems: '[data-list-loadmore-items]',
+  selPagination: '[data-list-loadmore-pagination]',
+  pageCacheRegex: /(page|p)=([0-9]*)$/ // regex where first item looksup key holding page number, and second item is the page number. This caches those items to ensure not recalling em
+};
+
+const PLUGIN_DATA_SEL = 'data-list-loadmore';
+class ListLoadMore extends HTMLElement {
+  connectedCallback(settings) {
+    this.el = this;
+    this.settings = Object.assign({}, DEFAULTS, settings);
+    this.el.setAttribute(PLUGIN_DATA_SEL, ''); // flag for interaction use
+    this.pageHrefCache = [1];
+    this.init();
+  }
+  init() {
+    this.elItems = this.el.querySelector(this.settings.selItems);
+    this.setBinds();
+  }
+
+  /**
+   * @param {string} url - url which to fetch to
+   * @param {function} customRender - custom rendering function, to bypass plugins default render, which is to append items to this.elItems
+   * customRender call sends the following
+   * - elItems - List items container
+   * - elPagination - List Paginatin container
+   * - elTempDiv - Full ajax response as a DOM node
+   * - elIndex - Unique identifier for THIS list... Tells you that this is the nth list in document
+   */
+  loadMore(url, customRender) {
+    let self = this;
+    let className = this.el.className;
+    let elsClassMatches = ListLoadMore.findClassNameMatches(document, className);
+    let elIndex = Array.from(elsClassMatches).indexOf(this.el);
+    this.pageHrefCache.push(this.getPageNum(url));
+    this.el.setAttribute(PLUGIN_DATA_SEL, 'loading');
+    window.fetch(url, {
+      credentials: 'include'
+    }).then(response => {
+      this.el.setAttribute(PLUGIN_DATA_SEL, '');
+      return response.text();
+    }).then(text => {
+      let elTempDiv = document.createElement('div');
+      elTempDiv.innerHTML = text;
+      let elsClassMatches = ListLoadMore.findClassNameMatches(elTempDiv, className);
+      let elItems = elsClassMatches[elIndex].querySelector(self.settings.selItems);
+      let elPagination = elsClassMatches[elIndex].querySelector(self.settings.selPagination);
+      if (typeof customRender === 'function') {
+        customRender(elItems, elPagination, elsClassMatches[elIndex]);
+      } else {
+        this.render(elItems, elPagination, self.elItems, self.elPagination);
+      }
+    }).catch(function (err) {
+      console.log(err);
+    });
+  }
+  next(customRender) {
+    if (this.elPagination) {
+      let elItem = this.elPagination.querySelector('a');
+      if (elItem) {
+        this.loadMore(elItem.href, customRender);
+      }
+    }
+  }
+  setBinds() {
+    if (this.elPagination) {
+      this.elPagination.addEventListener('click', e => {
+        let elTarget = e.target;
+        if (elTarget.nodeName.toUpperCase() === 'A') {
+          e.preventDefault();
+          this.loadMore(elTarget.href);
+        }
+      });
+    }
+  }
+  getPageNum(url) {
+    try {
+      let regexResult = this.settings.pageCacheRegex.exec(url);
+      return parseInt(regexResult[2]);
+    } catch (e) {
+      console.info('ListLoadMore', `${url} not a new page number`);
+      return 0;
+    }
+  }
+  updatePaginationDOM(ajaxPagination) {
+    let elPaginationLinks = [...ajaxPagination.querySelectorAll(':scope > a')];
+    elPaginationLinks.forEach(elLink => {
+      if (this.pageHrefCache.indexOf(this.getPageNum(elLink.href)) >= 0) {
+        // remove link if already used | in pageHrefCache
+        elLink.parentNode.removeChild(elLink);
+      }
+    });
+    this.elPagination.innerHTML = ajaxPagination.innerHTML;
+  }
+  static findClassNameMatches(doc, className) {
+    return doc.querySelectorAll(`[class=${className}]`);
+  }
+  get elPagination() {
+    return this.el.querySelector(this.settings.selPagination);
+  }
+  render(ajaxItems, ajaxPagination) {
+    if (ajaxItems) {
+      this.elItems.insertAdjacentHTML('beforeend', ajaxItems.innerHTML);
+    }
+    if (ajaxPagination) {
+      this.updatePaginationDOM(ajaxPagination);
+    } else {
+      this.elPagination.parentNode.removeChild(this.elPagination);
+    }
+    this.dispatchRendered();
+  }
+  dispatchRendered() {
+    let customEvent = new CustomEvent('Ajax:Rendered', {
+      bubbles: true
+    });
+    document.body.dispatchEvent(customEvent);
+  }
+}
+// EXTERNAL MODULE: ./node_modules/hoverintent/index.js
+var hoverintent = __webpack_require__(3876);
+var hoverintent_default = /*#__PURE__*/__webpack_require__.n(hoverintent);
+// EXTERNAL MODULE: ./node_modules/flickity-hash/hash.js
+var hash = __webpack_require__(102);
+var hash_default = /*#__PURE__*/__webpack_require__.n(hash);
+;// CONCATENATED MODULE: ./styleguide/core/gallery/GalleryPage.js
+/* eslint-disable no-unused-vars */
+
+
+
+class GalleryPage extends HTMLElement {
+  connectedCallback() {
+    window.addEventListener('load', () => {
+      this.cacheElements();
+      this.dealWithSlideHover();
+      this.slideClickEvent();
+
+      // if hash in URL, launch carousel
+      const startSlideFromHash = parseInt(window.location.hash.slice(7));
+      if (startSlideFromHash > -1) {
+        let startSlide = startSlideFromHash - 1;
+        this.buildCarousel(startSlide);
+        this.flickity.on('change', index => {
+          this.handleSlideChange(index);
+        });
+      }
+    });
+  }
+  cacheElements() {
+    this.galleryMainWrapper = this.querySelector('.GalleryPage-main');
+    this.galleryActions = this.querySelector('.GalleryPage-actions');
+    this.galleryCounter = this.querySelector('[class$="-numbers"]');
+    this.galleryMainSlide = this.querySelectorAll('.GallerySlide');
+    this.slide = '.GalleryPage-items-item';
+    this.carouselCount = this.querySelector('[class$="-currentIndex"]');
+    this.carouselNavigation = this.querySelector('#carouselNavigation').content.cloneNode(true).querySelector('*');
+    this.slides = this.querySelectorAll(this.slide);
+  }
+  buildGalleryAside() {
+    this.galleryCarouselAside = document.createElement(`aside`);
+    this.galleryCarouselPagination = document.createElement(`div`);
+    this.galleryCarouselAside.setAttribute('class', 'GalleryPageCarousel-aside');
+    this.galleryCarouselPagination.setAttribute('class', 'GalleryPageCarousel-pagination');
+    this.galleryCarouselWrapper.appendChild(this.galleryCarouselAside);
+    this.galleryCarouselAside.appendChild(this.galleryCarouselPagination);
+  }
+  buildCarousel(index) {
+    this.galleryCarouselWrapper = document.createElement(`div`);
+    this.gallerySlidesClone = document.createElement(`div`);
+    Array.from(this.querySelectorAll(this.slide)).forEach((slide, i) => {
+      let temp = document.createElement(`div`);
+      temp.setAttribute('class', 'GalleryPageCarousel-slide');
+      temp.setAttribute('id', 'slide-' + (i + 1));
+      this.gallerySlidesClone.setAttribute('class', 'GalleryPageCarousel-slides');
+      temp.appendChild(slide.querySelector('.GallerySlide').cloneNode(true));
+      this.gallerySlidesClone.appendChild(temp);
+    });
+    this.galleryCarouselWrapper.insertAdjacentHTML(`afterbegin`, `<a href="#" class="GalleryPageCarousel-closeButton"><svg><use xlink:href="#bsp-close-x"></use></svg></a>`);
+    this.galleryCarouselWrapper.className = `GalleryPageCarousel`;
+    this.galleryCarouselWrapper.appendChild(this.gallerySlidesClone);
+    document.body.appendChild(this.galleryCarouselWrapper);
+    document.body.classList.add(`GalleryPageCarousel-enabled`);
+    let carouselSlides = this.galleryCarouselWrapper.querySelector('.GalleryPageCarousel-slides');
+    let startSlide;
+    if (index > 0) {
+      startSlide = index;
+    } else {
+      startSlide = 0;
+    }
+    this.buildGalleryAside();
+    let carouselOptions = {
+      arrowShape: {
+        x0: 25,
+        x1: 60,
+        y1: 35,
+        x2: 65,
+        y2: 30,
+        x3: 35
+      },
+      adaptiveHeight: false,
+      hash: true,
+      imagesLoaded: true,
+      initialIndex: startSlide,
+      pageDots: false,
+      lazyLoad: 2,
+      prevNextButtons: false
+    };
+    if (startSlide > 0) {
+      this.setState('gallery');
+    }
+    this.flickity = new (hash_default())(carouselSlides, carouselOptions);
+
+    // make sure images are all loaded
+    window.addEventListener('load', () => {
+      this.flickity.resize();
+    });
+    this.galleryCarouselWrapper.querySelector(`.GalleryPageCarousel-closeButton`).addEventListener(`click`, evt => {
+      evt.preventDefault();
+      this.destroyCarousel();
+    });
+    this.galleryCarouselWrapper.addEventListener('click', this);
+
+    // Accessibility: escape key hides dropdown
+    document.addEventListener('keydown', e => {
+      let isEscape = false;
+      if ('key' in e) {
+        isEscape = e.key === 'Escape' || e.key === 'Esc';
+      } else {
+        isEscape = e.keyCode === 27;
+      }
+      if (isEscape) {
+        this.destroyCarousel();
+      }
+    });
+    this.handleSlideChange(startSlide);
+    this.dispatchRendered();
+  }
+  destroyCarousel() {
+    setTimeout(() => {
+      this.flickity.destroy();
+      // eslint-disable-next-line no-undef
+      history.pushState('', document.title, window.location.pathname + window.location.search);
+      let carousel = document.querySelector(`.GalleryPageCarousel`);
+      carousel.parentNode.removeChild(carousel);
+      document.body.classList.remove(`GalleryPageCarousel-enabled`);
+    }, 0);
+  }
+  handleEvent(event) {
+    if (event.type === 'click' && event.target.matches(`[data-click="previous"`) || event.target.closest(`[data-click="previous"`)) {
+      this.flickity.previous();
+    }
+    if (event.type === 'click' && event.target.matches(`[data-click="next"`) || event.target.closest(`[data-click="next"`)) {
+      this.flickity.next();
+    }
+  }
+  handleSlideChange(index) {
+    let slideActions = this.galleryActions;
+    let slidePagination = this.galleryCounter;
+    let actionLinks = this.querySelectorAll('.ActionLink');
+    let galleryCurrentSlide = this.querySelector('.GalleryPage-currentSlide');
+    let slideTitle = this.flickity.selectedElement.querySelector('.GallerySlide-title');
+    let slideDescription = this.flickity.selectedElement.querySelector('.GallerySlide-infoDescription');
+    let slideCredit = this.flickity.selectedElement.querySelector('.GallerySlide-infoAttribution');
+    let slideMedia = this.flickity.selectedElement.querySelector('.GallerySlide-media');
+    let galleryAsideContent = this.galleryCarouselWrapper.querySelector('.GalleryPageCarousel-aside');
+    galleryAsideContent.innerHTML = '';
+    if (galleryCurrentSlide) {
+      galleryCurrentSlide.innerHTML = index + 1;
+    }
+    if (slidePagination && galleryAsideContent) {
+      galleryAsideContent.innerHTML += slidePagination.outerHTML;
+    }
+    if (slideTitle && galleryAsideContent) {
+      galleryAsideContent.innerHTML += slideTitle.outerHTML;
+    }
+    if (slideDescription && galleryAsideContent) {
+      galleryAsideContent.innerHTML += slideDescription.outerHTML;
+    }
+    if (slideCredit && galleryAsideContent) {
+      galleryAsideContent.innerHTML += slideCredit.outerHTML;
+    }
+    galleryAsideContent.innerHTML += this.carouselNavigation.outerHTML;
+    if (slideActions && galleryAsideContent) {
+      galleryAsideContent.innerHTML += slideActions.outerHTML;
+    }
+    if (actionLinks) {
+      actionLinks.forEach(item => {
+        let link = item.getAttribute('href');
+        if (link) {
+          link = link.split('?')[1];
+        }
+        if (link) {
+          if (link.indexOf('#slide') > -1) {
+            item.setAttribute('href', item.getAttribute('href').replace(/#slide-\d+/, window.location.hash));
+          } else {
+            item.setAttribute('href', item.getAttribute('href').replace(window.location.pathname, window.location.pathname + window.location.hash));
+          }
+        }
+      });
+    }
+    document.body.dispatchEvent(new CustomEvent('Gallery:onSlideUpdate', {
+      detail: {
+        activeSlide: {
+          index: index,
+          title: slideTitle ? slideTitle.getAttribute('data-info-title') : '',
+          attribution: slideTitle ? slideTitle.getAttribute('data-info-attribution') : '',
+          bspId: slideMedia.getAttribute('data-image-bsp-id')
+        }
+      }
+    }));
+    this.preloadNextImage(index);
+    this.setState('gallery');
+  }
+  preloadNextImage(index) {
+    let nextSlide = index;
+    let slideElement = null;
+    let imageToPreload = null;
+    if (nextSlide <= this.flickity.cells.length) {
+      slideElement = this.flickity.cells[nextSlide].element;
+    } else {
+      return;
+    }
+    if (slideElement) {
+      imageToPreload = slideElement.querySelector('[data-lazy-load="true"]');
+      if (imageToPreload) {
+        if (imageToPreload.dataset.src) {
+          imageToPreload.src = imageToPreload.dataset.src;
+          imageToPreload.removeAttribute('data-src');
+          imageToPreload.removeAttribute('data-lazy-load');
+        }
+        if (imageToPreload.dataset.srcset) {
+          imageToPreload.srcset = imageToPreload.dataset.srcset;
+          imageToPreload.removeAttribute('data-srcset');
+          imageToPreload.removeAttribute('data-lazy-load');
+        }
+      }
+    }
+  }
+  dealWithSlideHover() {
+    this.galleryMainSlide.forEach(item => {
+      this.hoverListDner = hoverintent_default()(item, () => {
+        this.showGalleryIcon(item, 'hover');
+      }, () => {
+        this.hideGalleryIcon(item, 'hover');
+      });
+    });
+  }
+  dispatchRendered() {
+    let customEvent = new CustomEvent('Ajax:Rendered', {
+      bubbles: true
+    });
+    document.body.dispatchEvent(customEvent);
+  }
+  slideClickEvent() {
+    Array.from(this.slides).forEach((slide, index) => {
+      slide.addEventListener(`click`, evt => {
+        evt.preventDefault();
+        this.buildCarousel(index);
+        this.handleSlideChange(index);
+        this.flickity.on('change', index => {
+          this.handleSlideChange(index);
+        });
+      });
+    });
+  }
+  showGalleryIcon(item, action) {
+    if (item) {
+      if (item.getAttribute('data-item-' + action)) {
+        item.removeAttribute('data-item-' + action);
+      } else {
+        this.galleryMainSlide.forEach(navItem => {
+          navItem.removeAttribute('data-item-' + action);
+        });
+        item.setAttribute('data-item-' + action, true);
+      }
+    }
+  }
+  hideGalleryIcon(item, action) {
+    item.removeAttribute('data-item-' + action);
+  }
+  setState(state) {
+    this.setAttribute('data-state', state);
+    if (this.getAttribute('data-state') === 'start') {
+      this.removeAttribute('data-showing-aside');
+    }
+  }
+}
+// EXTERNAL MODULE: ./node_modules/plyr/dist/plyr.min.js
+var plyr_min = __webpack_require__(1443);
+var plyr_min_default = /*#__PURE__*/__webpack_require__.n(plyr_min);
+;// CONCATENATED MODULE: ./styleguide/core/video/VideoPlayer.js
+/**
+ * This class gets extended by all the child players. The child players have their own Listeners
+ * to the video actions depending on what the video technology is used and call the super functions to actually
+ * dispatch these events so things like the video page or analytics can capture them
+ */
+
+const events = {
+  ready: 'VideoPlayer:ready',
+  timeUpdate: 'VideoPlayer:timeUpdate',
+  valoumeChange: 'VideoPlayer:volumeChange',
+  play: 'VideoPlayer:play',
+  playing: 'VideoPlayer:playing',
+  pause: 'VideoPlayer:paused',
+  volumeChange: 'VideoPlayer:volumeChange',
+  enterFullscreen: 'VideoPlayer:enterFullscreen',
+  exitFullscreen: 'VideoPlayer:exitFullscreen',
+  ended: 'VideoPlayer:ended',
+  error: 'VideoPlayer:error',
+  quartileCompleted: 'VideoPlayer:quartileCompleted'
+};
+const intervals = {
+  playingInterval: 5,
+  playbackPosition: 0,
+  quartilePosition: -1
+};
+class VideoPlayer extends HTMLElement {
+  connectedCallback() {
+    this.intervals = {
+      ...intervals
+    };
+  }
+  get videoId() {
+    return this.getAttribute('video-id');
+  }
+  get videoTitle() {
+    return this.getAttribute('video-title');
+  }
+  get playerId() {
+    return this.getAttribute('player-id');
+  }
+  get autoplay() {
+    return this.hasAttribute('autoplay');
+  }
+  get disableClickToPlay() {
+    return this.hasAttribute('disable-click-to-play');
+  }
+  get muted() {
+    return this.hasAttribute('muted');
+  }
+  get loop() {
+    return this.hasAttribute('loop');
+  }
+  get poster() {
+    return this.getAttribute('poster');
+  }
+
+  /** returns JSON data for current video  **/
+  get video() {
+    return {
+      id: this.videoId,
+      videoPlatform: this.platform,
+      seekSeconds: this.seekSeconds,
+      title: this.videoTitle,
+      inPlaylist: document.querySelector('ps-playlist'),
+      playListTagsosition: [...document.querySelectorAll('ps-playlist-item')].findIndex(el => el.isCurrent),
+      duration: this.duration,
+      playerWidth: this.getPlayerWidth(),
+      playerHeight: this.getPlayerHeight(),
+      playerResolution: this.getPlayerResolution(),
+      isAutoPlay: this.getIsAutoPlay(),
+      startVolume: this.getStartVolume(),
+      volume: this.getVolume(),
+      isFullscreen: this.onVideoFullscreen(),
+      videoUuid: this.getVideoUuid(),
+      videoFileType: this.getVideoFileType(),
+      videoInitiation: this.getAttribute('data-playback-started') || false,
+      credit: this.getCredit(),
+      ownerSite: this.getOwnerSite(),
+      videoClassification: this.getCategory(),
+      source: this.getSource(),
+      location: this.getDateline(),
+      videoStatus: this.getVideoStatus(),
+      quartile: this.getDisplayQuartile(this.intervals.quartilePosition)
+    };
+  }
+  init() {
+    this.platform = this.getPlatformName();
+  }
+
+  /**
+   * The following functions dispatches events when certain video events happen.
+   * The child classes call these super functions
+   */
+
+  onReady() {
+    this.emit(events.ready);
+  }
+  onPlay() {
+    this.emit(events.playing);
+  }
+  onTimeUpdate() {
+    this.sendVideoPlaybackIntervalEvents();
+    this.emit(events.timeUpdate);
+  }
+  onMute() {
+    this.emit(events.volumeChange);
+  }
+  onPause() {
+    this.emit(events.pause);
+  }
+  onEnded() {
+    this.intervals = {
+      ...intervals
+    };
+    this.emit(events.ended);
+  }
+  onError() {
+    this.emit(events.error);
+  }
+  onVolumneChange() {
+    this.emit(events.volumeChange);
+  }
+
+  /**
+   * API to play and pause video, these are going to actually be implemented in the child classes
+   */
+
+  play() {
+    // abstract: implement in child class
+  }
+  pause() {
+    // abstract: implement in child class
+  }
+  playPause() {
+    if (this.getAttribute('data-playback-paused')) {
+      this.play();
+    } else {
+      this.pause();
+    }
+  }
+
+  /**
+   * Interval functions. This happens on the time update and sends events every
+   * "playingInterval" and does all the math for percentile events as well
+   */
+
+  sendVideoPlaybackIntervalEvents() {
+    if (!this.duration || this.duration === 0) {
+      return;
+    }
+    const percentComplete = this.currentTime / this.duration * 100;
+
+    // don't send extra events if the video didn't naturally pass the interval
+    while (this.currentTime > this.intervals.playbackPosition + this.intervals.playingInterval * 2) {
+      this.intervals.playbackPosition += this.intervals.playingInterval;
+    }
+    if (this.currentTime >= this.intervals.playbackPosition + this.intervals.playingInterval) {
+      this.intervals.playbackPosition += this.intervals.playingInterval;
+      let customEvent = new CustomEvent('Video:onVideoTimeIntervalUpdate', {
+        bubbles: true,
+        detail: {
+          playerId: this.playerId,
+          videoPlatform: this.platform,
+          video: this.video,
+          secondsElapsed: this.currentTime
+        }
+      });
+      this.dispatchEvent(customEvent);
+    }
+    let quartileEvent = null;
+    if (percentComplete >= this.intervals.quartilePosition) {
+      // when resuming, make sure we don't repeat quartile events
+      // once percentile updates correctly after seek, figure out next valid event position
+      if (this.intervals.quartilePosition === -1) {
+        if (percentComplete >= this.intervals.quartilePosition + 25) {
+          this.intervals.quartilePosition = 0;
+          while (percentComplete >= this.intervals.quartilePosition) {
+            this.intervals.quartilePosition += 25;
+          }
+        }
+      } else {
+        quartileEvent = this.intervals.quartilePosition;
+        this.intervals.quartilePosition += 25;
+        if (this.intervals.quartilePosition === 100) {
+          this.intervals.quartilePosition = 95;
+        }
+      }
+    }
+    if (quartileEvent !== null) {
+      // to ensure 100% is always reached, call at 95% instead
+      if (quartileEvent === 95) {
+        quartileEvent = 100;
+      }
+      this.emit(events.quartileCompleted, {
+        quartile: quartileEvent
+      });
+    }
+  }
+
+  // Map internal quartilePosition so that crossing 25% done --> 25, etc
+  getDisplayQuartile(quartilePos) {
+    if (quartilePos === -1) {
+      return 0;
+    }
+    if (quartilePos === 50) {
+      return 25;
+    }
+    if (quartilePos === 75) {
+      return 50;
+    }
+    if (quartilePos === 95) {
+      return 75;
+    }
+    return 100;
+  }
+
+  /**
+   * The following functions are used by the analytics dataLayer
+   */
+  getCategory() {
+    // abstract: implement in child class
+  }
+  getCredit() {
+    // abstract: implement in child class
+  }
+
+  // Used for the "Location" element
+  getDateline() {
+    // abstract: implement in child class
+  }
+  getIsAutoPlay() {
+    // abstract: implement in child class
+  }
+  getOwnerSite() {
+    // abstract: implement in child class
+  }
+  getPlatformName() {
+    // abstract: implement in child class
+  }
+  getPlayerHeight() {
+    // abstract: implement in child class
+  }
+  getPlayerWidth() {
+    // abstract: implement in child class
+  }
+  getPlayerResolution() {
+    let width = this.getPlayerWidth();
+    let height = this.getPlayerHeight();
+    return width + ' x ' + height;
+  }
+  getPlayListTagsosition(id) {
+    let playlist = document.querySelector('[data-playlist]');
+    let PlaylistItems = playlist.querySelectorAll('.PlaylistItem');
+    let activeVid = playlist.querySelector(`[data-video-id='${id}']`);
+    for (let i = 0; i < PlaylistItems.length; i++) {
+      if (activeVid === PlaylistItems[i]) {
+        return i;
+      }
+    }
+  }
+  getSource() {
+    // abstract: implement in child class
+  }
+  getVideoFileType() {
+    // abstract: implement in child class
+  }
+  getVideoStatus() {
+    if (this.getAttribute('data-playback-playing')) {
+      return 'Playing';
+    } else if (this.getAttribute('data-playback-paused')) {
+      return 'Paused';
+    } else if (this.getAttribute('data-playback-ended')) {
+      return 'Ended';
+    } else return null;
+  }
+  getVideoUuid() {
+    // abstract: implement in child class
+  }
+  getVolume() {
+    // abstract: implement in child class
+  }
+  getStartVolume() {
+    // abstract: implement in child class
+  }
+  onVideoFullscreen() {
+    // abstract: implement in child class
+  }
+  onEnterFullScreen() {
+    this.emit(events.enterFullscreen);
+  }
+  onExitFullscreen() {
+    this.emit(events.exitFullscreen);
+  }
+  emit(event) {
+    let detail = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    const customEvent = new CustomEvent(event, {
+      bubbles: true,
+      detail: detail
+    });
+    this.dispatchEvent(customEvent);
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/video/CompanionTooltip.js
+
+const tooltipWidth = 240;
+class CompanionTooltip extends HTMLElement {
+  constructor(companionNode) {
+    super(companionNode);
+    this.node = companionNode;
+  }
+  connectedCallback() {
+    this.classList.add('CompanionTooltip');
+    this.appendChild(this.node.companionItem.cloneNode(true));
+    this.updatePosition();
+    this.node.player.addEventListener(events.enterFullscreen, this);
+    this.node.player.addEventListener(events.exitFullscreen, this);
+    this.node.player.addEventListener(events.ready, this);
+  }
+  handleEvent(event) {
+    if ([events.enterFullscreen, events.exitFullscreen, events.ready].indexOf(event.type) >= 0) {
+      requestAnimationFrame(() => {
+        this.updatePosition();
+      });
+    }
+  }
+  updatePosition() {
+    const containerWidth = this.node.parentElement.clientWidth;
+    const nodePosition = this.node.position;
+    const tooltipWidthPercent = tooltipWidth / containerWidth * 100;
+    const overflowLeft = nodePosition - tooltipWidthPercent / 2 < 0;
+    const overflowRight = nodePosition + tooltipWidthPercent / 2 > 100;
+    this.style.removeProperty('right');
+    this.style.removeProperty('left');
+    let tail = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    let path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttributeNS(null, 'stroke', 'var(--borderColor)');
+    tail.classList.add('CompanionTooltip-tail');
+    tail.appendChild(path);
+    this.appendChild(tail);
+    if (overflowLeft) {
+      this.style.left = `7px`;
+      tail.setAttribute('width', 12);
+      tail.setAttribute('viewBox', '0 0 12 12');
+      path.setAttributeNS(null, 'd', 'M 0 0 L 0 12 L 12 0');
+      this.alignment = 'left';
+    } else if (overflowRight) {
+      this.style.right = `7px`;
+      tail.setAttribute('width', 12);
+      tail.setAttribute('viewBox', '0 0 12 12');
+      path.setAttributeNS(null, 'd', 'M 0 0 L 12 12 L 12 0');
+      this.alignment = 'right';
+    } else {
+      this.style.left = `-112px`;
+      tail.setAttribute('width', 24);
+      tail.setAttribute('viewBox', '0 0 24 12');
+      path.setAttributeNS(null, 'd', 'M 0 0 L 12 12 L 24 0');
+      this.alignment = 'center';
+    }
+  }
+  set alignment(value) {
+    this.setAttribute('alignment', value);
+  }
+}
+customElements.define('companion-tooltip', CompanionTooltip);
+;// CONCATENATED MODULE: ./styleguide/core/video/CompanionNode.js
+
+class CompanionNode extends HTMLElement {
+  constructor(companionItem, player) {
+    super(companionItem, player);
+    this.companionItem = companionItem;
+    this.player = player;
+    const durationMiliseconds = this.player.duration * 1000;
+    this.position = this.companionItem.timestamp / durationMiliseconds * 100;
+  }
+  connectedCallback() {
+    this.companionTooltip = new CompanionTooltip(this);
+    this.appendChild(this.companionTooltip);
+    this.style.left = `${this.position}%`;
+    let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    let circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    svg.appendChild(circle);
+    svg.setAttribute('viewBox', '0 0 16 16');
+    circle.setAttributeNS(null, 'cx', 8);
+    circle.setAttributeNS(null, 'cy', 8);
+    circle.setAttributeNS(null, 'r', 6);
+    circle.setAttributeNS(null, 'stroke', 'white');
+    circle.setAttributeNS(null, 'stroke-width', '4');
+    this.appendChild(svg);
+  }
+  set active(bool) {
+    bool ? this.setAttribute('active', '') : this.removeAttribute('active');
+  }
+}
+customElements.define('companion-node', CompanionNode);
+;// CONCATENATED MODULE: ./styleguide/core/video/VideoPlayerControls.js
+
+
+
+const VideoPlayerControlsEvents = {
+  play: 'VideoPlayerControls:play',
+  rewind: 'VideoPlayerControls:rewind',
+  forward: 'VideoPlayerControls:forward',
+  seek: 'VideoPlayerControls:seek',
+  togglePlayback: 'VideoPlayerControls:togglePlayback',
+  toggleMute: 'VideoPlayerControls:toggleMute',
+  toggleFullscreen: 'VideoPlayerControls:toggleFullscreen'
+};
+class VideoPlayerControls extends HTMLElement {
+  connectedCallback() {
+    this.addEventListener('click', this.clickHandler);
+    this.addEventListener('input', this.inputHandler);
+    this.addEventListener('change', this.changeHandler);
+    this.player.addEventListener(events.timeUpdate, () => {
+      this.update();
+    });
+    this.player.addEventListener(events.ready, () => {
+      this.ready = true;
+      this.update();
+    });
+    this.player.addEventListener(events.playing, () => {
+      this.resetControlsTimeout();
+      this.update();
+      setTimeout(() => {
+        console.log('focus');
+        this.focus();
+      }, 0);
+    });
+    this.player.addEventListener(events.pause, () => {
+      this.update();
+    });
+    this.player.addEventListener(events.volumeChange, () => {
+      this.update();
+    });
+    this.player.addEventListener(events.enterFullscreen, () => {
+      this.update();
+    });
+    this.player.addEventListener(events.exitFullscreen, () => {
+      this.update();
+    });
+    ['keydown', 'mousemove'].forEach(eventName => {
+      this.player.addEventListener(eventName, () => {
+        this.hideControls = false;
+        this.resetControlsTimeout();
+      });
+    });
+  }
+  createCompanionNodes() {
+    if (!this.player.duration || this.companionNodes) {
+      return;
+    }
+    this.companionNodes = [];
+    this.showCompanionNodes = this.querySelector('[name="companion-toggle"]').checked;
+    const seekControls = this.querySelector('.VideoPlayerControls-seekControls');
+    document.querySelectorAll('ps-playlist-item[is-current] ps-companion-content-item').forEach(item => {
+      let companionNode = new CompanionNode(item, this.player);
+      seekControls.appendChild(companionNode);
+      this.companionNodes.push(companionNode);
+    });
+    if (this.companionNodes.length > 0) {
+      this.withCompanion = true;
+    }
+  }
+  setCompanionNodesState() {
+    if (!this.companionNodes) {
+      return;
+    }
+    this.companionNodes.forEach(node => {
+      node.companionItem.active = false;
+    });
+    const viewdNodes = this.companionNodes.filter(node => {
+      return this.player.currentTime * 1000 > node.companionItem.timestamp;
+    });
+    viewdNodes.forEach(node => {
+      node.companionItem.active = false;
+      node.active = false;
+    });
+    if (viewdNodes.length > 0) {
+      const activeNode = viewdNodes.reduce((x, y) => {
+        return x.companionItem.timestamp > y.companionItem.timestamp ? x : y;
+      });
+      if (activeNode) {
+        activeNode.companionItem.active = true;
+        activeNode.active = true;
+      }
+    }
+  }
+  clickHandler(event) {
+    this.hideControls = false;
+    this.resetControlsTimeout();
+    if (event.target.matches('[data-click]')) {
+      event.stopImmediatePropagation();
+      this.emit(VideoPlayerControlsEvents[event.target.dataset.click]);
+    }
+  }
+  inputHandler(_ref) {
+    let {
+      target
+    } = _ref;
+    if (target.matches('[data-change="seek"]')) {
+      this.disableSeekUpdates = true;
+    }
+  }
+  changeHandler(_ref2) {
+    let {
+      target
+    } = _ref2;
+    if (target.matches('[data-change="seek"]')) {
+      this.disableSeekUpdates = false;
+      this.emit(VideoPlayerControlsEvents.seek, {
+        currentTime: this.player.duration / 100 * event.target.value
+      });
+    }
+    if (target.matches('[name="companion-toggle"]')) {
+      this.showCompanionNodes = target.checked;
+    }
+  }
+  resetControlsTimeout() {
+    if (this.controlsTimeout) {
+      clearTimeout(this.controlsTimeout);
+    }
+    this.controlsTimeout = setTimeout(() => {
+      this.hideControls = true;
+      this.controlsTimeout = null;
+    }, 2000);
+  }
+  disconnectedCallback() {
+    this.addEventListener('click', this.clickHandler);
+  }
+  get player() {
+    return this.closest('[data-video-player]');
+  }
+  get progress() {
+    return this.player.currentTime / this.player.duration * 100 || 0;
+  }
+  set playing(bool) {
+    bool ? this.setAttribute('playing', '') : this.removeAttribute('playing');
+  }
+  set hideControls(bool) {
+    bool ? this.setAttribute('hide-controls', '') : this.removeAttribute('hide-controls');
+  }
+  set muted(bool) {
+    bool ? this.setAttribute('muted', '') : this.removeAttribute('muted');
+  }
+  set showCompanionNodes(bool) {
+    bool ? this.setAttribute('show-companion-nodes', '') : this.removeAttribute('show-companion-nodes');
+  }
+  set interactive(bool) {
+    bool ? this.setAttribute('interactive', '') : this.removeAttribute('interactive');
+  }
+  set fullscreen(bool) {
+    bool ? this.setAttribute('fullscreen', '') : this.removeAttribute('fullscreen');
+  }
+  set ready(bool) {
+    bool ? this.setAttribute('ready', '') : this.removeAttribute('ready');
+  }
+  set withCompanion(bool) {
+    bool ? this.setAttribute('with-companion', '') : this.removeAttribute('with-companion');
+  }
+  emit(event) {
+    let detail = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    const customEvent = new CustomEvent(event, {
+      bubbles: true,
+      detail: detail
+    });
+    this.dispatchEvent(customEvent);
+  }
+  update() {
+    this.createCompanionNodes();
+    this.setCompanionNodesState();
+    this.playing = this.player.playing;
+    this.muted = this.player.muted;
+    this.fullscreen = this.player.fullscreen;
+    this.querySelector('.VideoPlayerControls-seekTrackProgress').style.width = `${this.progress}%`;
+    this.querySelector('.VideoPlayerControls-time').innerText = `${formatSeconds(this.player.currentTime)} / ${formatSeconds(this.player.duration)}`;
+    if (!this.disableSeekUpdates) {
+      this.querySelector('.VideoPlayerControls-seekControls input[type=range]').value = this.progress;
+    }
+    if (this.player.playing || this.player.currentTime > 0) {
+      this.interactive = true;
+      this.querySelector('.VideoPlayerControls-initialPlayButton').setAttribute('tabindex', '-1');
+    }
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/video/PlyrVideoPlayer.js
+
+
+
+class PlyrVideoPlayer extends VideoPlayer {
+  connectedCallback() {
+    if (this.plyr) {
+      return;
+    }
+    super.connectedCallback();
+    this.plyr = new (plyr_min_default())(this.plyrContainerElement, {
+      muted: this.muted,
+      autoplay: this.autoplay,
+      controls: this.querySelector('video-player-controls'),
+      poster: this.poster,
+      loop: {
+        active: this.loop
+      },
+      clickToPlay: !this.disableClickToPlay
+    });
+    setTimeout(() => {
+      this.plyr.poster = this.poster;
+    });
+    this.addEventListener(VideoPlayerControlsEvents.togglePlayback, () => {
+      this.plyr.togglePlay();
+    });
+    this.addEventListener(VideoPlayerControlsEvents.toggleMute, () => {
+      this.plyr.muted = !this.plyr.muted;
+    });
+    this.addEventListener(VideoPlayerControlsEvents.rewind, () => {
+      this.plyr.rewind(5);
+    });
+    this.addEventListener(VideoPlayerControlsEvents.forward, () => {
+      this.plyr.forward(5);
+    });
+    this.addEventListener(VideoPlayerControlsEvents.toggleFullscreen, () => {
+      this.plyr.fullscreen.toggle();
+    });
+    this.addEventListener(VideoPlayerControlsEvents.seek, event => {
+      this.plyr.currentTime = event.detail.currentTime;
+    });
+    this.addEventListener(VideoPlayerControlsEvents.play, event => {
+      this.plyr.play();
+    });
+    this.plyr.once('ready', () => this.onReady());
+    this.plyr.on('timeupdate', () => this.onTimeUpdate());
+    this.plyr.on('volumechange', () => this.onVolumneChange());
+    this.plyr.on('enterfullscreen', () => this.onEnterFullScreen());
+    this.plyr.on('exitfullscreen', () => this.onExitFullscreen());
+    this.plyr.on('playing', () => this.onPlay());
+    this.plyr.on('pause', () => this.onPause());
+    this.plyr.on('ended', () => this.onEnded());
+    this.plyr.on('error', () => this.onError());
+    this.init();
+  }
+  init() {
+    // overwrite in extended components
+  }
+  disconnectedCallback() {
+    this.state = {
+      currentTime: this.currentTime,
+      muted: this.muted,
+      playing: this.playing
+    };
+  }
+  play() {
+    this.plyr.play();
+  }
+  get plyrContainerElement() {
+    return this.querySelector('video');
+  }
+  get currentTime() {
+    return this.plyr.currentTime;
+  }
+  get duration() {
+    return this.plyr.duration;
+  }
+  get playing() {
+    return this.plyr.playing;
+  }
+  get fullscreen() {
+    return this.plyr.fullscreen.active;
+  }
+  get muted() {
+    if (this.plyr) {
+      return this.plyr.muted;
+    }
+    return this.hasAttribute('muted');
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/video/HTML5VideoPlayer.js
+
+class HTML5VideoPlayer extends PlyrVideoPlayer {}
+;// CONCATENATED MODULE: ./styleguide/core/image/LazyLoadImages.js
+/**
+ * Whenever we AJAX something, we should call an event on document.body that this class picks up
+ *
+ * let customEvent = new CustomEvent('Ajax:Rendered', {
+ *   bubbles: true
+ * })
+ *
+ * document.body.dispatchEvent(customEvent)
+ */
+
+class LazyLoadImages {
+  // with our All.js instantiation, this does not get called until DOM ready, so no check
+  constructor() {
+    if ('IntersectionObserver' in window) {
+      this.modernBrowsers();
+      document.body.addEventListener('Ajax:Rendered', () => {
+        this.modernBrowsers();
+      });
+      return;
+    }
+    this.oldskool();
+    document.body.addEventListener('Ajax:Rendered', () => {
+      this.oldskool();
+    });
+  }
+  applySrc(element) {
+    if (element.dataset.src) {
+      element.src = element.dataset.src;
+      element.removeAttribute('data-src');
+    }
+    if (element.dataset.srcset) {
+      element.srcset = element.dataset.srcset;
+      element.removeAttribute('data-srcset');
+    }
+    element.removeAttribute('data-lazy-load');
+  }
+  loadImage(image) {
+    const picture = image.closest('picture');
+    if (picture) {
+      let lazyElements = picture.querySelectorAll('[data-src], [data-srcset]');
+      lazyElements.forEach(element => this.applySrc(element));
+    }
+    if (!picture) {
+      this.applySrc(image);
+    }
+  }
+  modernBrowsers() {
+    let lazyImages = [].slice.call(document.querySelectorAll('img[data-lazy-load]'));
+    const intersectionObserverOptions = {
+      rootMargin: `${window.innerWidth}px ${window.innerHeight}px`
+    };
+    let lazyImageObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const lazyImage = entry.target;
+          this.loadImage(lazyImage);
+          lazyImageObserver.unobserve(lazyImage);
+        }
+      });
+    }, intersectionObserverOptions);
+    lazyImages.forEach(image => {
+      lazyImageObserver.observe(image);
+    });
+  }
+  oldskool() {
+    let active = false;
+    let lazyImages = [].slice.call(document.querySelectorAll('img[data-lazy-load]'));
+    const lazyLoad = () => {
+      if (active === false) {
+        active = true;
+        setTimeout(() => {
+          lazyImages.forEach(lazyImage => {
+            const imageBounds = lazyImage.getBoundingClientRect();
+            if (imageBounds.top <= window.innerHeight * 2 && imageBounds.bottom >= -window.innerHeight && window.getComputedStyle(lazyImage).display !== 'none') {
+              this.loadImage(lazyImage);
+              lazyImages = lazyImages.filter(image => {
+                return image !== lazyImage;
+              });
+              if (lazyImages.length === 0) {
+                document.removeEventListener('scroll', lazyLoad);
+                window.removeEventListener('resize', lazyLoad);
+                window.removeEventListener('orientationchange', lazyLoad);
+              }
+            }
+          });
+          active = false;
+        }, 200);
+      }
+    };
+    document.addEventListener('scroll', lazyLoad, true);
+    window.addEventListener('resize', lazyLoad);
+    window.addEventListener('orientationchange', lazyLoad);
+    lazyLoad();
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/global/Message.js
+class Message extends HTMLElement {
+  connectedCallback() {
+    if (this.dismissible) {
+      const svgElem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      const useElem = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+      useElem.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#close-x');
+      svgElem.appendChild(useElem);
+      this.dismissButton = document.createElement('button');
+      this.dismissButton.appendChild(svgElem);
+      this.appendChild(this.dismissButton);
+    }
+    this.addEventListener('click', this);
+  }
+  handleEvent(event) {
+    if (event.type === 'click' && event.target.matches('button')) {
+      this.parentNode.removeChild(this);
+    }
+  }
+  get dismissible() {
+    return this.hasAttribute('dismissible');
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/navigation/Navigation.js
+
+
+
+
+class Navigation extends HTMLElement {
+  connectedCallback() {
+    this.dealWithMenuHover();
+    this.handleEventListeners();
+    let alowNavOverflow = this.getAttribute('data-allow-nav-overflow');
+    let allowTrimNav;
+    if (alowNavOverflow === 'true') {
+      allowTrimNav = true;
+    } else {
+      allowTrimNav = false;
+    }
+    if (MediaQuery_DEFAULT_BREAKPOINT_OPTIONS.desktop.includes(getMediaQuery())) {
+      this.checkClickTarget();
+    }
+    if (document.readyState !== 'complete') {
+      window.addEventListener('load', () => {
+        if (allowTrimNav) {
+          this.trimNav();
+        }
+      });
+    } else {
+      if (allowTrimNav) {
+        this.trimNav();
+      }
+    }
+    window.addEventListener('resize', () => {
+      if (allowTrimNav) {
+        this.trimNav();
+      }
+    });
+  }
+  get navigationButton() {
+    return this.querySelectorAll(Navigation.selectors.buttonSelector);
+  }
+  get navigationItems() {
+    return this.querySelectorAll(Navigation.selectors.navigationItem);
+  }
+  trimNav() {
+    let clipping = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    const wrapper = this.querySelector(':scope > .Navigation-items');
+    const items = [...this.querySelectorAll(':scope > .Navigation-items > .Navigation-items-item:not([data-overflow-trigger]):not([data-nav-buton="true"])')];
+    const itemStack = this.querySelector(':scope [data-overflow-menu] > .NavigationItem-items-container');
+    const lastItem = items[items.length - 1];
+    if (wrapper.scrollWidth > wrapper.clientWidth) {
+      itemStack.prepend(lastItem);
+      this.querySelector('[data-overflow-trigger]').style.display = 'block';
+      this.trimNav(true);
+      return;
+    }
+    if (!clipping) {
+      if (itemStack.childNodes.length > 0) {
+        const firstChild = itemStack.childNodes[0];
+        lastItem.parentNode.insertBefore(firstChild, lastItem.nextSibling);
+        if (itemStack.childNodes.length < 1) {
+          this.querySelector('[data-overflow-trigger]').style.display = 'none';
+        }
+        this.trimNav();
+        return;
+      }
+    }
+  }
+  dealWithMenuHover() {
+    const options = {
+      timeout: 100,
+      interval: 0
+    };
+    this.navigationItems.forEach(item => {
+      this.hoverListener = hoverintent_default()(item, () => this.openNavItem(item, 'hover'), () => this.closeNavItem(item, 'hover')).options(options);
+    });
+  }
+
+  // Using this here instead of the generic toggle plugin as we do not want these search buttons
+  // interacting with the generic plugin toggles, and we also want to have them toggle each other
+  // off when the other is toggled in
+  handleEventListeners() {
+    addEventListener('resize', throttle(250, e => {
+      if (MediaQuery_DEFAULT_BREAKPOINT_OPTIONS.desktop.includes(getMediaQuery())) {
+        this.checkClickTarget();
+        if (this.navigationItems) {
+          this.navigationItems.forEach(item => {
+            if (item.querySelector(Navigation.selectors.moreSelector)) {
+              this.closeNavItem(item, 'click');
+              this.closeNavItem(item, 'hover');
+            }
+          });
+        }
+      } else {
+        this.removeClickTarget();
+      }
+    }));
+    if (this.navigationItems) {
+      this.navigationItems.forEach(item => {
+        if (item.querySelector(Navigation.selectors.moreSelector)) {
+          item.querySelector(Navigation.selectors.moreSelector).addEventListener('click', e => {
+            e.preventDefault();
+            this.openNavItem(item, 'click');
+          });
+        }
+      });
+    }
+    if (this.navigationButton) {
+      this.navigationButton.forEach(button => {
+        button.closest('.Navigation-items-item').setAttribute('data-nav-buton', 'true');
+      });
+    }
+  }
+  getContentWidth() {
+    const element = this.querySelector('.Navigation-items-container');
+    const styles = getComputedStyle(element);
+    return element.clientWidth - parseFloat(styles.paddingLeft) - parseFloat(styles.paddingRight);
+  }
+  openNavItem(item, action) {
+    if (item) {
+      if (item.parentNode.closest(Navigation.selectors.navigationItem)) return;
+      if (item.getAttribute('data-item-' + action)) {
+        item.removeAttribute('data-item-' + action);
+      } else {
+        this.navigationItems.forEach(navItem => {
+          navItem.removeAttribute('data-item-' + action);
+        });
+        item.setAttribute('data-item-' + action, true);
+        this.adjustSubNavPosition(item);
+      }
+    }
+  }
+  closeNavItem(item, action) {
+    item.removeAttribute('data-item-' + action);
+    const navItems = item.querySelector('.NavigationItem-items-container');
+    if (navItems) {
+      navItems.style.left = 0;
+    }
+  }
+  checkClickTarget() {
+    document.addEventListener('click', this.event);
+  }
+  removeClickTarget() {
+    if (this.event && document.removeEventListener('click', this.event)) {
+      document.removeEventListener('click', this.event);
+    }
+  }
+  adjustSubNavPosition(item) {
+    const tailWidth = 34;
+    const gutterWidth = 40;
+    const navItems = item.querySelector('.NavigationItem-items-container');
+    if (!navItems) return;
+    const itemWidth = item.getBoundingClientRect().width;
+    const navItemsWidth = navItems.getBoundingClientRect().width;
+    let translateX = (navItemsWidth / 2 - itemWidth / 2) * -1;
+    const overflowRight = navItems.getBoundingClientRect().right - document.body.getBoundingClientRect().right + translateX + gutterWidth;
+    const overflowLeft = document.body.getBoundingClientRect().left - navItems.getBoundingClientRect().left - translateX + gutterWidth;
+    if (overflowRight > 0) {
+      translateX = translateX + overflowRight * -1;
+    }
+    if (overflowLeft > 0) {
+      translateX = translateX + overflowLeft;
+    }
+    navItems.style.left = `${translateX}px`;
+    navItems.style.setProperty('--tail-offset-left', `${itemWidth / 2 - translateX - tailWidth / 2}px`);
+  }
+}
+defineProperty_default()(Navigation, "selectors", {
+  navigationItem: '.NavigationItem',
+  moreSelector: '.NavigationItem-more',
+  buttonSelector: '.NavigationItem-button'
+});
+// EXTERNAL MODULE: ./node_modules/masonry-layout/masonry.js
+var masonry = __webpack_require__(8751);
+var masonry_default = /*#__PURE__*/__webpack_require__.n(masonry);
+;// CONCATENATED MODULE: ./styleguide/core/list/ListMasonry.js
+
+var _class;
+
+
+class MasonryList extends HTMLElement {
+  connectedCallback() {
+    this.gridItems = this.querySelector(MasonryList.selectors.gridItems);
+    this.gridImages = this.gridItems.querySelectorAll('img');
+    this.gridItem = MasonryList.selectors.gridItem;
+    this.gridGutter = MasonryList.attributes.gutter;
+    this.gridSizer = MasonryList.selectors.gridSizer;
+    this.gridEnabled = MasonryList.selectors.gridEnabled;
+    this.buildMasonryList();
+  }
+  buildMasonryList() {
+    let masonryGrid = new (masonry_default())(this.gridItems, {
+      horizontalOrder: true,
+      itemSelector: this.gridItem,
+      columnWidth: this.gridSizer,
+      gutter: this.gridGutter,
+      percentPosition: true
+    });
+    this.gridImages.forEach(image => {
+      image.addEventListener('load', event => {
+        masonryGrid.layout();
+      });
+    });
+
+    // bind event listener
+    masonryGrid.once('layoutComplete', event => {
+      this.setAttribute(this.gridEnabled, 'true');
+    });
+    window.addEventListener('resize', throttle(250, () => {
+      masonryGrid.layout();
+    }));
+  }
+}
+_class = MasonryList;
+defineProperty_default()(MasonryList, "attributes", {
+  item: '[data-item]',
+  items: '[data-items]',
+  sizer: '[data-masonry-sizer]',
+  gutter: '[data-masonry-gutter]',
+  enabled: 'data-masonry-enabled'
+});
+defineProperty_default()(MasonryList, "selectors", {
+  gridItem: _class.attributes.item,
+  gridItems: _class.attributes.items,
+  gridSizer: _class.attributes.sizer,
+  gridGutter: _class.attributes.gutter,
+  gridEnabled: _class.attributes.enabled
+});
+;// CONCATENATED MODULE: ./styleguide/core/promo/PromoAccordion.js
+class PromoAccordion extends HTMLElement {
+  static get observedAttributes() {
+    return ['expanded'];
+  }
+  get headerEl() {
+    return this.querySelector('[data-header]');
+  }
+  get contentEl() {
+    return this.querySelector('[data-content]');
+  }
+  get expanded() {
+    return this.hasAttribute('expanded');
+  }
+  set expanded(bool) {
+    if (bool) {
+      this.setAttribute('expanded', '');
+    } else {
+      this.removeAttribute('expanded');
+    }
+  }
+  attributeChangedCallback(name) {
+    if (name === 'expanded') {
+      this.toggle();
+    }
+  }
+  connectedCallback() {
+    this.headerEl.addEventListener('click', event => {
+      event.preventDefault();
+      this.expanded = !this.expanded;
+    });
+    this.contentEl.addEventListener('transitionend', () => this.onTransitionEnd());
+    window.addEventListener('load', () => {
+      if (this.expanded) {
+        this.contentEl.style.height = 'auto';
+        this.contentEl.classList.add('test');
+      }
+    });
+  }
+  transition(startHeight, endHeight) {
+    this.contentEl.style.height = `${startHeight}px`;
+    window.requestAnimationFrame(() => {
+      this.contentEl.style.height = `${endHeight}px`;
+    });
+  }
+  onTransitionEnd() {
+    if (this.expanded) {
+      this.contentEl.style.height = 'auto';
+    }
+  }
+  toggle() {
+    const contentHeight = this.contentEl.scrollHeight;
+    if (this.expanded) {
+      this.transition(0, contentHeight);
+    } else {
+      this.transition(contentHeight, 0);
+    }
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/util/ps-toggler.js
+/**
+ * Element that handles toggling state for another element on the page.
+ * Note: Styling can be handled on an individual need basis by adding a class
+ * to the element.
+ */
+class PsToggler extends HTMLElement {
+  connectedCallback() {
+    let myToggleName = this.getAttribute('data-toggle');
+    let allMyToggles = this.querySelectorAll('[data-toggle-trigger="' + myToggleName + '"]');
+    let self = this;
+
+    /**
+     * Handles toggling behavior. This is here so we can use a closure to pass self in
+     *
+     * Note: We set a data attribute on ourselves as well as the body.
+     * It has the name of the toggle in it, so we can have multiple toggles at once on the page,
+     * as well as toggles within toggles.
+     */
+    this.handleToggle = function (event) {
+      event.preventDefault();
+      let toggleName = this.getAttribute('data-toggle-trigger');
+      let toggleDataAttribute = 'data-toggle-in';
+      if (toggleName) {
+        if (self.getAttribute(toggleDataAttribute) === toggleName) {
+          document.body.removeAttribute(toggleDataAttribute);
+          self.removeAttribute(toggleDataAttribute, toggleName);
+        } else {
+          document.body.setAttribute(toggleDataAttribute, toggleName);
+          self.setAttribute(toggleDataAttribute, toggleName);
+        }
+      }
+    };
+    allMyToggles.forEach(item => item.addEventListener('click', this.handleToggle, true));
+  }
+  disconnectedCallback() {
+    let allToggles = this.querySelectorAll('[data-toggle-trigger]');
+    allToggles.forEach(item => item.removeEventListener('click', this.handleToggle, true));
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/global/ReadMore.js
+class ReadMore extends HTMLElement {
+  connectedCallback() {
+    this.style.setProperty('--lineClamp', this.lineClamp);
+    if (document.readyState === 'complete') {
+      this.update();
+    } else {
+      window.addEventListener('load', this);
+    }
+    window.addEventListener('resize', this);
+    this.addEventListener('click', this);
+  }
+  get contentElement() {
+    return this.querySelector('.ReadMore-content');
+  }
+  get lineClamp() {
+    return this.getAttribute('line-clamp');
+  }
+  get clipping() {
+    return this.hasAttribute('clipping');
+  }
+  set clipping(bool) {
+    bool ? this.setAttribute('clipping', true) : this.removeAttribute('clipping');
+  }
+  set expanded(bool) {
+    bool ? this.setAttribute('expanded', true) : this.removeAttribute('expanded');
+  }
+  handleClick(event) {
+    if (event.target.matches('[data-click="expand"]')) {
+      event.preventDefault();
+      this.expanded = true;
+    }
+    if (event.target.matches('[data-click="collapse"]')) {
+      event.preventDefault();
+      this.expanded = false;
+    }
+  }
+  handleEvent(event) {
+    if (event.type === 'load' || event.type === 'resize') {
+      this.update();
+    }
+    if (event.type === 'click') {
+      this.handleClick(event);
+    }
+  }
+  update() {
+    this.clipping = this.contentElement.scrollHeight > this.contentElement.clientHeight;
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/search/SearchFilter.js
+
+class SearchFilter extends HTMLElement {
+  connectedCallback() {
+    this.addEventListener('click', this);
+    this.expandFirstFilterOnDesktop();
+  }
+  expandFirstFilterOnDesktop() {
+    if (document.querySelector('ps-search-filter') === this && MediaQuery_DEFAULT_BREAKPOINT_OPTIONS.desktop.includes(getMediaQuery())) {
+      this.expanded = true;
+    }
+  }
+  handleEvent(event) {
+    if (event.type === 'click') {
+      if (event.target.closest('.SearchFilter-heading') || event.target.matches('.SearchFilter-heading')) {
+        this.expanded = !this.expanded;
+        return;
+      }
+    }
+  }
+  disconnectedCallback() {
+    this.removeEventListener('click', this);
+  }
+  get expanded() {
+    return this.hasAttribute('expanded');
+  }
+  set expanded(bool) {
+    bool ? this.setAttribute('expanded', '') : this.removeAttribute('expanded');
+  }
+  get isCurrent() {
+    return this.hasAttribute('is-current');
+  }
+  set isCurrent(bool) {
+    bool ? this.setAttribute('is-current', '') : this.removeAttribute('is-current');
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/search/SearchFilters.js
+
+class SearchFilters extends HTMLElement {
+  connectedCallback() {
+    this.cacheElements();
+    this.handleFiltersOverlay();
+    this.handleSortSelect();
+    this.handleFiltersApply();
+    this.handleFiltersSelect();
+  }
+  cacheElements() {
+    this.searchResultsModule = document.querySelector('.SearchResultsModule');
+    this.searchForm = document.querySelector('.SearchResultsModule-form');
+    this.searchSort = this.querySelector('.SearchResultsModule-sorts select');
+    this.filtersOpenButton = this.querySelectorAll('.SearchResultsModule-filters-open');
+    this.filtersCloseButton = this.querySelector('.SearchResultsModule-filters-close');
+    this.filtersOverlay = this.querySelector('.SearchResultsModule-filters-overlay');
+    this.filtersApply = this.querySelector('.SearchResultsModule-filters-apply');
+    this.filtersApplyButton = this.filtersApply.querySelector('button');
+    this.filtersSeeAll = this.querySelectorAll('.SearchFilter-seeAll');
+    this.filters = this.querySelectorAll('.SearchFilterInput input');
+    this.selectedFiltersArray = [];
+    this.selectedFilters = this.querySelector('.SearchResultsModule-filters-selected');
+    this.selectedFiltersReset = this.querySelector('.SearchResultsModule-filters-selected-reset');
+    this.selectedFiltersContent = this.querySelector('.SearchResultsModule-filters-selected-content');
+  }
+  handleSortSelect() {
+    if (this.searchSort) {
+      this.searchSort.addEventListener('change', e => {
+        this.gatherSelectedFilters();
+        // Using API of search results module
+        this.searchResultsModule.submitSearch();
+      });
+    }
+  }
+
+  // If we are on a bigger media query, autosubmit the form when we change filters
+  handleFiltersSelect() {
+    this.filters.forEach(item => {
+      item.addEventListener('click', () => {
+        if (MediaQuery_DEFAULT_BREAKPOINT_OPTIONS.desktop.includes(getMediaQuery())) {
+          this.gatherSelectedFilters();
+          // Using API of search results module
+          this.searchResultsModule.submitSearch();
+        }
+      });
+    });
+  }
+
+  // Submit the form on apply button, AJAX is handled by the form itself
+  handleFiltersApply() {
+    this.filtersApply.addEventListener('change', e => {
+      e.preventDefault();
+      this.gatherSelectedFilters();
+      this.closeOverlay();
+      // Using API of search results module
+      this.searchResultsModule.submitSearch();
+    });
+    this.filtersApplyButton.addEventListener('click', e => {
+      console.log('click');
+      e.preventDefault();
+      this.gatherSelectedFilters();
+      this.closeOverlay();
+      // Using API of search results module
+      this.searchResultsModule.submitSearch();
+    });
+  }
+
+  // open and close the filters overlay using our own API
+  handleFiltersOverlay() {
+    this.filtersOpenButton.forEach(filterButton => {
+      filterButton.addEventListener('click', e => {
+        e.preventDefault();
+        this.openOverlay();
+      });
+    });
+    this.filtersCloseButton.addEventListener('click', e => {
+      e.preventDefault();
+      this.closeOverlay();
+    });
+  }
+  handleSelectedFiltersRemove() {
+    let selectedFilters = this.querySelectorAll('.SearchResultsModule-filters-selected-filter');
+    selectedFilters.forEach(selectedFilter => {
+      selectedFilter.querySelector('a').addEventListener('click', e => {
+        e.preventDefault();
+        this.removeSelectedFilter(selectedFilter);
+      });
+    });
+  }
+  removeSelectedFilter(selectedFilter) {
+    let value = selectedFilter.getAttribute('data-value');
+    let filter = this.querySelectorAll(`[value="${value}"]`);
+
+    // just in case we have some weird setup with multiple same values
+    filter.forEach(item => {
+      if (item.checked) {
+        item.checked = false;
+      }
+    });
+    this.gatherSelectedFilters();
+    // Using API of search results module
+    this.searchResultsModule.submitSearch();
+  }
+  gatherSelectedFilters() {
+    this.selectedFiltersArray = [];
+    this.filters = this.querySelectorAll('.SearchFilterInput input');
+    this.filters.forEach(filter => {
+      if (filter.checked) {
+        let label = filter.parentElement.querySelector('span').innerHTML;
+        let value = filter.getAttribute('value');
+        this.selectedFiltersArray.push({
+          label: label,
+          value: value
+        });
+      }
+    });
+  }
+  openOverlay() {
+    this.filtersOverlay.setAttribute('data-filters-open', true);
+    document.body.setAttribute('data-filters-open', true);
+  }
+  closeOverlay() {
+    console.log('overlay closed');
+    this.filtersOverlay.removeAttribute('data-filters-open');
+    document.body.removeAttribute('data-filters-open');
+  }
+}
+// EXTERNAL MODULE: ./node_modules/timeme.js/timeme.js
+var timeme = __webpack_require__(4291);
+;// CONCATENATED MODULE: ./styleguide/analytics/Tracking.js
+
+const url = '/_track';
+const TRACKING_PARAM = {
+  CHANNEL: 'ch',
+  PAGE_VIEW: 'pv',
+  REFFERER: 'r',
+  TIME_ON_PAGE: 't',
+  UNIQUE_VISIT: 'uv',
+  VISIT: 'v'
+};
+const getNow = () => +new Date();
+const setItem = (key, value) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch (e) {
+    // Ignore quota errors.
+  }
+};
+class Tracking {
+  static get bspTrackingScript() {
+    return document.querySelector('[data-bsp-site]');
+  }
+  static get contentId() {
+    const contentElement = document.querySelector('[data-bsp-contentid]');
+    if (contentElement) {
+      return contentElement.getAttribute('data-bsp-contentid');
+    }
+  }
+  static get extraData() {
+    const extraDataElement = document.querySelector('[data-bsp-analytics-data]');
+    if (extraDataElement) {
+      return JSON.parse(extraDataElement.dataset.bspAnalyticsData);
+    }
+  }
+  static set extraData(data) {
+    const extraDataElement = document.querySelector('[data-bsp-analytics-data]');
+    if (extraDataElement) {
+      extraDataElement.dataset.bspAnalyticsData = data;
+    }
+  }
+  static get pageViewIds() {
+    return [...document.querySelectorAll('[data-bsp-pv]')].map(pageViewEl => pageViewEl.getAttribute('data-bsp-pv'));
+  }
+  static get referrer() {
+    return document.referrer ? document.referrer : '';
+  }
+  static get siteId() {
+    if (this.bspTrackingScript) {
+      return this.bspTrackingScript.getAttribute('data-bsp-site');
+    }
+  }
+  static get siteSuffix() {
+    return this.siteId ? `.${this.siteId}` : '';
+  }
+  static get trackingEnabled() {
+    return !!this.bspTrackingScript;
+  }
+  static clearTimeout() {
+    const TIMEOUT_ID_KEY = `bsp.analytics.timeout.id${this.siteSuffix}`;
+    let timeoutId = localStorage.getItem(TIMEOUT_ID_KEY);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      localStorage.removeItem(TIMEOUT_ID_KEY);
+    }
+  }
+  static post(data, callback) {
+    const commonData = {
+      s: this.siteId,
+      p: this.pageViewIds,
+      u: window.location.href,
+      ...this.extraData
+    };
+    const req = new XMLHttpRequest();
+    const body = JSON.stringify({
+      ...commonData,
+      ...data
+    });
+    if (callback) {
+      req.open('POST', url, false);
+      req.onreadystatechange = function () {
+        if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
+          callback();
+        }
+      };
+    } else {
+      req.open('POST', url, true);
+    }
+    req.send(body);
+  }
+  static trackVisits() {
+    let uniqueVisit = false;
+    let visit = false;
+    const UNIQUE_VISIT_KEY = `bsp.analytics.uniqueVisit${this.siteSuffix}`;
+    const VISIT_STARTED_KEY = `bsp.analytics.visitStarted${this.siteSuffix}`;
+    const LAST_ACTIVITY_KEY = `bsp.analytics.lastActivity${this.siteSuffix}`;
+    if (!localStorage.getItem(UNIQUE_VISIT_KEY)) {
+      setItem(UNIQUE_VISIT_KEY, true);
+      uniqueVisit = true;
+    }
+    let visitStarted = localStorage.getItem(VISIT_STARTED_KEY);
+    let lastActivity = localStorage.getItem(LAST_ACTIVITY_KEY);
+    let now = getNow();
+    setItem(LAST_ACTIVITY_KEY, now);
+    if (!visitStarted || parseInt(visitStarted) + 12 * 60 * 60 * 1000 < now) {
+      setItem(VISIT_STARTED_KEY, now);
+      visit = true;
+    } else if (!lastActivity || parseInt(lastActivity) + 30 * 60 * 1000 < now) {
+      visit = true;
+    }
+    let event = [];
+    if (uniqueVisit) {
+      event.push(TRACKING_PARAM.UNIQUE_VISIT);
+    }
+    if (visit) {
+      event.push(TRACKING_PARAM.VISIT);
+    }
+    if (this.pageViewIds) {
+      event.push(TRACKING_PARAM.PAGE_VIEW);
+    }
+    if (this.referrer) {
+      event.push(TRACKING_PARAM.CHANNEL);
+    }
+    this.post({
+      r: this.referrer,
+      ci: this.contentId,
+      e: event
+    });
+  }
+  static trackTimeOnPage() {
+    // Track time on page.
+    timeme.resetAllRecordedPageTimes();
+    timeme.initialize({
+      idleTimeoutInSeconds: 30
+    });
+    let timeOnPage = 0;
+    let interval = 10000;
+    let maxInterval = interval * 32;
+    const TIMEOUT_ID_KEY = `bsp.analytics.timeout.id${this.siteSuffix}`;
+    const postTimeOnPage = () => {
+      if (interval < maxInterval) {
+        interval = interval * 2;
+      }
+      this.clearTimeout();
+      setItem(TIMEOUT_ID_KEY, setTimeout(postTimeOnPage, interval));
+      let newTimeOnPage = timeme.getTimeOnCurrentPageInSeconds();
+      let diff = newTimeOnPage - timeOnPage;
+      if (diff > 0) {
+        timeOnPage = newTimeOnPage;
+
+        // Guard against abnormal time, typically caused by the machine
+        // sleeping.
+        let event = [];
+        event.push(TRACKING_PARAM.TIME_ON_PAGE);
+        this.post({
+          e: event,
+          t: diff > maxInterval ? maxInterval : diff
+        });
+      }
+    };
+    this.clearTimeout();
+    setItem(TIMEOUT_ID_KEY, setTimeout(postTimeOnPage, interval));
+    window.addEventListener('beforeunload', () => {
+      let diff = timeme.getTimeOnCurrentPageInSeconds() - timeOnPage;
+      if (diff <= 0) {
+        return;
+      }
+      let event = [];
+      event.push(TRACKING_PARAM.TIME_ON_PAGE);
+      const data = {
+        e: event,
+        t: diff
+      };
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(url, JSON.stringify(data));
+      } else {
+        let complete;
+        let end = getNow() + 200;
+        this.post(data, () => {
+          complete = true;
+        });
+
+        // eslint-disable-next-line no-unmodified-loop-condition
+        while (!complete) {
+          if (getNow() > end) {
+            break;
+          }
+        }
+      }
+    });
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/search/SearchResultsModule.js
+
+
+class SearchResultsModule extends HTMLElement {
+  connectedCallback() {
+    this.cacheElements();
+    this.handleFormSubmit();
+    this.handleSearchInput();
+    this.checkInputValue();
+  }
+  handleFormSubmit() {
+    this.searchForm.addEventListener('submit', e => {
+      e.preventDefault();
+      this.searchInput && this.searchInput.blur();
+      let formUrl = new URLSearchParams(new FormData(this.searchForm)).toString();
+      let ajaxUrl = window.location.pathname + '?' + formUrl;
+      window.history.replaceState({}, document.title, ajaxUrl);
+      this.loadingTimeout = setTimeout(() => {
+        this.clearSearchForm();
+      }, 1000);
+      this.getNewSearch(ajaxUrl).then(response => {
+        clearTimeout(this.loadingTimeout);
+        this.clearSearchForm();
+        this.renderSearchResults(response);
+        document.body.dispatchEvent(new CustomEvent('Search:onSearchUpdate', {
+          detail: {
+            responseMarkup: response
+          }
+        }));
+      });
+    });
+  }
+
+  /* External API to submit the search, which just triggers this event, which kicks
+     off the Ajax stuffs */
+  submitSearch() {
+    let submitEvent;
+    if (typeof Event === 'function') {
+      submitEvent = new Event('submit');
+    } else {
+      submitEvent = document.createEvent('Event');
+      submitEvent.initEvent('submit', true, true);
+    }
+    this.searchForm.dispatchEvent(submitEvent);
+  }
+  getNewSearch(apiUrl) {
+    return new Promise((resolve, reject) => {
+      window.fetch(apiUrl, {
+        credentials: 'include'
+      }).then(response => {
+        resolve(response.text());
+      }).catch(() => {
+        reject();
+      });
+    });
+  }
+  clearSearchForm() {
+    this.searchResults.innerHTML = '';
+  }
+  checkInputValue() {
+    if (!this.searchInput) return;
+    if (this.searchInput.value.length === 0) {
+      this.searchForm.setAttribute('data-has-value', false);
+    } else {
+      this.searchForm.setAttribute('data-has-value', true);
+    }
+  }
+  handleSearchInput() {
+    this.searchInput && this.searchInput.addEventListener('keyup', throttle(250, () => {
+      this.checkInputValue();
+    }));
+    this.clearButton && this.clearButton.addEventListener('click', () => {
+      this.searchInput.value = '';
+      this.searchInput.focus();
+      this.checkInputValue();
+    });
+  }
+  renderSearchResults(response) {
+    // filter HTML response
+    let filterDiv = document.createElement('div');
+    filterDiv.innerHTML = response;
+    let searchResultsFromResponse = filterDiv.querySelector('.SearchResultsModule-ajax').innerHTML;
+    if (searchResultsFromResponse) {
+      this.searchResults.innerHTML = searchResultsFromResponse;
+    }
+    const extraDataElement = filterDiv.querySelector('[data-bsp-analytics-data]');
+    if (extraDataElement) {
+      Tracking.extraData = extraDataElement.dataset.bspAnalyticsData;
+    }
+    this.dispatchRendered();
+  }
+  dispatchRendered() {
+    const pageViewEvent = new CustomEvent('Bsp:PageView', {
+      bubbles: true
+    });
+    this.dispatchEvent(pageViewEvent);
+    const customEvent = new CustomEvent('Ajax:Rendered', {
+      bubbles: true
+    });
+    document.body.dispatchEvent(customEvent);
+  }
+  cacheElements() {
+    this.searchForm = this.querySelector('.SearchResultsModule-form');
+    this.searchInput = this.searchForm.querySelector('.SearchResultsModule-formInput');
+    this.searchResults = this.querySelector('.SearchResultsModule-ajax');
+    this.clearButton = this.searchForm.querySelector('.SearchResultsModule-clearInputButton');
+  }
+}
+// EXTERNAL MODULE: ./node_modules/flickity/js/index.js
+var js = __webpack_require__(2442);
+var js_default = /*#__PURE__*/__webpack_require__.n(js);
+;// CONCATENATED MODULE: ./styleguide/core/navigation/SectionNavigation.js
+
+
+
+// widths determined by designs
+const carouselViewport = 767;
+class SectionNavigation extends HTMLElement {
+  connectedCallback() {
+    this.init();
+    this.setEventListeners();
+    // this.setBinds()
+  }
+
+  init() {
+    this.childEls = this.querySelectorAll('.SectionNavigation-items-item');
+    this.items = this.querySelector('.SectionNavigation-items');
+    this.navItem = this.querySelectorAll('.SectionNavigationItem-text-link');
+  }
+
+  // initializing event Listeners
+  setEventListeners() {
+    window.addEventListener('load', () => {
+      if (window.innerWidth < carouselViewport) {
+        this.setCarousel();
+      }
+    });
+    window.addEventListener('resize', throttle(250, () => {
+      if (window.innerWidth < carouselViewport) {
+        this.setCarousel();
+      } else {
+        this.destroyCarousel();
+      }
+    }));
+  }
+
+  // creates carousel if enough items
+  setCarousel() {
+    if (this.flickity === undefined) {
+      this.flickity = new (js_default())(this.items, {
+        contain: true,
+        cellAlign: 'left',
+        adaptiveHeight: true,
+        prevNextButtons: false,
+        pageDots: false,
+        wrapAround: true
+      });
+      this.flickity.resize();
+    }
+  }
+
+  // destroys carousel
+  destroyCarousel() {
+    if (this.flickity) {
+      this.flickity.destroy();
+      this.flickity = undefined;
+    }
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/form/input/ToggleInput.js
+class ToggleInput extends HTMLElement {
+  connectedCallback() {
+    this.checked = this.input.checked;
+    this.addEventListener('change', _ref => {
+      let {
+        target
+      } = _ref;
+      if (target === this.input) {
+        this.checked = this.input.checked;
+      }
+    });
+  }
+  get input() {
+    return this.querySelector('input');
+  }
+  set checked(bool) {
+    bool ? this.setAttribute('checked', '') : this.removeAttribute('checked');
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/youtube/YouTubeVideoPlayer.js
+
+class YouTubeVideoPlayer extends PlyrVideoPlayer {
+  get plyrContainerElement() {
+    return this.querySelector('div');
+  }
+  init() {
+    if (this.plyr) {
+      this.plyr.source = {
+        type: 'video',
+        sources: [{
+          src: this.videoId,
+          provider: 'youtube'
+        }]
+      };
+    }
+    if (this.plyr && this.state) {
+      this.plyr.autoplay = this.state.playing;
+      this.plyr.once('ready', () => {
+        this.plyr.currentTime = this.state.currentTime;
+        this.plyr.muted = this.state.muted;
+      });
+    }
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/util/CSSVarOutput.js
+/* global HTMLElement Promise setTimeout getComputedStyle */
+
+
+class CSSVarOutput extends HTMLElement {
+  connectedCallback() {
+    this.cssvar = this.getAttribute('var');
+    window.addEventListener('load', () => {
+      this.innerHTML = this.getVarValue();
+    });
+    window.addEventListener('resize', throttle(250, () => {
+      this.innerHTML = this.getVarValue();
+    }));
+  }
+  getVarValue() {
+    let val = getComputedStyle(document.documentElement).getPropertyValue(this.cssvar);
+    val = val.endsWith('rem') ? `${Number(val.slice(0, -3)) * 10}px` : val;
+    return val;
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/core/search/VerticalBookSearchModule.js
+
+class VerticalBookSearchModule extends Form {
+  connectedCallback() {
+    this.dateFrom = this.querySelector('[name=yrl]');
+    this.dateTo = this.querySelector('[name=yrh]');
+    this.validationErrors = this.querySelector(`.${this.dateFrom.parentElement.dataset.errorsElement}`);
+    this.testRangeValidity = this.isValid.bind(this);
+    this.dateFrom.addEventListener('focusout', this.testRangeValidity);
+    this.dateTo.addEventListener('focusout', this.testRangeValidity);
+    super.connectedCallback();
+  }
+  handleEvent(event) {
+    if (event.type === 'submit') {
+      this.hideDateRangeValidationError();
+      event.preventDefault();
+      if (!this.isValid()) {
+        return;
+      }
+      this.form.submit();
+    }
+  }
+  isValid() {
+    // test against pattern first
+    let datesValidType = this.dateFrom.validity.valid && this.dateTo.validity.valid;
+    let numFrom = Number(this.dateFrom.value);
+    let numTo = Number(this.dateTo.value);
+    let datesValidRange = numTo > numFrom || numTo === numFrom;
+    if (!datesValidType || !datesValidRange) {
+      this.showDateRangeValidationError();
+      return false;
+    }
+    this.hideDateRangeValidationError();
+    return true;
+  }
+  showDateRangeValidationError() {
+    if (this.validationErrors.classList.contains('hidden')) {
+      this.validationErrors.classList.remove('hidden');
+    }
+  }
+  hideDateRangeValidationError() {
+    if (!this.validationErrors.classList.contains('hidden')) {
+      this.validationErrors.classList.add('hidden');
+    }
+  }
+}
+;// CONCATENATED MODULE: ./styleguide/All.js
+/* global customElements */
+/* eslint-disable no-new */
+
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
+/* eslint-disable camelcase */
+__webpack_require__.p = window.resourceBaseUrl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function registerCustomElements() {
+  customElements.define('ps-audio-player', AudioPlayer);
+  customElements.define('ps-banner', Banner);
+  customElements.define('ps-accordion-promo', PromoAccordion);
+  customElements.define('ps-custom-dropdown', CustomDropdown);
+  customElements.define('ps-enhancement-carousel', EnhancementCarousel);
+  customElements.define('ps-form', Form);
+  customElements.define('ps-captcha-input', CaptchaInput);
+  customElements.define('ps-file-input', FileInput);
+  customElements.define('ps-ecommerce-list', EcommerceList);
+  customElements.define('ps-email-input', EmailInput);
+  customElements.define('ps-google-captcha', GoogleCaptcha);
+  customElements.define('ps-text-input', TextInput);
+  customElements.define('ps-password-input', PasswordInput);
+  customElements.define('ps-phone-number-input', PhoneNumberInput);
+  customElements.define('ps-text-area', TextArea);
+  customElements.define('ps-select', Select);
+  customElements.define('ps-gallery-page', GalleryPage);
+  customElements.define('ps-html5player', HTML5VideoPlayer);
+  customElements.define('ps-list-carousel-g', ListCarouselG);
+  customElements.define('ps-list-loadmore', ListLoadMore);
+  customElements.define('ps-nav', Navigation);
+  customElements.define('ps-masonry-list', MasonryList);
+  customElements.define('ps-message', Message);
+  customElements.define('ps-read-more', ReadMore);
+  customElements.define('ps-search-filter', SearchFilter);
+  customElements.define('ps-search-filters', SearchFilters);
+  customElements.define('ps-search-results-module', SearchResultsModule);
+  customElements.define('ps-section-nav', SectionNavigation);
+  customElements.define('ps-toggle-input', ToggleInput);
+  customElements.define('ps-toggler', PsToggler);
+  customElements.define('ps-youtubeplayer', YouTubeVideoPlayer);
+  customElements.define('video-player-controls', VideoPlayerControls);
+  customElements.define('bsp-cssvaroutput', CSSVarOutput);
+  customElements.define('abe-vertical-book-search', VerticalBookSearchModule);
+  new LazyLoadImages();
+}
+const onDomContentLoaded = () => {
+  registerCustomElements();
+  // ABEEXT-54
+  let customModules = document.querySelectorAll('.Abemodule');
+  const abemodulesContent = '.homepage-recommendations-widget-mount';
+  customModules.forEach(module => {
+    let content = module.querySelector(abemodulesContent) || module.querySelector('.amw-mount');
+    if (!content || content.innerHTML.trim().length === 0) {
+      module.setAttribute('data-has-content', false);
+    } else {
+      module.setAttribute('data-has-content', true);
+    }
+  });
+};
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', onDomContentLoaded);
+} else {
+  onDomContentLoaded();
+}
+/* harmony default export */ var All = ({});
+}();
+/******/ })()
+;

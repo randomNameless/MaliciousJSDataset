@@ -1,0 +1,254 @@
+
+
+$(document).ready(function() {
+	window.fbAsyncInit = function() {
+		FB.init({
+			appId  : 296033817097993,
+		});
+	};
+
+	// Load the SDK Asynchronously
+    (function(d){
+		var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+	    js = d.createElement('script'); js.id = id; js.async = true;
+	    js.src = "//connect.facebook.net/en_US/all.js";
+	    d.getElementsByTagName('head')[0].appendChild(js);
+	}(document));
+
+	$("#request_joingroup").click(function() {
+   
+   		var gid = $('input#gid').val();
+		var url = $('input#url').val();
+		$('#main_form').html('<div style="padding-left:5px;" class="no-results-message">Loading form.. Please wait.. <br /><img src="/images/loader.gif" /></div>');
+		jQuery.get('/groups/group_join_form', {'gid' : gid}, function(data) {
+			
+			$('#main_form').html(data);
+			$('#join_send').bind('click', function() {	
+				var memType = $('select#member_type').val();
+				var degTitle = $('input#degree_title').val();
+				var majSubtitle = $('input#major_subtitle').val();
+				var sDate = $('select#start_year').val() + '-' + $('select#start_month').val() + '-01';
+			//	alert($('select#start_month').val());
+				if($('select#start_month').val() === '---') {
+					var sDate = $('select#start_year').val() + '-00-00';
+				}
+				
+				
+				var end = $("input[name='radio_val']:checked").val();
+				if(end == 'present')
+				{
+					eDate = '3000-01-01';
+				}
+				else
+				{
+					eDate = $('select#end_year').val() + '-' + $('select#end_month').val() + '-01';
+					if($('select#end_month').val() === '---') {
+						var eDate = $('select#end_year').val() + '-00-00';
+					}
+				}
+				alert('memtype: ' + memType + '\ndeg: ' + degTitle + '\nsub: ' + majSubtitle + 'sdate: ' + sDate + 'eDate: ' + eDate);
+								
+				jQuery.post('/groups/enqueue_request/', {
+					'gid' : gid, 
+					'member_type' : memType, 
+					'degree_title' : degTitle, 
+					'major_subtitle' : majSubtitle, 
+					'start_date' : sDate, 
+					'end_date' : eDate}, function(data) {
+				
+					if(data === 'true') {
+						jAlert('Your request for membership for this group has been sent to the moderator', 'Membership Request Pending',
+								   'OK', function(call_b) {
+									window.location = '/'+ url;   
+						});
+					} else {
+						jAlert('There seems to be a problem regarding requesting to join this group.<br/><br /> Please contact support1@alumni.net regarding this matter.', 'Membership Request Error',
+								   'OK', function(call_b) {
+									window.location = '/'+ url;   
+						});
+					}
+				});
+
+			});
+			
+			$('#join_cancel').bind('click', function() {
+					window.location='/'+url;
+			});
+			
+		});
+	});
+	$("button.ggjoin").click(function() {
+   		var gid = $('input#gid').val();
+		var end_date = '';
+		var url = $('input#url').val();
+        
+        // Log to console for testing
+        console.log("Join Button clicked.");
+		//var redirect = $('input#redirect').val();
+		$('#main_form').html('<div style="padding-left:5px;" class="no-results-message">Loading form.. Please wait.. <br /><img src="/images/loader.gif" /></div>');
+		//jQuery.get('/groups/group_join_form', {'gid' : gid, 'redirect' : redirect}, function(data) {
+		jQuery.get('/groups/group_join_form', {'gid' : gid}, function(data) {
+			$('#main_form').html(data);
+			$('#join_send').bind('click', function() {
+				var group_rating = $('#group_rating').val();
+				var group_review = $('#ta_review').val();
+				var memType = $('select#member_type').val();
+				var degTitle = $('input#degree_title').val();
+				var sDate = $('select#start_year').val() + '-' + $('select#start_month').val() + '-01';
+				//alert($('select#start_month').val());
+				if($('select#start_month').val() === '---') {
+					var sDate = $('select#start_year').val() + '-00-00';
+				}
+				
+				var end = $("input[name='radio_val']:checked").val();
+				if(end == 'present')
+				{
+					eDate = '3000-01-01';
+				}
+				else
+				{
+					eDate = $('select#end_year').val() + '-' + $('select#end_month').val() + '-01';
+					if($('select#end_month').val() === '---') {
+						var eDate = $('select#end_year').val() + '-00-00';
+					}
+				}
+				//alert('memtype: ' + memType + '\ndeg: ' + degTitle + '\nsub: ' + majSubtitle + 'sdate: ' + sDate + 'eDate: ' + eDate);
+				var userlist = $("input[name='chk_invite']:checked").val();
+				
+				//check if user has placed a rating
+				if(group_rating != 0) {
+					if(group_rating != 0 && group_review == '') {
+						jAlert('You need to write a review when you set a rating this group.', 'Group Reviews', 'OK');
+					} else {
+						
+						jQuery.post('/groups/set_review_join', {'group_rating':group_rating,'group_review':group_review, 'gid' : gid,'member_type' : memType, 'start_date' : sDate, 'end_date' : eDate});
+						
+						jQuery.post('/groups/gjoin/', {
+							'url':url, 
+							'gid' : gid, 
+							'member_type' : memType, 
+							'degree_title' : degTitle, 
+							'start_date' : sDate, 
+							'end_date' : eDate}, function(data) {
+								$('#main_form').html('<div style="padding-left:5px;" class="no-results-message">Submitting membership data.. Please wait.. <br /><img src="/images/loader.gif" /></div>');
+								jAlert('You are now a member of this group', 'Membership Confirmed', 'OK', function(call_b) {
+									//window.location = url;
+									if(userlist != undefined) {
+										FB.ui({method: 'apprequests',
+											message: 'Use Alumni.NET to network with fellow alumni, find jobs, post classifieds, donate to a cause, and do other school centric activities.',
+								    		to: userlist,
+								    		 
+								    		}, function() {
+								    			window.location = url;
+									    });
+									} else {
+										window.location = url;
+									}
+								});
+						
+						});
+						
+					}
+				} else {
+					jQuery.post('/groups/gjoin/', {
+						'url':url, 
+						'gid' : gid, 
+						'member_type' : memType, 
+						'degree_title' : degTitle, 
+						'start_date' : sDate, 
+						'end_date' : eDate}, function(data) {
+							$('#main_form').html('<div style="padding-left:5px;" class="no-results-message">Submitting membership data.. Please wait.. <br /><img src="/images/loader.gif" /></div>');
+						jAlert('You are now a member of this group', 'Membership Confirmed', 'OK', function(call_b) {
+							//window.location = url;
+							if(userlist != undefined) {
+								FB.ui({method: 'apprequests',
+									message: 'Use Alumni.NET to network with fellow alumni, find jobs, post classifieds, donate to a cause, and do other school centric activities.',
+						    		to: userlist,
+						    		 
+						    		}, function() {
+						    			window.location = url;
+							    });
+							} else {
+								window.location = url;
+							}
+						});
+					
+					});
+				}
+							
+				
+								
+			});
+			
+			$('#join_cancel').bind('click', function() {
+				window.location= url;
+			});
+			
+			
+		});
+	});
+	
+	$("#join").bind('click' ,function() {
+		
+   		var gid = $('input#gid').val();
+		var end_date = '';
+		var url = $('input#gurl').val();
+		
+		$('#main_form').html('<div style="padding-left:5px;" class="no-results-message">Loading form.. Please wait.. <br /><img src="/images/loader.gif" /></div>');
+		jQuery.get('/groups/group_join_form', {'gid' : gid}, function(data) {
+
+			$('#main_form').html(data);
+			$('#join_send').bind('click', function() {	
+				var memType = $('select#member_type').val();
+				var degTitle = $('input#degree_title').val();
+				var majSubtitle = $('input#major_subtitle').val();
+				var sDate = $('select#start_year').val() + '-' + $('select#start_month').val() + '-01';
+			//	alert($('select#start_month').val());
+				if($('select#start_month').val() === '---') {
+					var sDate = $('select#start_year').val() + '-00-00';
+				}
+				
+				
+				var end = $("input[name='radio_val']:checked").val();
+				if(end == 'present')
+				{
+					eDate = '3000-01-01';
+				}
+				else
+				{
+					eDate = $('select#end_year').val() + '-' + $('select#end_month').val() + '-01';
+					if($('select#end_month').val() === '---') {
+						var eDate = $('select#end_year').val() + '-00-00';
+					}
+				}
+//				alert('memtype: ' + memType + '\ndeg: ' + degTitle + '\nsub: ' + majSubtitle + 'sdate: ' + sDate + 'eDate: ' + eDate);
+
+				jQuery.post('/groups/gjoin/', {
+											'url':url, 
+											'gid' : gid, 
+											'member_type' : memType, 
+											'degree_title' : degTitle, 
+											'major_subtitle' : majSubtitle, 
+											'start_date' : sDate, 
+											'end_date' : eDate}, function(data) {
+					$('#main_form').html('<div style="padding-left:5px;" class="no-results-message">Submitting membership data.. Please wait.. <br /><img src="/images/loader.gif" /></div>');
+					jAlert('You are now a member of this group', 'Membership Confirmed', 'OK', function(call_b) {
+						window.location = url;
+					});
+			
+				});
+				
+					
+			});
+			
+			$('#join_cancel').bind('click', function() {
+				window.location= url;
+			});
+			
+			
+		}); 
+	});
+	
+	
+	
+});

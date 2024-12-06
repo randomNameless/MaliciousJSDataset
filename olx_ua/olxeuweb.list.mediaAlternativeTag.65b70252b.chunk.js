@@ -1,0 +1,2 @@
+"use strict";(self.__LOADABLE_LOADED_CHUNKS__=self.__LOADABLE_LOADED_CHUNKS__||[]).push([[80357],{546099:(e,r,l)=>{l.r(r),l.d(r,{MediaAlternativeTag:()=>t});var a=l(46160),n=l(895225);function t(e){var{url:r}=e;if(r){var l=r.replace(/^[^.]+\.olx\.([a-z]{2})/,"https://m.olx.$1");return(0,n.jsx)(a.ql,{children:(0,n.jsx)("link",{rel:"alternate",media:"only screen and (max-width: 640px)",href:l})})}return null}}}]);
+//# sourceMappingURL=olxeuweb.list.mediaAlternativeTag.65b70252b.chunk.js.map

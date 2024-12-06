@@ -1,0 +1,1 @@
+var Chorus=Chorus||{};Chorus.CookiePreferences=function(){return{init:function(){const e=document.querySelector("#cookie-pref");e&&e.addEventListener("click",function(e){e.preventDefault(),document.querySelector("#privacy-options").classList.remove("m-privacy-options__hidden")})}}}(jQuery),jQuery(function(){Chorus.CookiePreferences.init()});

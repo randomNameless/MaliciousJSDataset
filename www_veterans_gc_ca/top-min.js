@@ -1,0 +1,1 @@
+$(window).scroll(function(){0!=$(this).scrollTop()?$("#top").fadeIn("fast"):$("#top").fadeOut("fast")});

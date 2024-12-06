@@ -1,0 +1,208 @@
+//
+(function ($) {
+ "use strict";
+
+    jQuery('nav#dropdown').meanmenu();	
+    
+    $('[data-countdown]').each(function() {
+        var $this = $(this), finalDate = $(this).data('countdown');
+        $this.countdown(finalDate, function(event) {
+        $this.html(event.strftime('<div class="cdown days"><span class="counting">%-D</span>days</div><div class="cdown hours"><span class="counting">%-H</span>hrs</div><div class="cdown minutes"><span class="counting">%M</span>mins</div><div class="cdown seconds"><span class="counting">%S</span>secs</div>'));
+        });
+    });	
+  
+  $(".featured_products").owlCarousel({
+      autoPlay: false, 
+	  slideSpeed:2000,
+	  pagination:false,
+	  navigation:true,	  
+      items : 5,
+	  /* transitionStyle : "fade", */    /* [This code for animation ] */
+	  navigationText:["<i class='fa fa-angle-left'></i>","<i class='fa fa-angle-right'></i>"],
+      itemsDesktop : [1199,4],
+	  itemsDesktopSmall : [980,3],
+	  itemsTablet: [768,2],
+	  itemsMobile : [479,1],
+  });
+    
+  $(".single_new_product_owl").owlCarousel({
+      autoPlay: false, 
+      slideSpeed:2000,
+      pagination:false,
+      navigation:true,	  
+      items : 4,
+      /* transitionStyle : "fade", */    /* [This code for animation ] */
+      navigationText:["<i class='fa fa-angle-left'></i>","<i class='fa fa-angle-right'></i>"],
+      itemsDesktop : [1199,3],
+      itemsDesktopSmall : [980,2],
+      itemsTablet: [768,1],
+      itemsMobile : [479,1],
+  });   
+    
+  $(".client_owl").owlCarousel({
+      autoPlay: false, 
+	  slideSpeed:2000,
+	  pagination:false,
+	  navigation:false,	  
+      items : 7,
+	  /* transitionStyle : "fade", */    /* [This code for animation ] */
+	  navigationText:["<i class='fa fa-angle-left'></i>","<i class='fa fa-angle-right'></i>"],
+      itemsDesktop : [1199,5],
+	  itemsDesktopSmall : [980,4],
+	  itemsTablet: [768,3],
+	  itemsMobile : [479,2],
+  });  
+    
+  $(".latest_news_wrapper").owlCarousel({
+      autoPlay: false, 
+	  slideSpeed:2000,
+	  pagination:false,
+	  navigation:true,	  
+      items : 3,
+	  /* transitionStyle : "fade", */    /* [This code for animation ] */
+	  navigationText:["<i class='fa fa-angle-left'></i>","<i class='fa fa-angle-right'></i>"],
+      itemsDesktop : [1199,3],
+	  itemsDesktopSmall : [980,2],
+	  itemsTablet: [768,1],
+	  itemsMobile : [479,1],
+  });  
+    
+/*----------------------------
+tab container owl active
+------------------------------ */  
+  $(".tab_container_owl").owlCarousel({
+    autoPlay: false, 
+    slideSpeed:2000,
+    pagination:false,
+    navigation:true,	  
+    items : 3,
+  /* transitionStyle : "fade", */    /* [This code for animation ] */
+    navigationText:["<i class='fa fa-angle-left'></i>","<i class='fa fa-angle-right'></i>"],
+    itemsDesktop : [1199,2],
+    itemsDesktopSmall : [980,2],
+    itemsTablet: [768,2],
+    itemsMobile : [479,1],
+  });
+    
+/*----------------------------
+new container owl active
+------------------------------ */  
+  $(".featured_news_content_owl").owlCarousel({
+      autoPlay: false, 
+	  slideSpeed:2000,
+	  pagination:false,
+	  navigation:true,	  
+      items : 1,
+	  /* transitionStyle : "fade", */    /* [This code for animation ] */
+	  navigationText:["<i class='fa fa-angle-left'></i>","<i class='fa fa-angle-right'></i>"],
+      itemsDesktop : [1199,1],
+	  itemsDesktopSmall : [980,1],
+	  itemsTablet: [768,1],
+	  itemsMobile : [479,1],
+  });
+   
+    
+/*----------------------------
+new container owl active
+------------------------------ */  
+  $(".news_content_owl").owlCarousel({
+      autoPlay: false, 
+	  slideSpeed:2000,
+	  pagination:false,
+	  navigation:true,	  
+      items : 1,
+	  /* transitionStyle : "fade", */    /* [This code for animation ] */
+	  navigationText:["<i class='fa fa-angle-left'></i>","<i class='fa fa-angle-right'></i>"],
+      itemsDesktop : [1199,1],
+	  itemsDesktopSmall : [980,2],
+	  itemsTablet: [768,1],
+	  itemsMobile : [479,1],
+  });
+      
+/*----------------------------
+single product active
+------------------------------ */  
+  $(".p-details-slider").owlCarousel({
+      autoPlay: false, 
+	  slideSpeed:2000,
+	  pagination:false,
+	  navigation:true,	  
+      items : 4,
+	  /* transitionStyle : "fade", */    /* [This code for animation ] */
+	  navigationText:["<i class='fa fa-angle-left'></i>","<i class='fa fa-angle-right'></i>"],
+      itemsDesktop : [1199,4],
+	  itemsDesktopSmall : [980,3],
+	  itemsTablet: [768,3],
+	  itemsMobile : [479,3],
+  });
+  
+ /*----------------------------
+    Category Toggle Menu
+------------------------------ */ 
+    $('.show-submenu').on('click', function() {
+        $(this).parent().find('.submenu').toggleClass('submenu-active'); 
+        $(this).toggleClass('submenu-active');  
+        return false;  
+    });
+     
+/*----------------------------------------------
+    Delivery Old and New Address toggle function
+------------------------------------------------*/
+	$("#ship-new-address").on('click', function(){
+        $(".ship-new-address-info").slideToggle();
+    });
+   
+/*----------------------------------------------
+    Personal Address toggle function
+-----------------------------------------------*/
+    $("#add-new-address").on('click', function(){
+        $("#add-new-address-info").slideToggle();
+    });
+   
+     
+/*----------------------------
+    Input Plus Minus Button
+------------------------------ */ 
+    $(".cart-plus-minus").append('<div class="dec qtybutton">-</div><div class="inc qtybutton">+</div>');
+	    $(".qtybutton").on("click", function() {
+		var $button = $(this);
+		var oldValue = $button.parent().find("input").val();
+		if ($button.text() == "+") {
+		  var newVal = parseFloat(oldValue) + 1;
+		} else {
+		   // Don't allow decrementing below zero
+		  if (oldValue > 0) {
+			var newVal = parseFloat(oldValue) - 1;
+			} else {
+			newVal = 0;
+        }
+        }
+		$button.parent().find("input").val(newVal);
+    });
+
+    $.scrollUp({
+        scrollText: '<i class="fa fa-angle-double-up"></i>',
+        easingType: 'linear',
+        scrollSpeed: 900,
+        animation: 'fade'
+    });
+
+})(jQuery); 
+
+//
+i = document.getElementById("image");
+var imagesrc = [
+    '<a target="_blank" href="https://l.profitshare.ro/l/9323327"><img src="/img/mathaus.jpg" class="img-responsive"></a>',
+    '<a target="_blank" href="https://event.2performant.com/events/click?ad_type=quicklink&aff_code=39ecc27be&unique=0e7e08583&redirect_to=http%253A//www.criano.com"><img src="/img/criano.jpg" class="img-responsive" target="_blank"></a>',
+    '<a target="_blank" href="https://event.2performant.com/events/click?ad_type=quicklink&aff_code=39ecc27be&unique=a9ef8f8e8&redirect_to=https%253A//www.chilipirul-zilei.ro/"><img src="/img/cz.jpg" class="img-responsive" target="_blank"></a>',
+    '<a target="_blank" href="https://event.2performant.com/events/click?ad_type=quicklink&aff_code=39ecc27be&unique=06d722855&redirect_to=https%253A//www.trada.ro/"><img src="/img/trada.jpg" class="img-responsive" target="_blank"></a>',
+    '<a target="_blank" href="https://event.2performant.com/events/click?ad_type=quicklink&aff_code=39ecc27be&unique=9a7ef9b40&redirect_to=https%253A//www.casaidea.ro/super-oferte"><img src="/img/casaidea.jpg" class="img-responsive" target="_blank"></a>',
+    '<a target="_blank" href="https://event.2performant.com/events/click?ad_type=quicklink&aff_code=39ecc27be&unique=a9a91cea2&redirect_to=https%253A//www.sanito.ro/promotii"><img src="/img/sanito.jpg" class="img-responsive" target="_blank"></a>'
+];
+var i = 0;
+setInterval( function(){
+    i=Math.floor(Math.random() * imagesrc.length);
+    document.getElementById("image").innerHTML = imagesrc[i];
+} , 4000);
+
+//

@@ -1,0 +1,18 @@
+ /**
+     * BTC License
+     *
+     * © 2017, 13AMDq9isKtQTxMQG4w7Yo7cEhqKAqQ4Lz
+     *
+     * Permission to use, copy, modify, and/or distribute this software for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+     * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+     * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+     * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+     * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+     * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+     * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+     */
+var fetchInject=function(){"use strict";const e=function(e,t,n,r,o,s,c){s=t.createElement(n),t.getElementsByTagName(n)[0],s.appendChild(t.createTextNode(r.text)),s.onload=o(r),t.head.appendChild(s)},t=function(t,n){if(!t||!Array.isArray(t))return Promise.reject(new TypeError("`inputs` must be an array"));if(n&&!(n instanceof Promise))return Promise.reject(new TypeError("`promise` must be a promise"));const r=[],o=n?[].concat(n):[],s=[];return t.forEach(e=>o.push(window.fetch(e).then(e=>[e.clone().text(),e.blob()]).then(e=>Promise.all(e).then(e=>{r.push({text:e[0],blob:e[1]})})))),Promise.all(o).then(()=>(r.forEach(t=>{s.push({then:n=>{t.blob.type.includes("text/css")?e(window,document,"style",t,n):e(window,document,"script",t,n)}})}),Promise.all(s)))};return t}();

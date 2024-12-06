@@ -1,0 +1,349 @@
+/**
+ * @author Glenn Powell
+
+ * @desc - Creates a Pause/Play Button for Bootstrap 3 Carousels and adaptable to 3rd party carousels.
+
+           !!!
+ *         Be sure to add data-itemid="YOUR STACK ID" to your Slideshow or a unique ID if not a stack
+           !!!
+
+ * @param JSON Object
+     * @json  string (carousel) ID of the Carousel
+     * @json  string (type) declare type (can be used for additional styling or alternate plugin methods)
+     * @json  string (category) needs to only be set if it is not a stack or design stack element
+     * @json  string (random) needs to only be set if not a stack or design stack element
+     * @json  string (placement) needs to only be set if you wish to adjust the left margin of the buttons over carousel
+
+ * @return string = html to create working pause/play buttons displayed over the slideshow you call it on.
+
+===============================
+STACK OR DESIGN STACK EXAMPLE:
+===============================
+
+pauseCarousels(JSON.stringify({
+    carousel_id_to_pause: "#full_width_carousel_<?= $item['ID']; ?>",
+    type: "slideshow"
+}));
+
+===============================
+NON STACK EXAMPLE:
+===============================
+
+pauseCarousels(JSON.stringify({
+    carousel_id_to_pause: "#headerCarousel",
+    type: "slideshow",
+    category: "nonstack",
+    random: "<?= rand(); ?>",
+    placement: "0px"
+}));
+
+
+*/
+
+function pauseCarousels(json) {
+    const obj = JSON.parse(json);
+
+    let type = '';
+    let category = '';
+    let random = '';
+    let placement = '';
+    let carousel_id_to_pause = '';
+    let loadID = '';
+
+
+    if ("carousel_id_to_pause" in obj) {
+
+        carousel_id_to_pause = obj.carousel_id_to_pause;
+        //set orginal html ID value passed
+        loadID = carousel_id_to_pause;
+        //pass html ID into object HTML node
+        carousel_id_to_pause = $(carousel_id_to_pause);
+    }
+    if ("type" in obj) {
+        type = obj.type;
+    }
+    if ("category" in obj) {
+        category = obj.category;
+    }
+    if ("random" in obj) {
+        random = obj.random;
+    }
+    if ("placement" in obj) {
+        placement = obj.placement;
+    }
+    if (placement == '') {
+        placement = "100px";
+    }
+    //get the stackID of the current carousel, if its not a stack, a random unique ID should be passed as a parem
+    var stackID = carousel_id_to_pause.data("itemid") != undefined ? carousel_id_to_pause.data("itemid"): carousel_id_to_pause.data("itemid");
+
+    let stack_visibility = ''
+    let pausePlay = '';
+    let api = '';
+    let controlsID = '';
+    let useCase = '';
+    let buttonID = '';
+
+    //account for toggling visibility on the front end (don't show if slideshow is turned off)
+    if (("#stack_content_"+stackID)) {
+        stack_visibility = $("#stack_content_"+stackID).attr("class");
+    }
+    //can be used to account for widgets that are not part of a stack element, or any non stack Carousel
+    if (category != '' && category == 'nonstack')  {
+        var stackID = random;
+    }
+
+    //make sure the stack visibility is not on if we plan to add a play/pause button
+    if (stackID != '' && stackID !== undefined && stack_visibility != 'stack_off') {
+        //we can pass types to clarify if we need to use a plugin other than bootstrap carousel to activate pause/play
+        switch(type) {
+            case "stack_announcement":
+                controlsID = 'carouselButtonsAnnouncements';
+                useCase = 'stack_announcement'
+            break;
+            case "slideshow":
+                controlsID = 'carouselButtons';
+                useCase = 'slideshow';
+            break;
+            case "article_slideshow":
+                controlsID = 'carouselButtons';
+                useCase = 'slideshow';
+            break;
+            case "widget":
+                controlsID = 'carouselButtons';
+                useCase = 'slideshow';
+            break;
+            case "slider":
+                controlsID = 'carouselButtons';
+                useCase = 'slider';
+            break;
+            default:
+                controlsID = '';
+                useCase = '';
+        }
+        if (controlsID != '') {
+
+            if (type == "widget") {
+                buttonID = loadID.substring(1);
+            } else {
+                buttonID = stackID;
+            }
+            //Create the layout of the buttons that will overlay your Carousel
+            if (type == 'slider') {
+                pausePlay = `
+                <div class="${controlsID}">
+                    <button data-toggle="tooltip" title="Press Enter To Play. Use the arrow keys to change slides." id="playButton_${buttonID}" type="button" class="btn pause_play ss_control_${buttonID} btn-default btn-xs" aria-label="Play Slideshow button. Press Enter To Play. Use the arrow keys to change slides." data-carouselType="${useCase}" data-ssID="${loadID}" style="display: none;">
+                        <span class="glyphicon glyphicon-play"></span>
+                     </button>
+                    <button data-toggle="tooltip" title="Press Enter To Pause. Use the arrow keys to change slides." id="pauseButton_${buttonID}" type="button" class="btn pause_play ss_control_${buttonID} btn-default btn-xs" aria-label="Pause Slideshow button. Press Enter To Pause. Use the arrow keys to change slides." data-carouselType="${useCase}" data-ssID="${loadID}" style="display: inline-block;">
+                        <span class="glyphicon glyphicon-pause"></span>
+                    </button>
+                </div>
+                `;
+            } else {
+                pausePlay = `
+                <div class="${controlsID}">
+                    <button data-toggle="tooltip" title="Press Enter To Play" id="playButton_${buttonID}" type="button" class="btn play_anchor pause_play ss_control_${buttonID} btn-default btn-xs" aria-label="Play Slideshow" data-carouselType="${useCase}" data-ssID="${loadID}" style="display: none;">
+                        <span class="glyphicon glyphicon-play"></span>
+                     </button>
+                    <button data-toggle="tooltip" title="Press Enter To Pause" id="pauseButton_${buttonID}" type="button" class="btn pause_anchor pause_play ss_control_${buttonID} btn-default btn-xs" aria-label="Pause Slideshow" data-carouselType="${useCase}" data-ssID="${loadID}" style="display: inline-block;">
+                        <span class="glyphicon glyphicon-pause"></span>
+                    </button>
+                </div>
+                `;
+            }
+
+            //style our buttons, we can base on type
+            if (type == "stack_announcement") {
+                pausePlay += `
+                <style>
+                .carouselButtonsAnnouncements {
+                    width:100%;
+                    margin-left: 0px;
+                    position: relative;
+                    bottom: 0px;
+                    z-index:90;
+                    padding: 10px 0px 10px 10px;
+                    background-color:transparent !important;
+                    top:31;
+                    right:40;
+                }
+                .carouselButtonsAnnouncements .btn {
+
+                    padding-left:10px !important;
+                    padding-right:10px !important;
+                    padding-top:5px !important;
+                    padding-bottom: 7px !important;
+
+
+                }
+                #playButton_${stackID} {
+
+                    float:right;
+                }
+                #pauseButton_${stackID} {
+                    float:right;
+                }
+                </style>
+                `;
+            } else if (type == 'slider') {
+                pausePlay += `
+                <style>
+                .carouselButtons {
+                    left: 15;
+                    position: absolute;
+                    bottom: 0px;
+                    z-index:999;
+                    padding:10px;
+                }`;
+                /*This is used if extra parms are passed to override the above default margin-left position*/
+                if (loadID != "" && placement != '') {
+                    pausePlay += `
+                    ${loadID} .carouselButtons {
+                        margin-left: ${placement};
+                        position: absolute;
+                        bottom: 0px;
+                        z-index:999;
+                        padding:10px;
+                    }`;
+                }
+                pausePlay += `
+                .carouselButtons .btn {
+                    padding-left:10px !important;
+                    padding-right:10px !important;
+                    padding-top:5px !important;
+                    padding-bottom: 7px !important;
+
+                }
+                </style>
+                `;
+            } else {
+                pausePlay += `
+                <style>
+                .carouselButtons {
+                    margin-left: 100px;
+                    position: absolute;
+                    bottom: 0px;
+                    z-index:90;
+                    padding:10px;
+                }`;
+                /*This is used if extra parms are passed to override the above default margin-left position*/
+                if (loadID != "" && placement != '') {
+                    pausePlay += `
+                    ${loadID} .carouselButtons {
+                        margin-left: ${placement};
+                        position: absolute;
+                        bottom: 0px;
+                        z-index:90;
+                        padding:10px;
+                    }`;
+                }
+                pausePlay += `
+                .carouselButtons .btn {
+                    padding-left:10px !important;
+                    padding-right:10px !important;
+                    padding-top:5px !important;
+                    padding-bottom: 7px !important;
+
+                }
+                </style>
+                `;
+            }
+        }
+        //Append buttons to your Carousel
+        carousel_id_to_pause.prepend(pausePlay);
+
+        //Hide Play Button on load so Pause/Play icons can be toggled
+        $("#playButton_"+buttonID).hide();
+
+        if (type == 'slider') {
+            if ($(carousel_id_to_pause).slick('slickGetOption','autoplay') == false) {
+                $("#pauseButton_"+buttonID).hide();
+                $("#playButton_"+buttonID).show();
+            }
+        }
+
+        // jQuery(document).ready(function($) {
+        //     setTimeout( function(){
+        //         alert("pauseME: #"+'pauseButton_'+stackID);
+        //         //$("#pauseButton_<?= $item['ID']; ?>").click(); 
+
+        //         api = $.data( $('#item'+stackID+' #main-slider_'+stackID)[0], 'liquidSlider');
+        
+        //         api.stopAutoSlide();
+        //         console.log("stackID: "+stackID);
+        //         console.log(api);
+
+        //     }  , 1000 );
+            
+        // });
+
+        //On click of the pause or play button, check the ID and peform pause or play action
+        $(document).on("click", '.btn.ss_control_'+buttonID, function(e) {
+            let carousel_type = $(this).attr("data-carouselType");
+            let element = $(this).attr("data-ssID");
+            let api = '';
+            //show tooltip instructions on button focus
+            $(this).tooltip({
+                 placement: "top",
+                 trigger: "focus"
+            });
+
+            //can use type param to activate other plugin methods for Pause/Play
+            if (carousel_type == "stack_announcement") {
+                api = $.data( $('#main-slider_'+stackID)[0], 'liquidSlider');
+            }
+            //PLAY:
+            //If playing, delay before moving to next slide instead of full interval for more natural effect
+            if ($(this).attr("id") == "playButton_"+buttonID) {
+                setTimeout( function(){
+                    if (carousel_type == "stack_announcement") {
+                        $("#main-slider_"+stackID).carousel('cycle');
+                        api.startAutoSlide();
+                    }
+                    if (carousel_type == "slideshow") {
+                        $(element).carousel('cycle');
+                        $(element).carousel('next');
+                    }
+                    if (carousel_type == "slider") {
+                        $(element).slick('slickPlay');
+                    }
+                }  , 1000 );
+
+                $("#playButton_"+buttonID).hide();
+                $("#pauseButton_"+buttonID).show();
+                setTimeout(function () {
+                    $("#pauseButton_"+buttonID).focus();
+                }, 100);
+            }
+            //PAUSE
+            if ($(this).attr("id") == "pauseButton_"+buttonID) {
+                if (carousel_type == "stack_announcement") {
+                    api.stopAutoSlide();
+                }
+                if (carousel_type == "slideshow") {
+                    $(element).carousel('pause');
+                }
+                if (carousel_type == "slider") {
+                    $(element).slick('slickPause');
+                }
+
+                $("#playButton_"+buttonID).show();
+                $("#pauseButton_"+buttonID).hide();
+                //set timer as IE don't like to respond quickly and need small delay
+                setTimeout(function () {
+                    $("#playButton_"+buttonID).focus();
+                }, 100);
+            }
+
+        });
+        //allow a simple tooltip on hover of pause/play buttons on mouseover
+        $('[data-toggle="tooltip"]').tooltip();
+
+
+
+    }
+
+
+
+}

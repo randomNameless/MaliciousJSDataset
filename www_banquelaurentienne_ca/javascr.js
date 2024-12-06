@@ -1,0 +1,72 @@
+// FONT FUNCTIONS
+
+/*function get_cookie( cookie_name ){
+  var results = document.cookie.match ( '(^|;) ?' + cookie_name + '=([^;]*)(;|$)' );
+  if ( results )
+    return ( unescape ( results[2] ) );
+  else
+    return null;
+}*/
+
+var sit=0;
+
+/*v=get_cookie("font");	
+if(v==null){
+	document.cookie = "font=0";
+}
+else{
+	sit=parseInt(v);
+}
+
+function ChangeFontToIdsAuto() {
+	if (arguments[0]>0 && sit <= 4) {
+		for (var i=1; i<arguments.length; i++) {
+			var x = document.getElementById(arguments[i]);
+			ChangeFontTo(arguments[0], x);
+		}
+	}
+	if (arguments[0]<0 && sit >= 0) {
+		for (var i=1; i<arguments.length; i++) {
+			var x = document.getElementById(arguments[i]);
+			ChangeFontTo(arguments[0], x);
+		}
+	}
+}
+*/
+function ChangeFontToIds() {
+	if (arguments[0]>0 && sit <= 3) {
+		/*document.cookie = "font="+(parseInt(get_cookie("font"))+1)+";";*/
+		for (var i=1; i<arguments.length; i++) {
+			var x = document.getElementById(arguments[i]);
+			ChangeFontTo(arguments[0], x);
+		}
+		sit++;
+	}
+	if (arguments[0]<0 && sit > 0) {
+		/*document.cookie = "font="+(parseInt(get_cookie("font"))-1)+";";*/
+		for (var i=1; i<arguments.length; i++) {
+			var x = document.getElementById(arguments[i]);
+			ChangeFontTo(arguments[0], x);
+		}
+		sit--;
+	}
+}
+
+function ChangeFontTo(val, x) {
+	if (x.currentStyle && (parseInt(x.currentStyle['fontSize'])>8)) {
+		x.style['fontSize']=x.currentStyle['fontSize'];
+		x.style['fontSize']=parseInt(x.style['fontSize'])+val+"px";
+	} 
+	if (window.getComputedStyle) { 
+		try {
+			x.style['fontSize']=document.defaultView.getComputedStyle(x,null).getPropertyValue('font-size');
+			x.style['fontSize']=parseInt(x.style['fontSize'])+val+"px";
+		} catch (e) {;}
+	}
+	//for Children
+	var cns=x.childNodes;
+	for (var i=0; i<cns.length; i++){
+		ChangeFontTo(val, cns.item(i));
+	}
+}
+

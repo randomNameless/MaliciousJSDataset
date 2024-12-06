@@ -1,0 +1,74 @@
+(function ($) {
+    'use strict';
+    angular
+        .module('blackbar', ['gettext'])
+        .config(['$locationProvider', function (x) { x.html5Mode(true); }])
+        .constant('tokenStorageKey', 'ls.token')
+        .constant('defaultLanguage', 'en-CA')
+        .constant('languageUrl', '/languages/{{lang}}.json')
+        .directive('a', htmlAnchorDirective)
+        .controller('MainCtrl', MainCtrl);
+
+    listen();
+
+    /////////////////////////////////////////
+ 
+    var rGolfCanadaUrl = /(stadiumdigital\.com|golfcanada\.ca|britishcolumbiagolf\.org|albertagolf\.org|golfsaskatchewan\.org|golfmanitoba\.mb\.ca|gao\.ca|golfquebec\.org|golfnb\.ca|nsga\.ns\.ca|peiga\.ca|golfnl\.ca)$/i,
+        $injector = angular.injector(['ng']),
+        $q = $injector.get('$q'),
+        deferred = $q.defer(),
+        promise = deferred.promise;
+
+    MainCtrl.$inject = ['$window', '$location', '$interpolate', 'gettextCatalog', 'tokenStorageKey', 'defaultLanguage', 'languageUrl'];
+    function MainCtrl($window, $location, $interpolate, gettextCatalog, tokenStorageKey, defaultLanguage, languageUrl) {
+        var vm = this,
+            token = localStorage[tokenStorageKey] && JSON.parse(localStorage[tokenStorageKey]),
+            user = token && token.user,
+            search = $location.search(),
+            lang = (search.lang || search.culture || defaultLanguage).replace('-', '_');
+
+        if (vm.loggedIn = !!user) {
+            vm.name = user.fullName;
+            vm.handicap = user.handicap;
+            vm.cardId = user.golfCanadaCardId;
+
+            if (lang) {
+                languageUrl = $interpolate(languageUrl)({ lang: lang });
+                gettextCatalog.setCurrentLanguage(lang);
+                gettextCatalog.loadRemote(languageUrl).finally(deferred.resolve.bind(deferred));
+            }
+            else
+                deferred.resolve();
+        }
+        else
+            deferred.reject('Not logged in');
+    }
+
+    function htmlAnchorDirective() {
+        return {
+            restrict: 'E',
+            link: link
+        };
+
+        function link(scope, element, attrs) {
+            attrs.$set('href', element.prop('href'));
+        }
+    }
+
+    function listen() {
+        $(window).on('message', message);
+
+        function message(e) {
+            var event = e.originalEvent || e,
+                origin = event.origin;
+
+            if (rGolfCanadaUrl.test(origin))
+                promise.finally(sendResponse);
+
+            function sendResponse() {
+                var blackBar = document.getElementById('blackbar');
+                parent.postMessage($(blackBar).html() || '', origin);
+            }
+        }
+    }
+})(angular.element);

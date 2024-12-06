@@ -1,0 +1,442 @@
+import {$qo, delay} from '../dom.js'
+
+/**
+ * @typedef {{
+ *  slug: string
+ *  title: string
+ *  summary: string
+ *  degrees: {
+ *    slug: string
+ *    degree: string
+ *    year: number
+ *    institution: string
+ *    rank: number
+ *  }[]
+ *  primaryAffiliations: string
+ *  careerFocus: string
+ *  [id: string]: string | number
+ * }} Entry
+ */
+
+/**
+ * @typedef {{
+ * 	profiles: Entry[]
+ *  members: Entry[]
+ *  exhibits: Entry[]
+ *  projects: Entry[]
+ *  teaching: Entry[]
+ * }} SearchResults
+ */
+
+/**
+ * @type {m.FactoryComponent}
+ */
+export default function Search() {
+	let profilesOnly = false
+	let query = ''
+	let searchedQuery = ''
+	let searching = false
+	let searchType = 'birth'
+
+	/** @type {SearchResults} Most recent search results */
+	let results = {
+		profiles: [],
+		members: [],
+		exhibits: [],
+		projects: [],
+		teaching: []
+	}
+
+	/**
+	 * Fire off a search request. Given a search form element, this will
+	 * figure out how to build the request and handle the response.
+	 * @param {FormData} data
+	 */
+	function startSearch(data) {
+		searchedQuery = ''
+		const curQuery = query.trim()
+		if (profilesOnly) {
+			// Only search profiles
+
+			searchType = data.get('yearType') || 'birth'
+			searching = true
+			const opts = {
+				yearFrom: Number(data.get('yearFrom')) || undefined,
+				yearTo: Number(data.get('yearTo')) || undefined,
+				yearType: data.get('yearType') || undefined,
+				primaryAffiliations: data.get('primaryAffiliations').trim().toLowerCase() || undefined,
+				careerFocus: data.get('careerFocus').trim().toLowerCase() || undefined
+			}
+			console.log('profile search opts:', opts)
+			return searchProfiles(curQuery, opts).then(profiles => {
+				results = {
+					profiles,
+					members: [],
+					exhibits: [],
+					projects: [],
+					teaching: []
+				}
+				searchedQuery = curQuery || '(profiles)'
+				searching = false
+			})
+		}
+		// Otherwise return site-wide results
+		if (!curQuery) {
+			return
+		}
+		searching = true
+		return searchAll(curQuery).then(r => {
+			results = r
+			searchedQuery = curQuery
+			searching = false
+		})
+	}
+
+	return {
+		view: () => m('.search.container.mb-3.mt-3',
+			m('form.container-narrow',
+				{
+					onsubmit: async e => {
+						e.preventDefault()
+						if (!searching) {
+							await startSearch(new FormData(e.currentTarget))
+							// Once we have results, scroll down to the top of the results list
+							await delay(250)
+							$qo('.search-results-anchor', el => {
+								el.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'})
+							})
+						}
+					}
+				},
+				m('.search-generic',
+					m('.searchbox-with-icon.mt-1',
+						m('label.input-wrapper',
+							m('span', {class: 'hidden'}, 'Search Feminist Voices'),
+							m('input', {
+								type: 'text',
+								name: 'search',
+								value: query,
+								oninput: e => query = e.currentTarget.value
+							})
+						),
+						m('button.btn.search-icon', {
+							type: 'submit',
+							disabled: searching
+						})
+					),
+					m('fieldset.mt-1',
+						m('legend', {class: 'hidden'}, 'Search location'),
+						m('.radio-inline',
+							m('input', {
+								id: 'search-entire-website',
+								type: 'radio',
+								name: 'location',
+								value: 'all',
+								checked: !profilesOnly,
+								onclick: () => {profilesOnly = false}
+							}),
+							m('label', {for: 'search-entire-website'}, 'Search entire website')
+						),
+						m('.radio-inline',
+							m('input', {
+								id: 'search-profiles-only',
+								type: 'radio',
+								name: 'location',
+								value: 'profiles',
+								checked: profilesOnly,
+								onclick: () => {profilesOnly = true}
+							}),
+							m('label', {for: 'search-profiles-only'}, 'Search profiles only')
+						)
+					)
+				),
+				// Only when "Search Profiles Only" radio button is selected does the
+				// div with the class name of "search-detailed" below is displayed
+				profilesOnly && m('.search-detailed.border-top',
+					m('h2', 'Advanced Filtering'),
+					m('fieldset',
+						m('legend', 'Select date range for:'),
+						m('.radio-inline',
+							m('input', {id: 'search-birth', type: 'radio', name: 'yearType', value: 'birth', checked: (searchType === 'birth')}),
+							m('label', {for: 'search-birth'}, 'Year of Birth')
+						),
+						m('.radio-inline',
+							m('input', {id: 'search-death', type: 'radio', name: 'yearType', value: 'death', checked: (searchType === 'death')}),
+							m('label', {for: 'search-death'}, 'Year of Death')
+						),
+						m('.radio-inline',
+							m('input', {id: 'search-degree', type: 'radio', name: 'yearType', value: 'degree', checked: (searchType === 'degree')}),
+							m('label', {for: 'search-degree'}, 'Year of highest degree')
+						)
+					),
+
+					m('.flex-spacebetween.mt-2',
+						m('label.input-wrapper',
+							m('span.label', 'From this year:'),
+							m('input', {type: 'text', name: 'yearFrom'})
+						),
+						m('span', 'to'),
+						m('label.input-wrapper',
+							m('span.label', 'this year:'),
+							m('input', {type: 'text', name: 'yearTo'})
+						)
+					),
+
+					m('label.input-wrapper.mt-2',
+						m('span.label', 'Primary Affiliation:'),
+						m('input', {type: 'text', name: 'primaryAffiliations'})
+					),
+
+					m('label.input-wrapper.mt-2',
+						m('span.label', 'Career Focus:'),
+						m('input', {type: 'text', name: 'careerFocus'})
+					)
+				),
+
+				m('.mt-3.right',
+					m('button.btn.reset', {type: 'button', disabled: searching}, 'Reset'),
+					m('button.btn.submit', {type: 'submit', disabled: searching},
+					   searching ? m('img',
+							{
+								src: 'img/icons/spin.gif'
+							}
+						) : 'Search'
+					)
+				)
+			),
+			// Render search results
+			searchedQuery && renderResults(results, searchedQuery)
+		)
+	}
+}
+
+/**
+ * @type {m.FactoryComponent<{title: string}>}
+ */
+function AccordionSection() {
+	let isOpen = true
+	return {
+		view: v => m('.accordion-section',
+			m('button.btn-accordion',
+				{
+					type: 'button',
+					class: isOpen ? 'expanded' : '',
+					onclick: () => {isOpen = !isOpen}
+				},
+				`Results from ${v.attrs.title}:`
+			),
+			v.children
+		)
+	}
+}
+
+/**
+ * @param {SearchResults} results
+ * @param {string} query
+ */
+function renderResults (results, query) {
+	return m('.border-top.mt-3.pt-3',
+		m('p.search-results-anchor', 'Showing results for: ', query),
+		m('p', m('strong', `${resultsCount(results)} results`)),
+		m('.accordion-set.mt-2',
+			results.profiles.length > 0 && m(AccordionSection,
+				{title: 'Profiles'},
+				m('.results.profile',
+					m('ul',
+						results.profiles.map(profile => m('li',
+							m('a',
+								{href: `/profiles/${profile.slug}`},
+								profile.image && m('img', {src: profile.image}),
+								m('span', profile.title)
+							)
+						))
+					)
+				)
+			),
+			results.members.length > 0 && m(AccordionSection,
+				{title: 'Members'},
+				m('.results.profile',
+					m('ul',
+						results.members.map(member => m('li',
+							m('a',
+								{href: `/aboutUs/${member.slug}`},
+								member.image && m('img', {src: member.image}),
+								m('span', member.title)
+							)
+						))
+					)
+				)
+			),
+			results.exhibits.length > 0 && m(AccordionSection,
+				{title: 'Exhibits'},
+				m('.results',
+					m('ul',
+						results.exhibits.map(ex => m('li',
+							m('a',
+								{href: `/exhibits/${ex.slug}`},
+								m('span', ex.title)
+							),
+							m('p', ex.summary)
+						))
+					)
+				)
+			),
+			results.projects.length > 0 && m(AccordionSection,
+				{title: 'Projects'},
+				m('.results',
+					m('ul',
+						results.projects.map(proj => m('li',
+							m('a',
+								{href: `/projects/${proj.slug}`},
+								m('span', proj.title)
+							),
+							m('p', proj.summary)
+						))
+					)
+				)
+			),
+			results.teaching.length > 0 && m(AccordionSection,
+				{title: 'Teaching'},
+				m('.results',
+					m('ul',
+						results.teaching.map(t => m('li',
+							m('a',
+								{href: `/teaching/${t.slug}`},
+								m('span', t.title)
+							),
+							m('p', t.summary)
+						))
+					)
+				)
+			)
+		)
+	)
+}
+
+/**
+ * @param {string} query
+ * @param {{
+ *  yearFrom?: number
+ *  yearTo?: number
+ *  yearType?: string
+ *  primaryAffiliations?: string
+ *  careerFocus?: string
+ * }} [opts]
+ */
+function searchProfiles (query, opts) {
+	return m.request({
+		url: '/api/search-profiles',
+		params: Object.assign({q: query}, opts)
+	}).then((/** @type {{data: Entry[]}} */ r) => {
+		if (!opts) {
+			// No profile filtering options, so we don't need to perform
+			// any client-side filtering of results.
+			return r.data
+		}
+		// Filter by options
+		return r.data.filter(entry => {
+			if (opts.primaryAffiliations && (!entry.primaryAffiliations || !entry.primaryAffiliations.toLowerCase().includes(opts.primaryAffiliations))) {
+				return false
+			}
+			if (opts.careerFocus && (!entry.careerFocus || !entry.careerFocus.toLowerCase().includes(opts.careerFocus))) {
+				return false
+			}
+			if (opts.yearType === 'death') {
+				return inRange(entry.deathYear, opts.yearFrom, opts.yearTo)
+			} else if (opts.yearType === 'birth') {
+				return inRange(entry.birthYear, opts.yearFrom, opts.yearTo)
+			} else if (opts.yearType === 'degree') {
+				// Find the year of this profile's highest degree
+				const {year} = entry.degrees.reduce(
+					(best, degree) => {
+						if (best.rank == null || best.rank > degree.rank) {
+							best.rank = degree.rank
+							best.year = degree.year
+						}
+						return best
+					},
+					/** @type {{year: number | undefined, rank: number | undefined}} */
+					({year: undefined, rank: undefined})
+				)
+				return inRange(year, opts.yearFrom, opts.yearTo)
+			}
+			return true
+		})
+	}).catch(err => {
+		console.warn('Profile search failed:', err.stack)
+		return []
+	})
+}
+
+/**
+ * @returns {boolean} true if the year falls within the from-to range.
+ * @param {number | undefined} year
+ * @param {number | undefined} from
+ * @param {number | undefined} to
+ */
+function inRange (year, from, to) {
+	if (!year) return false
+	if (from && year < from) return false
+	if (to && year > to) return false
+	return true
+}
+
+/** @param {string} query */
+function searchMembers (query) {
+	return m.request({
+		url: '/api/search-members',
+		params: {q: query}
+	}).then(
+		r => r.data
+	).catch(err => {
+		console.warn('Member search failed:', err)
+		return []
+	})
+}
+
+/**
+ * @param {string} section
+ * @param {string} query
+ */
+function searchSection (section, query) {
+	if (!query) {
+		return Promise.resolve([])
+	}
+	return m.request({
+		url: `/api/search-${section}`,
+		params: {q: query}
+	}).then(
+		r => r.data
+	).catch(err => {
+		console.warn(`search '${section}' failed:`, err)
+		return []
+	})
+}
+
+/**
+ * @param {string} query
+ * @returns {Promise<SearchResults>}
+ */
+async function searchAll (query) {
+	return {
+		profiles: await searchProfiles(query),
+		members: await searchMembers(query),
+		exhibits: await searchSection('exhibits', query),
+		projects: await searchSection('projects', query),
+		teaching: await searchSection('teaching', query)
+	}
+}
+
+/** @param {SearchResults} results */
+function resultsEmpty (results) {
+	return results.profiles.length < 1 && results.members.length < 1
+		&& results.exhibits.length < 1 && results.projects.length < 1
+		&& results.teaching.length < 1
+}
+
+/** @param {SearchResults} results */
+function resultsCount (results) {
+	return results.profiles.length + results.members.length
+		+ results.exhibits.length + results.projects.length
+		+ results.teaching.length
+}

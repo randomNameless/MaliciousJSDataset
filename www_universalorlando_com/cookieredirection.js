@@ -1,0 +1,33 @@
+/**
+* Cookie Redirection for store, packages and hotels
+*/
+// (() => {
+//     window.addEventListener('load', () => {
+//       const regexCookie = /^(.*;)?\s*opl_flow_managed\s*=/.test(document.cookie);
+//       const regexApp =/\/web-store\/|\/web-packages\/|\/hotels\//gi;
+//       const regexConfirmation = /\/web-store\/en\/us\/checkout-confirmation|\/web-packages\/en\/us\/confirmation|\/hotels\/en\/us\/confirmation/gi;
+//       if (window.location.href.match(regexApp)) {
+//           let oldHref = window.location.href;
+//           const body = document.querySelector('body');
+//           if (body) {
+//             const observer = new MutationObserver(mutations => {
+//               if (oldHref !== document.location.href) {
+//                 if (oldHref.match(regexConfirmation)) {
+//                     // delete cookie first so it doesn't get picked up again.
+//                     document.cookie = `opl_flow_managed=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+//                     document.cookie = `opl_epic_managed=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+//                     document.cookie = `opl_ap_managed=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+//                     window.location.href = '/web/en/us/tickets-packages/store-selection';
+//                 }
+//                 oldHref = window.location.href;
+//                 // Force queue-it to check for removing user from queue
+//                 if (window.QueueIt && window.location.href.match(regexConfirmation)) {
+//                   window.QueueIt.validateUser(true); 
+//                 }
+//               }
+//             });
+//             observer.observe(body, { childList: true, subtree: false });
+//           }
+//       }
+//     });
+// })();

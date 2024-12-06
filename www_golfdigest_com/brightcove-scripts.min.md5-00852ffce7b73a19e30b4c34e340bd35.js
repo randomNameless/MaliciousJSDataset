@@ -1,0 +1,176 @@
+function initBcAnalytics(player){
+   if (typeof videojs !== 'undefined') {
+      let objHelper = {
+        Inst: {},
+        player: player,
+        played: false,
+        paused: false,
+        tracked: false,
+        adNum: 1
+      };
+      bcAnalyticsInit(objHelper);
+    }
+}
+function bcAnalyticsInit(ob){
+  let self = ob;
+  self.player.bigPlayButton.disable()
+  window.addEventListener('load', function(){
+  let delegate = {
+      getCurrentPlaybackTime: function(){
+        return self.player.currentTime();
+      },
+      getQoSObject: function(){return null;}
+    };
+    let config = {
+      playerName: "Brightcove Player",
+      ovp: "Brightcove",
+      channel: "Default Channel"
+    };
+
+    window.ADB.MediaHeartbeat.getInstance(delegate, config).then(
+      function(instance){
+        self.Inst._mediaHeartbeat = instance;
+        bcEventsInit(self);
+        self.player.bigPlayButton.enable()
+      }
+    ).catch(function(err){
+      console.log(err);
+    });
+  })
+}
+
+function startTrack(mdInfo, selfObj){
+  let self = selfObj;
+  let info = mdInfo;
+  let mediaInfo = window.ADB.MediaHeartbeat.createMediaObject(info.name, info.id , Math.floor(Number(info.duration)), window.ADB.MediaHeartbeat.StreamType.VOD, window.ADB.MediaHeartbeat.MediaType.Video);
+  let customVideoMetadata = {};
+  let standardVideoMetadata = {};
+  if(typeof mdManager !== 'undefined' && mdManager) {
+      let series = mdManager.getKeys().SCTNDSPNAME;
+      if(series && Array.isArray(series)) {
+          standardVideoMetadata[window.ADB.MediaHeartbeat.VideoMetadataKeys.SHOW] = series.join('');
+      }
+      else {
+          standardVideoMetadata[window.ADB.MediaHeartbeat.VideoMetadataKeys.SHOW] = 'N/A';
+      }
+  }
+  else {
+      standardVideoMetadata[window.ADB.MediaHeartbeat.VideoMetadataKeys.SHOW] = 'N/A';
+  }
+  standardVideoMetadata[window.ADB.MediaHeartbeat.VideoMetadataKeys.EPISODE] = info.name;
+  standardVideoMetadata[window.ADB.MediaHeartbeat.VideoMetadataKeys.SEASON] = 'N/A';
+  mediaInfo.setValue(window.ADB.MediaHeartbeat.MediaObjectKey.StandardVideoMetadata,standardVideoMetadata);
+  self.Inst._mediaHeartbeat.trackSessionStart(mediaInfo, customVideoMetadata);
+  self.tracked = true;
+}
+
+function bcEventsInit(obj){
+  let self = obj;
+
+  self.player.on('loadstart', function() {
+    if(self.tracked) {
+      self.Inst._mediaHeartbeat.trackComplete();
+      self.Inst._mediaHeartbeat.trackSessionEnd();
+    }
+    self.played = false;
+    self.paused = false;
+    self.tracked = false;
+    self.adNum = 1;
+  })
+  self.player.on('playlistitem', function(){
+    self.adNum = 1;
+    self.played = true;
+    self.paused = false;
+    self.tracked = true;
+    self.Inst._mediaHeartbeat.trackComplete();
+    self.Inst._mediaHeartbeat.trackSessionEnd();
+    startTrack(self.player.playlist()[self.player.playlist.currentIndex()], self);
+    self.Inst._mediaHeartbeat.trackPlay();
+  })
+  self.player.on('play',function(){
+    if(!self.tracked){
+      startTrack(self.player.mediainfo, self);
+    }
+    if(!self.played){
+      self.Inst._mediaHeartbeat.trackPlay();
+      self.played = true;
+      self.paused = false;
+    }
+  })
+  self.player.on('pause',function(){
+    if(!self.paused){
+      self.Inst._mediaHeartbeat.trackPause();
+      self.played = false;
+      self.paused = true;
+    }
+  })
+  self.player.on('seeking',function(){
+    self.Inst._mediaHeartbeat.trackEvent(window.ADB.MediaHeartbeat.Event.SeekStart);
+  })
+  self.player.on('seeked',function(){
+    self.Inst._mediaHeartbeat.trackEvent(window.ADB.MediaHeartbeat.Event.SeekComplete);
+  })
+  self.player.on('ended',function(){
+    self.Inst._mediaHeartbeat.trackComplete();
+    self.Inst._mediaHeartbeat.trackSessionEnd();
+    self.played = false;
+    self.paused = false;
+    self.tracked = false;
+    self.adNum = 1;
+  })
+  self.player.on('ads-pod-started', function(evt){
+    let adBreakObject = window.ADB.MediaHeartbeat.createAdBreakObject(self.player.ads.ad.type, self.adNum, self.player.currentTime());
+    self.Inst._mediaHeartbeat.trackEvent(window.ADB.MediaHeartbeat.Event.AdBreakStart, adBreakObject);
+    self.adNum++;
+  })
+  self.player.on('ads-ad-started', function(){
+    let adObject = window.ADB.MediaHeartbeat.createAdObject(self.player.ads.ad.id, self.player.ads.ad.id, self.player.ads.ad.index, self.player.ads.ad.duration);
+    let standardAdMetadata = {};
+    standardAdMetadata[window.ADB.MediaHeartbeat.AdMetadataKeys.ADVERTISER] = self.player.ads.contentSrc;
+    standardAdMetadata[window.ADB.MediaHeartbeat.AdMetadataKeys.CAMPAIGN_ID] = self.player.ads.adType;
+    adObject.setValue(window.ADB.MediaHeartbeat.MediaObjectKey.StandardAdMetadata, standardAdMetadata);
+    let adCustomMetadata = {};
+    self.Inst._mediaHeartbeat.trackEvent(window.ADB.MediaHeartbeat.Event.AdStart, adObject, adCustomMetadata);
+  })
+  self.player.on('ads-ad-ended', function(){
+    self.Inst._mediaHeartbeat.trackEvent(window.ADB.MediaHeartbeat.Event.AdComplete);
+  })
+  self.player.on('ads-ad-skipped', function(){
+    self.Inst._mediaHeartbeat.trackEvent(window.ADB.MediaHeartbeat.Event.AdSkip);
+  })
+  self.player.on('ads-pod-ended', function(){
+    self.Inst._mediaHeartbeat.trackEvent(window.ADB.MediaHeartbeat.Event.AdBreakComplete);
+  })
+}
+
+window.initBcAnalytics = initBcAnalytics;
+
+function initBcAd(player, vid, adTag){
+  player.on('loadstart',function(){
+    if (!vid || (vid !== player.mediainfo.id)){
+      vid = player.mediainfo.id;
+      const regex = /(vid=).*?(&)/i;
+      adTag = adTag.replace(regex, 'vid='+ vid + "&");
+    }
+    let position = calculatePlayerPosition(player.tagAttributes.id);
+    player.ima3.settings.serverUrl = adTag.replace('videoposition%3D', 'videoposition%3D'+ position);
+  });
+}
+function calculatePlayerPosition(playerId){
+  let siteContainerHeight = document.querySelectorAll('#site')[0] && document.querySelectorAll('#site')[0].offsetHeight;
+  let playerOffset = document.querySelectorAll('#' + playerId)[0] && document.querySelectorAll('#' + playerId)[0].offsetTop;
+  let offsetPercent = Math.round((playerOffset * 100)/siteContainerHeight);
+  if(offsetPercent < 26){
+    return 'top';
+  }
+  if(offsetPercent > 25 && offsetPercent < 76){
+    return 'middle';
+  }
+  if(offsetPercent > 75){
+    return 'bottom';
+  }
+  return '';
+}
+
+window.initBcAd = initBcAd;
+

@@ -1,0 +1,1 @@
+var pmc_fastly_geo_data = {"city":"cincinnati","region":"OH","country":"US","continent":"NA","asn":"20126"}

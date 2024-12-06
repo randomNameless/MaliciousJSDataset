@@ -1,0 +1,25 @@
+/*/////////////////////////////////
+Set Feed Logo
+/////////////////////////////////*/
+function setFeedLogo() {
+  if ($('#feedLogo').length) {
+    var baseInterval = 149; // one fourth of a jupiter day at its poles, in minutes
+    var date = new Date();
+    var offset = date.getDate() * 2; // offset changes every day to be equal to the date * 2
+    var intervalForToday = baseInterval + offset; // should be between 151-211 minutes
+    var currentTimeInMinutes = (date.getHours() * 60) + date.getMinutes(); // should be between 0 - 1439
+    var index = Math.floor(currentTimeInMinutes / intervalForToday); // should be between 1-10
+    var logoCount = IDX.env.id == 'portmerc' ? 7 : 10;
+    // fallback to a random number if the above math returns an unexpected result
+    var randomNumber = Math.floor(Math.random() * logoCount) + 1;
+    if ((index < 1) || (index > logoCount)) {
+      index = randomNumber;
+    }
+    var imagePath = `${IDX.env.assetHost}/assets/3/sites/${IDX.env.assetDirectory}/images/feed-logos/${randomNumber}.png`;
+    $('#feedLogo').attr('src', imagePath);
+  }
+}
+
+$(function() {
+  setFeedLogo();
+});

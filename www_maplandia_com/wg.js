@@ -1,0 +1,448 @@
+
+
+/* wg------------------------------------------------------------------------*/
+function wg_prejdi(i, id, jen, zaklad_adresy, koncovka) {
+	if (i != "-") {
+		var posledni = zaklad_adresy.charAt(zaklad_adresy.length - 1);
+		var url_ = zaklad_adresy + (i > 1 || posledni == '=' ? ((posledni == '/' || posledni == '=') ?  '' : '-') + String(i) : "") + koncovka;
+		var url = 'http://www.maplandia.com/' + (id.length ? 'ajax/' : '') + url_;
+		url += (url.indexOf('?') > -1 ? '&' : '?') + '_jtzs=a';
+		if (id.length) {
+			url += (jen.length ? (url.indexOf('?') > -1 ? '&' : '?') + '_j[]=' + jen.replace(/,/g, '&_j[]=') : '');
+			var url_archiv = url;
+			var	node = id.length ? document.getElementById('ifr' + id) : false;
+			if (node) {
+				node.src  = url;
+				$('permanent').href = url_;
+			} else {
+				node = id.length ? document.getElementById(id) : false;
+				if (node) {
+					node.innerHTML  = '<iframe id="ifr' + id + '" src="' + url + '" scrolling="no" height="' + node.getSize().size.y + '" width="' + node.getSize().size.x + '" frameborder="0">upgrade</iframe>';
+				} else {
+					var poslat_ = url_archiv + (url_archiv.indexOf('?') > -1 ? '&' : '?') + '_bi=1';
+					var poslat = url + (url.indexOf('?') > -1 ? '&' : '?') + '_bi=1';
+					wg_archivovat(id, poslat_);
+					return wg_send('', id, poslat);
+				}
+			}
+		} else {
+			location.href = url;
+		}
+	}
+};
+
+var wg_nemen_title = false;
+var wg_nemen_adresu = false;
+var wg_down_duration = 200;
+var wg_loading = null;
+
+var wg_posilam = '';
+var wg_adresa_cela = 'search-places/';
+var wg_zaklad_adresy = 'search-places/';
+var wg_koncovka = '';
+var wg_title = '';
+
+var wg_historie = 0;
+var wg_registr = {};
+var wg_vysky = new Hash();
+var wg_history;
+var wg_pamet;
+var wg_nereaguj = '';
+var wg_najed = '';
+
+
+
+/* ajax------------------------------------------------------------------------*/
+var i, http_request = new Array(), wg_down_now = 0;
+
+function wg_send(co, id, url, method) {
+	if (typeof http_request[id] == 'undefined') {
+		http_request[id] = false;	
+	} else {//ne tak rychle
+		return false;
+	}
+	if (!(http_request[id] == false)) {
+		//return true; //posle bez ajaxu
+	}
+
+	if (!method) method = 'GET';
+
+	if (window.XMLHttpRequest) { // Mozilla, Safari,...
+		http_request[id] = new XMLHttpRequest();
+		if (http_request.overrideMimeType) {
+			http_request[id].overrideMimeType('text/xml');
+		}
+	} else if (window.ActiveXObject) { // IE
+		try {
+			http_request[id] = new ActiveXObject("Msxml2.XMLHTTP");
+		} catch (e) {
+			try {
+				http_request[id] = new ActiveXObject("Microsoft.XMLHTTP");
+			} catch (e) {}
+		}
+	}
+
+	if (!http_request[id] && typeof XMLHttpRequest != 'undefined') {
+		http_request[id] = new XMLHttpRequest();
+	}
+	if (!http_request[id]) return true;
+
+	var mrizka = url.indexOf('#');
+	if (mrizka > -1) url = url.substring(0, mrizka);
+	http_request[id].onreadystatechange = function() {
+		return wg_update(id);
+	};
+	//alert(url + '*' +co);
+	if (wg_down_now == 0) {
+		$('down').tween('opacity', 1);
+	}
+	wg_down_now++;
+
+	if (url.indexOf('http://') != 0) url = 'http://www.maplandia.com/' + url;
+	http_request[id].open(method, url, true);
+	http_request[id].setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	http_request[id].send(co);
+	return false;
+};
+
+function wg_update_obsah(prikaz) {
+	var od = prikaz.indexOf('*', 1);
+ 	if (od == -1) return;
+	var co = prikaz.substr(1, od-1);
+	var cim = prikaz.substr(od+1);
+	var node = document.getElementById(co);
+	if (node) {
+		if (cim.charAt(0) == '.') {
+			temp = cim.substr(1).split(':', 2);
+			node.className = temp[0];
+			node.innerHTML  = temp[1]
+		} else {
+			node.innerHTML = cim;
+		}
+		if (co == 'mm') {
+			var kam = document.getElementById('top');
+			if (kam) var posun = new Fx.Scroll(window).toElement('top');
+		}
+		if (co == 'mm_tady' && document.getElementById(co)) {
+			var kam = document.getElementById('sem');
+			if (kam) var posun = new Fx.Scroll(window).toElement('sem');
+		}
+	}
+}
+
+function wg_update(id) {
+	try {
+		if (http_request[id].readyState == 4 && http_request[id].status == 200) {
+			var response = http_request[id].responseText;
+			//alert(response);
+			//mg_info(response);
+			var dalsi = response.indexOf('^^');
+
+			var kolik = parseInt(response.substr(0, dalsi));
+			var prikazy = response.split('^^', kolik + 2);
+
+			var od = 0;
+			var prikaz, temp, obsah;
+			var node;
+			var byl_eval = false;
+			for (var i = 1; i < kolik + 1; i++) {
+				prikazy[i] = parseInt(prikazy[i]);
+				prikaz = prikazy[kolik + 1].substr(od, prikazy[i]);
+				od += prikazy[i];
+				if (prikaz.charAt(0) == '*') {
+					wg_update_obsah(prikaz);
+				} else {
+					eval(prikaz);
+					byl_eval = true;
+				}
+			}
+			if (!wg_nemen_title && wg_title.length) {
+				document.title = wg_title;
+				wg_nemen_title = false;
+			}
+			if (!wg_nemen_adresu && wg_adresa_cela.length) {
+				$('permanent').href = wg_adresa_cela;
+				wg_nemen_adresu = false;
+			}
+			delete http_request[id];
+			if (--wg_down_now == 0) {
+				$('down').tween('opacity', 0);
+			}
+			if (wg_loading) {
+				wg_loading.tween('opacity', 0);//.chain(function() {wg_loading.setStyle('display', 'none')});
+			}
+			if (wg_najed.length) {
+				var posun = new Fx.Scroll(window).toElement(wg_najed);
+				wg_najed = '';
+			}
+		}
+	}
+	catch( e ) {
+		delete http_request[id];
+		if (--wg_down_now == 0) {
+			$('down').tween('opacity', 0);
+		}
+		if (wg_loading) {
+			wg_loading.tween('opacity', 0);//.chain(function() {wg_loading.setStyle('display', 'none')});
+		}
+	}
+};
+
+function wg_archiv(id, url) {
+	this.id = id;
+	this.url = url;
+}
+
+function wg_archivovat(id, poslat) {//alert('registruji'+poslat);
+	if (!wg_history) {
+		$('hist').innerHTML = '<iframe id="wgArchiv" name="wgArchiv" src="" frameBorder="0" width="1" height="1"></iframe>';
+		wg_history = frames["wgArchiv"];
+	}
+	if (wg_history) {
+		var key = ++wg_historie;
+		wg_nereaguj = key;
+		wg_registr[key] = new wg_archiv(id, poslat);//alert(scriptUri + "?key=" + key);
+		wg_history.location.href = wg_pamet + "history.php?key=" + key;//alert(frames['history'].location.href);
+	}
+}
+
+
+function wg_ajax(id, url, jen, prvek, prvni) {
+	var url_ = url;
+
+	if (url.indexOf('http://') == 0) url = url.replace('http://www.maplandia.com/', 'http://www.maplandia.com/ajax/'); else url = 'ajax/' + url;
+	var mrizka = url.indexOf('#');
+	if (mrizka > -1) url = url.substring(0, mrizka);
+	url += (url.indexOf('?') > -1 ? '&' : '?') + '_jtzs=a';
+	url += (jen.length ? (url.indexOf('?') > -1 ? '&' : '?') + '_j[]=' + jen.replace(/,/g, '&_j[]=') : '');
+	var url_archiv = url;
+
+	var	node = id.length ? document.getElementById('ifr' + id) : false;
+	if (node) {
+		node.src  = url;
+		$('permanent').href = url_;
+	} else {
+		node = id.length ? document.getElementById(id) : false;
+		if (node) {
+			node.innerHTML  = '<iframe id="ifr' + id + '" src="' + url + '" scrolling="no" height="' + node.getSize().size.y + '" width="' + node.getSize().size.x + '" frameborder="0">upgrade</iframe>';
+		} else {
+			
+			var poslat_ = url_archiv + (url_archiv.indexOf('?') > -1 ? '&' : '?') + '_bi=1';
+			var poslat = url + (url.indexOf('?') > -1 ? '&' : '?') + '_bi=1';
+			wg_archivovat(id, poslat_);
+			if (typeof prvni != 'undefined') return;
+			if (prvek && wg_loading) {
+				prvek = $(prvek);
+				var nadpis_bude = prvek.title ? '<div class="lobr"></div><h3>Loading ' + wg_ajax_title(prvek.title) + '</h3>' : '';
+				wg_loading.set('html', nadpis_bude + '<p>The requested content is loading. Please wait until this message disappears or click the following link.</p><a href="' + url_ + '" title="Click this link to load the requested page.">'+ url_ + '</a>');
+				prvek.setStyle('display', 'block');
+				kam = prvek.getPosition($('vsechno'));
+				prvek.setStyle('display', 'inline');
+				var okno = $('vsechno').getScrollSize();
+				var r = wg_loading.getSize();
+				var p = prvek.getSize();
+				if (kam.x + (p.x/2) + (r.x/2)> okno.x) {
+					kam.x = okno.x - r.x - 5;
+				} else {
+					if (kam.x + (p.x/2) - (r.x/2) < 5) kam.x = 5; else kam.x = kam.x  + (p.x/2) - (r.x/2);
+				}
+				if (kam.y + p.y + r.y + 5 > okno.y) {
+					// nad prvek
+					kam.y = kam.y - r.y - 5;
+				} else {
+					kam.y = kam.y + p.y + 5;
+				}
+				wg_loading.setStyle('left', kam.x + 'px');
+				wg_loading.setStyle('top', kam.y + 'px');
+				wg_loading.tween('opacity', 0.95);
+			}
+			//setTimeout("wg_send('', '" + id + "', '" + poslat + "');", 3000); return false;
+			return wg_send('', id, poslat);
+		}
+	}
+	return false;
+};
+
+function wg_send_form(form, id, url, jen, reset) {
+	if (typeof reset == 'undefined') reset = false;
+
+	var mrizka = url.indexOf('#');
+	if (mrizka > -1) url = url.substring(0, mrizka);
+	url += (url.indexOf('?') > -1 ? '&' : '?') + '_jtzs=a';
+	url += (jen.length ? (url.indexOf('?') > -1 ? '&' : '?') + '_j[]=' + jen.replace(/,/g, '&_j[]=') : '');
+	url += (url.indexOf('?') > -1 ? '&' : '?') + '_bi=1';
+	if (!wg_send("ajax[" + id + "]=1&" + (!reset ? wg_form_values(form) : "reset[" + id + "]=1"), id, url, 'POST')) {
+		var button = document.getElementById("submit-" + id);
+
+		button.value = "wait please...";
+		button.disabled = true;
+		return false;
+	} else {
+		return true;
+	}
+};
+
+function wg_update_form(vlastnosti, polozky) {
+	var i, j;
+	var o;
+	if (!polozky.length) {
+		wg_sh(vlastnosti[0]);
+	} else {
+		var radek, divy, primo;
+		for (i = 0; i < polozky.length; i++) {
+			if (polozky[i][0] == '_h') {
+				primo = document.getElementById(polozky[i][1]);
+				if (primo) primo.value = polozky[i][2];
+				continue;
+			}
+			radek = document.getElementById(polozky[i][0]);
+			divy = radek.getElementsByTagName('div'); //kvuli radio;
+			divy[divy.length - 1].innerHTML = polozky[i][5];
+			radek.className = polozky[i][1];
+			if (polozky[i][2].length) {
+				radek.getElementsByTagName('label')[0].innerHTML = polozky[i][2];
+			}
+			primo = null;
+			if (vlastnosti[1] || polozky[i][9].length || polozky[i][6] != -1 || polozky[i][7] != -1 || polozky[i][8] != -1) {
+				switch (polozky[i][3]) {
+					case 'radio':
+						break;
+					case 'select':
+						primo = radek.getElementsByTagName('select')[0];
+						break;
+					case 'textarea':
+						primo = radek.getElementsByTagName('textarea')[0];
+						break;
+					default:
+						primo = radek.getElementsByTagName('input')[0];
+				}
+			}
+			if (vlastnosti[1] && primo !== null) primo.value = polozky[i][4];
+			if (polozky[i][9].length && primo !== null) {
+				primo.innerHTML = '';
+				for (j = 0; j < polozky[i][9].length; j++) {
+					var o = document.createElement("option");
+					o.value = polozky[i][9][j][0];
+					o.selected = polozky[i][9][j][1];
+					o.innerHTML = polozky[i][9][j][2];
+					primo.appendChild(o);
+				}
+				if (primo.selectedIndex == -1) {
+					primo.options[0].selected = true;
+				} 
+			}
+			if (polozky[i][6] != -1 && primo !== null) primo.disabled = polozky[i][6];
+			if (polozky[i][7] != -1 && primo !== null) primo.readonly = polozky[i][7];
+			if (polozky[i][8] != -1 && radek !== null) radek.style.display = polozky[i][8] == 1 ? 'block' : 'none';
+		}
+	}
+	var button = document.getElementById("submit-" + vlastnosti[0]);
+	button.className = "submit";
+	button.value = vlastnosti[2];
+	button.disabled = false;
+};
+
+function wg_form_values(form) {
+
+	var send = '';
+	var input;
+	var prevInputName = '';
+
+	for (i = 0; i < form.elements.length; i++) {
+		input = form.elements[i];
+		if (input.disabled) continue;
+		switch (input.type) {
+			case 'text':
+			case 'textarea':
+			case 'password':
+			case 'hidden':
+				send += input.name + '=' + encodeURIComponent(input.value) + '&';
+				break;
+			case 'select-one':
+				send += input.name + '=' + encodeURIComponent(input.options[input.selectedIndex].value) + '&';
+			case 'radio':
+				if (input.checked) {
+					send += input.name + '=' + encodeURIComponent(input.value) + '&';
+				}
+				break;
+			case 'checkbox':
+				if (input.checked) {
+					if (input.name == prevInputName) {
+						if (send.lastIndexOf('&') == send.length - 1) {
+							send = send.substr(0, send.length - 1);
+						}
+						send += ',' + encodeURIComponent(input.value);
+					}
+					else {
+						send += input.name + '=' + encodeURIComponent(input.value);
+					}
+					send += '&';
+					prevInputName = input.name;
+				}
+				break;
+
+		}
+	}
+	send = send.substr(0, send.length -1);
+	return send;
+};
+
+function wg_sh(id, kam) {
+	var co = document.getElementById(id);
+	if (!co) return false;
+	
+	var sh = new Fx.Style(id);
+	var ovladani, show;
+	if (!wg_vysky.hasKey(id)) {
+		wg_vysky.set(id, co.getSize().scrollSize.y);
+	}
+	if(co.getStyle('height').toInt() > 0) {
+    	//hide
+		show = false;
+		wg_vysky.set(id, co.getSize().scrollSize.y);
+		co.setStyle('overflow','hidden');
+		if (typeof kam != 'undefined') {
+			var posun = new Fx.Scroll(window);
+			posun.toElement('top');
+		}
+    	sh.start('height', 0);
+  	} else {
+    	//show
+		show = true;
+		if (typeof kam != 'undefined') {
+			var posun = new Fx.Scroll(window);
+			posun.toElement(kam);
+		}
+    	sh.start('height', wg_vysky.get(id));
+		co.setStyle('overflow','visible');
+  	}
+
+	if (ovladani = document.getElementById(id + '_sh')) {
+		var bude = !show ? 'show' : 'hide';
+		var bylo = show ? 'show' : 'hide';
+
+		var temp = ovladani.innerHTML;
+		ovladani.innerHTML = temp.replace(bylo, bude);
+		ovladani.blur();
+	}
+
+	return false;
+};
+
+function wg_cb(key){
+	if(!key || !(obj = wg_registr[key])) return;
+	if (obj.url) wg_send('', obj.id, obj.url);
+};
+
+function wg_ajax_title(title) {
+	title = title.replace(/–/g, "&ndash;");
+	title = title.replace('go to page', 'page');
+	title = title.replace('go to previous page &ndash; page', 'page');
+	title = title.replace('go to next page &ndash; page', 'page');
+	return title;
+}
+
+function wg_posun(kam) {
+	var posun = new Fx.Scroll(window).toElement(kam);
+	return false;
+}

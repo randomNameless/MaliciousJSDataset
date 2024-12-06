@@ -1,0 +1,788 @@
+var displayNotices;
+(function ($) {
+    displayNotices = function () {
+        $(".notice-holder > div").each(function (index, item) {
+            var notice = $(item);
+            var type = notice.attr("data-type");
+            var title = notice.attr("data-title");
+            showMessageNotice(title, notice.html(), type);
+            notice.hide();
+        });
+        $(".notice-holder").remove();
+    };
+
+    function reloadComments(url, callback) {
+//        showWaitNoticeDefault();
+        $.ajax({
+            url: url,
+            dataType: "HTML",
+            type: "GET",
+            success: function (response) {
+                var holder = $(".article-comments");
+                holder.find("> .article-comment").remove();
+                holder.prepend(response);
+                highlight($(".article-comments"));
+                if (typeof callback == "function") {
+                    callback();
+                }
+                loadCommentComments();
+            },
+            error: function () {
+                showErrorMessageNotice();
+            },
+            complete: function () {
+                hideWaitNotice()
+            }
+        });
+    }
+
+    //Initialize sticky sidebar logic
+    //Will add or remove a fixed class depending on the screen scroll position
+    function initStickyCommentHeader() {
+        //Based on http://jqueryfordesigners.com/fixed-floating-elements/
+        var top = $('#comments-section-header').offset().top - parseFloat($('#comments-section-header').css('marginTop').replace(/auto/, 0));
+        $(window).scroll(function (event) {
+            // what the y position of the scroll is
+            var y = $(this).scrollTop();
+
+            // whether that's below the form
+            if (y >= (top - 66)) { //adjusts sticky to initialize (66px from top)
+                // if so, ad the fixed class
+                $('#comments-section-header').addClass('fixed');
+            } else {
+                // otherwise remove it
+                $('#comments-section-header').removeClass('fixed');
+            }
+        });
+    }
+
+    function initCommentSubscriptionForm() {
+        var form = $("#subscribe-to-comments-holder").find("form");
+        form.ajaxForm({
+            dataType: "JSON",
+            beforeSubmit: function () {
+//                showWaitNoticeDefault();
+            },
+            success: function (response) {
+                $("#subscribe-to-comments-holder").html(response.html);
+                if (textPresent(response.button_text)) {
+                    $("#subscribe-to-comments").html(response.button_text);
+                    initCommentSubscriptionForm();
+                }
+                else {
+                    $("#subscribe-to-comments").hide();
+                }
+//                displayNotices();
+            },
+            error: function (responseJson) {
+                var response = $.parseJSON(responseJson.responseText);
+                $("#subscribe-to-comments-holder").html(response.html);
+                displayNotices();
+                initCommentSubscriptionForm();
+            },
+            complete: function () {
+                hideWaitNotice();
+            }
+        });
+        form.find(".submit").click(function () {
+            form.submit();
+        });
+    }
+
+    function initCommentForm() {
+        //Comment form submit
+        $("#article-comments-section").on("click", ".article-comment .comment-form .form-actions > a.submit", function (e) {
+            $(this).hide();
+            var form = $(this).parents("form");
+            var holder = form.parents(".article-comment");
+            var editorId = form.find('textarea[name="blog_comment[comment]"]').attr("id");
+            form.ajaxForm({
+                //beforeSubmit: showWaitNoticeDefault,
+                success: function (response, status) {
+                    tresponse = response;
+                    //hideWaitNotice();
+                    if (tinyMCEAllowed) {
+                        tinyMCE.execCommand('mceRemoveEditor', false, editorId);
+                    }
+                    if (!response.match(/window.location\s*=/)) {
+                        holder.replaceWith(response);
+                    }
+                    displayNotices();
+                    if ((editorId != "top-comment-editor") && tinyMCEAllowed) {
+                        tinyMCE.execCommand('mceAddEditor', false, editorId);
+                    }
+                    else {
+                        var floatingCommentForm = $("#comments-section-header-comment-form-holder");
+                        var topButton = $("#add-new-comment-button");
+                        var text = topButton.attr("hidden-text");
+                        topButton.html(text);
+                        floatingCommentForm.hide();
+                    }
+                    reloadComments(commentsUrl);
+                    $('#add-new-comment-button').show();
+                    $('#new-comment-form-holder').css("display", "block");
+                },
+                error: function (response) {
+                    hideWaitNotice();
+                    if (tinyMCEAllowed) {
+                        tinyMCE.execCommand('mceRemoveEditor', false, editorId);
+                    }
+                    holder.replaceWith(response.responseText);
+                    displayNotices();
+                    if (tinyMCEAllowed) {
+                        tinyMCE.execCommand('mceAddEditor', false, editorId);
+                    }
+                    $("#comment-editor, #existing-comment-editor, #top-comment-editor").change();
+                }
+            });
+            form.submit();
+            e.preventDefault();
+            return false;
+        });
+
+        //Tinymce content update binding
+        $("body").on("keypress change", "#comment-editor, #existing-comment-editor, #top-comment-editor", function () {
+            var self = $(this);
+            if (textPresent(self.val())) {
+                self.parents("form").find(".comment-additional-info").show('blind');
+            }
+            else {
+                self.parents("form").find(".comment-additional-info").hide('blind');
+            }
+        });
+        $("#comment-editor, #existing-comment-editor, #top-comment-editor").change();
+    }
+
+    function initLikeUnlikeButtons() {
+        var closeLikedDisplayList = true;
+        $("body").on("click", ".like-unlike-button", function (e) {
+            var self = $(this);
+            var url = self.attr("href");
+            showWaitNoticeDefault();
+            $.ajax({
+                url: url,
+                type: "POST",
+                success: function (response) {
+                    hideWaitNotice();
+                    self.parent().replaceWith(response);
+                },
+                error: function () {
+                    hideWaitNotice();
+                    showErrorMessageNotice('Error', 'An unexpected error has occurred, please try again later.')
+                }
+            });
+            e.preventDefault();
+            return false;
+        });
+        $("body").on("click", ".likes-count", function (e) {
+            $(".liked-by-display").removeClass('liked-by-display');
+            $(this).addClass('liked-by-display');
+            closeLikedDisplayList = false;
+        });
+
+        //Register functionality clicks
+        $("body").on("click", ".article-user-actions .likes-count", function (e) {
+            registerFunctionalityClick(functionalityClickNames.show_upvotes, functionalityClickLocations.blog_entry);
+        });
+
+        $("body").on("click", ".article-comments .likes-count", function (e) {
+            registerFunctionalityClick(functionalityClickNames.show_upvotes, functionalityClickLocations.comment);
+        });
+    }
+
+    //Load the comment's comments through ajax
+    function loadCommentComments(commentId) {
+        var commentInitialDisplay = 3;
+        var url = blogEntryCommentCommentsUrl;
+        var dataType = "JSON";
+        var successCallback = function (commentMap) {
+            hideWaitNotice();
+            for (var commentId in commentMap) {
+                var comment = $('.article-comment[data-id="' + commentId + '"]')
+                var container = comment.find(".comment-comments-list");
+                var showAll = container.attr("data-show-all");
+                container.html(commentMap[commentId].join(""));
+                if (!showAll && (container.children().length > commentInitialDisplay)) {
+                    var hiddenComments, comments = container.children();
+                    comments.detach();
+                    container.append(comments.slice(0, commentInitialDisplay));
+                    hiddenComments = comments.slice(commentInitialDisplay, comments.length);
+                    setupCommentLoadMore(container, hiddenComments);
+                }
+            }
+        };
+        if (!!commentId) {
+            url = blogCommentCommentsUrl.replace(idPlaceholder, commentId);
+            successCallback = function (response) {
+                hideWaitNotice();
+                var comment = $('.article-comment[data-id="' + commentId + '"]')
+                var container = comment.find(".comment-comments-list");
+                var showAll = container.attr("data-show-all");
+                container.html(response);
+                if (!showAll && (container.children().length > commentInitialDisplay)) {
+                    var hiddenComments, comments = container.children();
+                    comments.detach();
+                    container.append(comments.slice(0, commentInitialDisplay));
+                    hiddenComments = comments.slice(commentInitialDisplay, comments.length);
+                    setupCommentLoadMore(container, hiddenComments);
+                }
+            };
+            dataType = "HTML";
+        }
+        $.ajax({
+            url: url,
+            dataType: dataType,
+            success: successCallback,
+            error: function () {
+                hideWaitNotice();
+                showErrorMessageNotice('Error', 'An unexpected error has occurred.');
+            }
+        });
+    }
+
+    //Setup the load more button for comments
+    function setupCommentLoadMore(container, hiddenItems) {
+        var loadMoreButton, comment, commentCommentsFormHolder
+        if (hiddenItems.length == 1) {
+            loadMoreButton = $('<div class="comments-load-more">' + loadMoreText1 + '</div>');
+        }
+        else {
+            loadMoreButton = $('<div class="comments-load-more">' + loadMoreText.replace(genericPlaceholder, hiddenItems.length) + '</div>');
+        }
+        container.prepend(loadMoreButton);
+        loadMoreButton.click(function () {
+            loadMoreButton.remove();
+            container.append(hiddenItems);
+            container.attr("data-show-all", true);
+
+            comment = $(container.parents(".article-comment")[0]);
+            commentCommentsFormHolder = comment.find(".comment-comments .form-holder:last-child");
+            commentCommentsFormHolder.show();
+            if (commentCommentsFormHolder.find("textarea").is(":visible")) {
+                toggleTinyMCE(commentCommentsFormHolder, true);
+            }
+        })
+    }
+
+    //Toggle the comment for tinyMCE editor state
+    function toggleTinyMCE(formHolder, enableTinyMCE) {
+        var textArea = formHolder.find("textarea");
+        var textAreaId = textArea.attr("id");
+        if (!textPresent(textAreaId) || (textAreaId == "blog_comment_comment_body")) {
+            textAreaId = "textarea-" + (jQuery.guid++);
+            textArea.attr("id", textAreaId);
+        }
+        if (enableTinyMCE) {
+            tinyMCE.execCommand('mceAddEditor', false, textAreaId);
+            tinyMCE.execCommand('mceAutoResize', false, textAreaId);
+        }
+        else {
+            tinyMCE.execCommand('mceRemoveEditor', false, textAreaId);
+        }
+    }
+
+    $(function () {
+        initCommentForm();
+        initLikeUnlikeButtons();
+        initCommentSubscriptionForm();
+        initStickyCommentHeader();
+        loadCommentComments();
+
+        // //Remote links
+        // $("body").on("click", 'a[data-remote="true"]:not(.disabled)', function (e) {
+        //     var self = $(this);
+        //     var url = self.attr("href");
+
+// //            showWaitNoticeDefault();
+        //     $.ajax({
+        //         url: url,
+        //         dataType: "HTML",
+        //         success: function (response) {
+        //             self.replaceWith(response);
+// //                    showSuccessMessageNotice();
+        //         },
+        //         error: function () {
+        //             showErrorMessageNotice();
+        //         },
+        //         complete: function () {
+        //             hideWaitNotice();
+        //         }
+        //     });
+
+        //     e.preventDefault();
+        //     return false;
+        // });
+
+        //Generate and display blog entry short url
+        $("#short-url-button").click(function (e) {
+            var holder = $("#short-url-holder");
+            var self = $(this);
+            var url = self.attr("href");
+            if (/#short-url-holder/.test(url)) {
+                holder.toggle('blind');
+            }
+            else {
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    success: function (response) {
+                        self.attr("href", "#short-url-holder");
+                        holder.html(response);
+                        holder.show('blind');
+                    },
+                    error: function () {
+                        showErrorMessageNotice();
+                    },
+                    complete: function () {
+                        hideWaitNotice();
+                    }
+                });
+            }
+            e.preventDefault();
+            return false;
+        });
+
+        //Re-blogged by data display toggle
+        $(".re-blog-count, #re-blogged-by > a").click(function () {
+            $("#re-blogged-by").toggle('blind');
+        });
+
+        //Subscribe to comments
+        $("#comments-section-header").on("click", "#subscribe-to-comments", function (e) {
+            var form = $("#subscribe-to-comments-holder form");
+            $("#comments-section-header-comment-form-holder").hide();
+            if (form.find('input[type!="hidden"]').length > 0) {
+                $("#subscribe-to-comments-holder").toggle();
+            }
+            else {
+                form.submit();
+            }
+            e.preventDefault();
+            return false;
+        });
+
+        //Report a comment
+        $('body').on('click', 'a.report-comment', function (e) {
+            var self = $(this);
+            var confirmationText = self.attr('data-confirmation');
+            var url = self.attr('data-url');
+            if (confirm(confirmationText)) {
+                showWaitNoticeDefault();
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    success: function (response) {
+                        self.replaceWith(response);
+                        showSuccessMessageNotice();
+                    },
+                    error: function () {
+                        showErrorMessageNotice();
+                    },
+                    complete: function () {
+                        hideWaitNotice();
+                    }
+                });
+            }
+            e.preventDefault();
+            return false;
+        });
+
+        //Report a blog post
+                $('body').on('click', 'a.report-post', function (e) {
+                    var button =$(this)
+                  if(button.attr("disabled")){
+                  return false;
+                  }
+                  $(function() {
+                    $( "#dialog" ).dialog({
+                     buttons: {
+                            "Submit": function() {
+                              var self = $('form#new_concern');
+                              var url = self.attr('action');
+                               showWaitNoticeDefault();
+                              $.ajax({
+                                  url: url,
+                                  type: "POST",
+                                  data: self.serialize(),
+                                  success: function (response) {
+                                      button.attr("disabled", true);
+                                      showSuccessMessageNotice();
+                                  },
+                                  error: function () {
+                                      showErrorMessageNotice();
+                                  },
+                                  complete: function () {
+                                      hideWaitNotice();
+                                  }
+                              });
+                              $( this ).dialog( "close" );
+                            },
+                            Cancel: function() {
+                              $( this ).dialog( "close" );
+                            }
+                          }
+                          });
+                  });
+                });
+        $("#concern_issue").on("change", function(){
+            if($( this ).val() == 'not_original'){
+            $('section.message').html('<p>Please tell us where else have you seen this content.</p><textarea name="concern[message]" id="concern_message"></textarea>');
+            }
+            if($( this ).val() == 'violation'){
+             $('section.message').html('<p>Please tell us why you consider this post inappropriate.</p><textarea name="concern[message]" id="concern_message"></textarea>');
+            }
+            if($( this ).val() == 'spam'){
+             $('section.message').html('<p>Are you sure you want to report this blog entry as spam?</p>');
+            };
+         });
+
+
+        //Remove points
+        $("body").on("change", ".blog-entry-console .remove-points input", function () {
+            var self = $(this);
+            var url = self.attr("data-url");
+            var checked = self.prop('checked');
+            showWaitNoticeDefault();
+            $.ajax({
+                url: url,
+                dataType: "HTML",
+                type: "POST",
+                data: {
+                    remove_points: checked
+                },
+                success: function (response) {
+                    $(".blog-entry-console").replaceWith(response);
+                    showSuccessMessageNotice();
+                },
+                error: function (response) {
+                    var responseJson = $.parseJSON(response.responseText);
+                    showErrorMessageNotice(responseJson.message);
+                    self.prop('checked', !checked);
+                },
+                complete: function () {
+                    hideWaitNotice()
+                }
+            });
+        });
+
+        //Featured state toggle
+        $("body").on('click', '.blog-entry-console .feature-state-button', function (e) {
+            var self = $(this);
+            var url = self.attr("href");
+            showWaitNoticeDefault();
+            $.ajax({
+                url: url,
+                dataType: "HTML",
+                type: "POST",
+                success: function (response) {
+                    $(".blog-entry-console").replaceWith(response);
+                    showSuccessMessageNotice();
+                },
+                error: function (response) {
+                    showErrorMessageNotice(response.responseText);
+                },
+                complete: function () {
+                    hideWaitNotice()
+                }
+            });
+            e.preventDefault();
+            return false;
+        });
+
+        //Featured state toggle
+        $("body").on('click', '.blog-entry-console .remove-activity-feed-button', function (e) {
+            var self = $(this);
+            var url = self.attr("href");
+            modalInfoConfirmationDialog(removeActivityFeedConfirmation, function () {
+                showWaitNoticeDefault();
+                $.ajax({
+                    url: url,
+                    dataType: "HTML",
+                    type: "POST",
+                    success: function (response) {
+                        $(".blog-entry-console").replaceWith(response);
+                        showSuccessMessageNotice();
+                    },
+                    error: function (response) {
+                        showErrorMessageNotice(response.responseText);
+                    },
+                    complete: function () {
+                        hideWaitNotice()
+                    }
+                });
+            });
+            e.preventDefault();
+            return false;
+        });
+
+        //Sponsored schedule submit
+        $("body").on('click', '.blog-entry-console .sticky-posting-schedule .submit', function (e) {
+            var self = $(this);
+            self.parents("form").submit();
+            e.preventDefault();
+            return false;
+        });
+
+        //Remove content on comment editor
+        $("#comment-editor").val("");
+
+        //Comment sorting
+        $("#comments_sort_by").change(function (e) {
+            var url = $(this).val();
+            reloadComments(url, function () {
+                $(".show-all-comments").remove();
+//                showSuccessMessageNotice();
+                commentsUrl = url;
+            });
+            e.preventDefault();
+            return false;
+        });
+
+        //Show all comments
+        $(".show-all-comments").click(function (e) {
+            var self = $(this);
+            var url = self.attr("data-url");
+            reloadComments(url, function () {
+                $(".show-all-comments").remove();
+                showSuccessMessageNotice();
+                commentsUrl = url;
+            });
+            e.preventDefault();
+            return false;
+        });
+
+        $(".article-comments").on("click", ".article-comment .comment-header", function (e) {
+            var self = $(this);
+            var url = self.attr("data-url");
+            if (textPresent(url)) {
+                window.location = url;
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        //Toggle new comment form display
+        $("#add-new-comment-button").on('click', function (e) {
+            var text = $(this).html();
+            var floatingCommentForm = $("#comments-section-header-comment-form-holder");
+            $("#subscribe-to-comments-holder").hide();
+            if (floatingCommentForm.is(":visible")) {
+                text = $(this).attr("hidden-text");
+                if (tinyMCEAllowed) {
+                    tinyMCE.execCommand('mceRemoveEditor', false, "top-comment-editor");
+                }
+                floatingCommentForm.hide();
+                $("#top-comment-editor").val("");
+            }
+            else {
+                text = $(this).attr("visible-text");
+                floatingCommentForm.show();
+                if (tinyMCEAllowed) {
+                    tinyMCE.execCommand('mceAddEditor', false, "top-comment-editor");
+                    tinyMCE.execCommand('mceAutoResize', false, "top-comment-editor");
+                }
+            }
+            $(this).html(text);
+            e.preventDefault();
+            return false;
+        });
+
+        /* Popover */
+        if (showSharePopup) {
+            //modalInfoDialog(sharePopupContent);
+            $("#share-modal-content").dialog({
+                bgiframe: true,
+                resizable: false,
+                dialogClass: 'info',
+                modal: true,
+                overlay: {
+                    backgroundColor: '#000',
+                    opacity: 0.5
+                },
+                buttons: {
+                    Close: function () {
+                        $("#share-modal-content").dialog('close');
+                    }
+                }
+            });
+        }
+
+
+        //Toggle display of comment comments
+        $("body").on("click", ".btn-new-comment-comment", function () {
+            var comment = $($(this).parents(".article-comment")[0]);
+            var commentCommentsFormHolder = comment.find(".comment-comments .form-holder:last-child");
+            commentCommentsFormHolder.toggle();
+            if (commentCommentsFormHolder.is(":visible")) {
+                var o, $w, container = comment.find(".comment-comments-list");
+                container.attr("data-show-all", true);
+                comment.find(".comments-load-more").click();
+                o = commentCommentsFormHolder.find(".blog_comment_comment_body textarea").focus().offset().top, $w = $(window);
+                $w.scrollTop(o - ($w.height() / 2));
+                toggleTinyMCE(commentCommentsFormHolder, true);
+            }
+            else {
+                toggleTinyMCE(commentCommentsFormHolder, false);
+            }
+        });
+
+        //Handle the comment's comment form
+        $("body").on("click", '.blog-comment-comment.form-holder form .form-actions > input[type="submit"]', function (e) {
+            var self = $(this);
+            var form = self.parents("form");
+            var holder = $(form.parents(".form-holder")[0]);
+            var comment = $(self.parents(".article-comment")[0]);
+            var commentId = comment.attr("data-id");
+            var newHolder;
+            self.hide();
+            e.preventDefault();
+            form.ajaxForm({
+                    beforeSubmit: function () {
+                        showWaitNoticeDefault();
+                    },
+                    success: function (response) {
+                        newHolder = $(response);
+                        toggleTinyMCE(holder, false);
+                        holder.replaceWith(newHolder);
+                        toggleTinyMCE(newHolder, true);
+                        showSuccessMessageNotice();
+                        loadCommentComments(commentId, true);
+                        $(".blog_comment_comment_body textarea").change();
+                    },
+                    error: function (response) {
+                        hideWaitNotice();
+                        if (response.status == 422) {
+                            newHolder = $(response.responseText);
+                            toggleTinyMCE(holder, false);
+                            holder.replaceWith(newHolder);
+                            toggleTinyMCE(newHolder, true);
+                        }
+                        else {
+                            self.show();
+                        }
+                        showErrorMessageNotice('Error', 'An unexpected error has occurred.');
+                    }
+                }
+            );
+            form.submit();
+        });
+
+
+        //Edit an comment comment
+        $('body').on('click', 'a.edit-comment-comment', function (e) {
+            var self = $(this);
+            var url = self.attr('href');
+            showWaitNoticeDefault();
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                    var formHolder = $(response);
+                    self.parents(".blog-comment-comment").replaceWith(formHolder);
+                    formHolder.show();
+                    toggleTinyMCE(formHolder, true);
+                    showSuccessMessageNotice();
+                },
+                error: function () {
+                    showErrorMessageNotice();
+                },
+                complete: function () {
+                    hideWaitNotice();
+                }
+            });
+            e.preventDefault();
+            return false;
+        });
+
+        //Restore an comment comment
+        $('body').on('click', 'a.restore-comment-comment', function (e) {
+            var self = $(this);
+            var confirmationText = self.attr('data-confirmation');
+            var url = self.attr('href');
+            if (confirm(confirmationText)) {
+                showWaitNoticeDefault();
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    success: function () {
+                        var comment = self.parents(".article-comment");
+                        var id = comment.attr("data-id");
+                        loadCommentComments(id);
+                        showSuccessMessageNotice();
+                    },
+                    error: function () {
+                        showErrorMessageNotice();
+                    },
+                    complete: function () {
+                        hideWaitNotice();
+                    }
+                });
+            }
+            e.preventDefault();
+            return false;
+        });
+
+        //Delete an comment comment
+        $('body').on('click', 'a.delete-comment-comment', function (e) {
+            var self = $(this);
+            var confirmationText = self.attr('data-confirmation');
+            var url = self.attr('href');
+                        e.preventDefault();
+            if (confirm(confirmationText)) {
+                showWaitNoticeDefault();
+                $.ajax({
+                    url: url,
+                    type: "DELETE",
+                    success: function () {
+                        self.parents(".blog-comment-comment").remove();
+                        showSuccessMessageNotice();
+                    },
+                    error: function () {
+                        showErrorMessageNotice();
+                    },
+                    complete: function () {
+                        hideWaitNotice();
+                    }
+                });
+            }
+            return false;
+        });
+
+        //Report a comment
+        $('body').on('click', 'a.report-comment-comment', function (e) {
+            var self = $(this);
+            var confirmationText = self.attr('data-confirmation');
+            var url = self.attr('data-url');
+            if (confirm(confirmationText)) {
+                showWaitNoticeDefault();
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    success: function (response) {
+                        self.replaceWith(response);
+                        showSuccessMessageNotice();
+                    },
+                    error: function () {
+                        showErrorMessageNotice();
+                    },
+                    complete: function () {
+                        hideWaitNotice();
+                    }
+                });
+            }
+            e.preventDefault();
+            return false;
+        });
+
+
+        if (autoExpandCommentsFor && (autoExpandCommentsFor > 0)) {
+            $(".article-comments").find('[data-id="' + autoExpandCommentsFor + '"] .comment-comments-count').click();
+        }
+
+    });
+
+    if ($('form.simple_form.comment-form:not(#new_blog_comment)').is(":visible")) {
+        $('#add-new-comment-button').hide();
+        $('#new-comment-form-holder').css("display", "none");
+    }
+})(jQuery);

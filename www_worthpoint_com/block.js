@@ -1,0 +1,67 @@
+(function () {
+    function createElement(type, classes, attributes, styles) {
+        const elm = document.createElement(type);
+        if (classes && classes.length > 0) {
+            classes.forEach((e) => {
+                elm.classList.add(e);
+            });
+        }
+        if (attributes) {
+            Object.keys(attributes).forEach((k) => {
+                elm.setAttribute(k, attributes[k]);
+            });
+        }
+        if (styles) {
+            Object.keys(styles).forEach((k) => {
+                elm.style[k] = styles[k];
+            });
+        }
+        return elm;
+    }
+
+    const uuidText = document.querySelector('.content').querySelectorAll('p')[4].innerText;
+
+    window._pxJsClientSrc = 'https://client.perimeterx.net/' + window._pxAppId + '/main.min.js';
+    window._pxFirstPartyEnabled = false;
+    window._pxVid = window.px_vid;
+    window._pxUuid = uuidText.substr(uuidText.indexOf('#') + 1);
+    window._pxHostUrl = 'https://collector-' + window._pxAppId + '.perimeterx.net';
+
+    document.querySelector('.content').remove();
+
+    const contentWrapper = document.querySelector('.content-wrapper');
+    const content = createElement('div', ['content']);
+    const pxCaptcha = createElement('div', null, { id: 'px-captcha' });
+    content.appendChild(pxCaptcha);
+    const p1 = createElement('p');
+    p1.innerText =
+        'Access to this page has been denied because we believe you are using automation tools to browse the website.';
+    content.appendChild(p1);
+    const p2 = createElement('p');
+    p2.innerText = 'This may happen as a result of the following:';
+    content.appendChild(p2);
+    const ul = createElement('ul');
+    const li1 = createElement('li');
+    li1.innerText = 'Javascript is disabled or blocked by an extension (ad blockers for example)';
+    ul.appendChild(li1);
+    const li2 = createElement('li');
+    li2.innerText = 'Your browser does not support cookies';
+    ul.appendChild(li2);
+    content.appendChild(ul);
+    const p3 = createElement('p');
+    p3.innerText =
+        'Please make sure that Javascript and cookies are enabled on your browser and that you are not blocking them from loading.';
+    content.appendChild(p3);
+    const p4 = createElement('p');
+    p4.innerText = 'Reference ID: #' + window._pxUuid;
+    content.appendChild(p4);
+
+    contentWrapper.appendChild(content);
+
+    const blockScript = document.createElement('script');
+    blockScript.src = 'https://captcha.px-cdn.net/' + window._pxAppId + '/captcha.js?a=c&m=0';
+    const head = document.getElementsByTagName('head')[0];
+    head.insertBefore(blockScript, null);
+
+    document.querySelector('.container').style.display = 'flex';
+})();

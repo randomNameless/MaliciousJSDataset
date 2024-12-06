@@ -1,0 +1,1 @@
+import{k as n,g as i}from"./entry.C11SF3mO.js";import{a as s}from"./swiper-vue.CQ8HLYq-.js";const p=n("seoFooter",()=>{const{$useApiFetch:a}=i(),e=s(),t=s();return{firstSet:e,secondSet:t,setSeoFooterData:async(r,c={})=>{try{const o=await a(`/api/seo/footer/${r}`,{params:c});e.value=o.firstSet,t.value=o.secondSet}catch{e.value=void 0,t.value=void 0}}}});export{p as u};

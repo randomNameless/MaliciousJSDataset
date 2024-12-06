@@ -1,0 +1,118 @@
+//Redirects for links that cannot be redirected in web.config
+
+if (window.location.href.indexOf("about#executive-team") > -1) {
+    window.location.replace("https://" + window.location.hostname + "/corp/our-leaders");
+
+} else if ((window.location.href.indexOf("#about-customer-service") > -1) || (window.location.href.indexOf("about#our-company") > -1) ) {
+    window.location.replace("https://" + window.location.hostname + "/corp/our-business");
+
+} else if (window.location.href.indexOf("about#citizenship") > -1) {
+    window.location.replace("https://" + window.location.hostname + "/corp/our-business#we-are-global");
+
+} else if (window.location.href.indexOf("about#ownership-governance") > -1) {
+    window.location.replace("https://" + window.location.hostname + "/corp/ownership");
+
+} else if (window.location.href.indexOf("about#sustainability") > -1 || (window.location.href.indexOf("about#sustainability#canada") > -1)) {
+    window.location.replace("http://sustainable.oxfordproperties.com/");
+
+
+}
+
+
+
+function scrollToRegularElement() {
+    let target = $(location.hash);
+    let offset = 0;
+
+     // add optional offset
+    if (target.attr("data-hook-offset")) {
+        // if offset set in section, overwrite value
+        offset = target.attr("data-hook-offset");
+    }
+    else {
+        offset = 100;
+    }
+
+    if (target.length) {
+        $("html, body").animate(
+            {
+                scrollTop: target.offset().top - parseInt(offset)
+            },
+            600,
+            function () {
+                var $target = $(target);
+                $target.focus();
+                if ($target.is(":focus")) {
+                    return false;
+                } else {
+                    $target.focus(); // Set focus again
+                }
+            }
+        );
+    }        
+}
+
+function scrollToCaseTile() {
+    var $this = $(location.hash),
+        filter = $this.attr("data-filter");
+    $("#caseFilters").collapse("hide");
+
+    //$("#caseFilters").one("hidden.bs.collapse", function () {
+        // scroll top
+        const top =  $(".js-scroll-hook").offset().top;
+        console.log(`top: ${top}`)
+        $("html, body").animate(
+            {
+                scrollTop: $(".js-scroll-hook").offset().top - 80,
+            },
+            300
+        );
+        /*let hook = document.querySelector(".js-scroll-hook");
+        hook.*/
+    //  });
+
+    // select current filter
+    $("[data-filter]").removeClass("underline");
+    $this.addClass("underline");
+    $(".js-filter-active").text(filter);
+
+    // show tiles
+    $(".js-case").hide();
+    $(".js-case" + "." + filter).each(function (i, el) {
+        setTimeout(function () {
+            $(el).fadeIn(300);
+        }, 300 * i);
+    });
+}
+
+
+function waitToScrollToView() {
+    let element = document.querySelector(location.hash);
+
+    if (!element) {
+        setTimeout(() => waitToScrollToView(), 100)
+    }
+    else {
+        let bounds = element.getBoundingClientRect();
+
+        //TODO
+        if (bounds.width === 0 || bounds.height === 0) {
+            setTimeout(() => waitToScrollToView(), 100)
+        }
+        else {
+
+            if (location.pathname === "/our-impact") {
+                scrollToCaseTile();
+            }
+            else {
+                scrollToRegularElement();
+            }
+        }
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (location.hash !== '') {
+        waitToScrollToView();
+    }
+});

@@ -1,0 +1,138 @@
+// Photo Grow
+// This can be re-written to be more efficient with regards
+// to re-using image instead of create/destroy approach
+
+var photo_grow = {
+
+	width: {},
+	height: {},
+	coordinates: {},
+	
+	init: function(size) {
+		this.startSize = size; 
+		var imgs = $$('img.zoom');
+		
+		imgs.each(function(el, index) {
+			// Is this a blank img?
+			if (/recipe\.png/.test(el.src)) return; 
+			// Delay downloading full-sized image, and calculating geometries until after page has been initially painted
+			// Prevents unecessary ui lockup on load
+			this.preset.delay(2000, this, [el,index]);
+		}, this);
+	},
+	
+	preset: function(small_img, i) {
+		
+		// Set click listener. Done here to prevent clicks before full-sized d/l complete
+		small_img.addEvent('click', this.load_image.bindWithEvent(this, [small_img, i]));
+		
+		// Preload full-sized img
+		//var preload = new Element('img', {
+		//	'src': small_img.src.replace(this.startSize, 'original')
+		//});
+		
+		// Collect position and size information from the small img
+		// This will cause reflow
+		this.coordinates[i] = small_img.getCoordinates();
+	},
+	
+	load_image: function(e, img, index) {
+		
+		new Event(e).stop();
+		
+		// Show loading message
+		this.loading_msg = new Element('span', {'class':'img_loading'}).setText('Loading...');
+		this.loading_msg.setStyles({
+			'top': this.coordinates[index].top,
+			'left': this.coordinates[index].left
+		});
+		this.loading_msg.injectInside(document.body);
+		
+		// Remove if already exists
+		if (enlarged = $('grown_photo')) enlarged.remove();
+		
+		// Create an img element for full-sized
+		var image = new Element('img', {
+			'styles': {
+				'position': 'absolute',
+				'top': '0px',
+				'z-index': '-99',
+				'cursor': 'pointer',
+				'opacity': '0',
+				'alt': ''
+			},
+			'class': 'enlarged',
+			'id': 'grown_photo',
+			'events': {
+				'load': function(){
+					photo_grow.grow(image, index);
+				}
+			}
+		});
+		
+		// Here, or else ie won't fire load event for cached image
+		image.src = img.src.replace(this.startSize, 'original');
+		
+	},
+	
+	grow: function(image, index){
+			
+		// Remove loading msg
+		this.loading_msg.remove();
+		
+		// Inject img
+		image.injectInside(document.body);
+		
+		// Full image size
+		imageWidth = image.width;
+		imageHeight = image.height;
+		
+		// Skip if image isn't loaded
+		if (imageWidth < 10) return;
+		
+		// When enlarged, middle of the screen
+		var grownTop = window.getScrollTop() + 105;
+		var grownLeft = (window.getWidth() - imageWidth) / 2;
+		
+		// Center grown image over thumbs
+		image.setStyles({
+			'top'    : this.coordinates[index].top + "px",
+			'left'   : this.coordinates[index].left + "px",
+			'width'  : this.coordinates[index].width + "px",
+			'height' : this.coordinates[index].height + "px",
+			'z-index': '+99'
+		});	
+		
+		// Create grow fx
+		var enlargeImage = new Fx.Styles(image, {duration: 300, onComplete: function() {
+			
+			// Watch for click to shrink image down
+			image.addEvent('click', function() { 
+				var contractImage = new Fx.Styles(image, {duration: 300, onComplete: function() {
+					image.remove();
+				}});
+				
+				// Shrink back to thumb location and size
+				contractImage.start({
+					'top'    : [grownTop, this.coordinates[index].top],
+					// added
+					'left'   : [grownLeft, this.coordinates[index].left],
+					'width'  : [imageWidth, this.coordinates[index].width],
+					'height' : [imageHeight, this.coordinates[index].height],
+					'opacity': [1,0]
+				});
+			}.bind(this));
+			
+		}.bind(this)});
+		
+		// Grow it, small -> big
+		enlargeImage.start({
+			'top'    : [this.coordinates[index].top, grownTop],
+			// added
+			'left'   : [this.coordinates[index].left, grownLeft],
+			'width'  : [this.coordinates[index].width, imageWidth],
+			'height' : [this.coordinates[index].height, imageHeight],
+			'opacity': [0,1]
+		});
+	}
+}

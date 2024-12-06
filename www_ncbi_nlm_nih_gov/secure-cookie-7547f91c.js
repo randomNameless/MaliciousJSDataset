@@ -1,0 +1,1 @@
+import{a as s}from"./vendor-e5de9311.js";function n(o,i,t){const e=t||{};window.location.protocol==="https:"&&(e.secure=!0),(!e.expires||e.expires==="Session")&&(e.expires=365),s.set(o,i,e)}function c(o){return s.get(o)}export{c as r,n as s};

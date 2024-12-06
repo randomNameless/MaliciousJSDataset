@@ -1,0 +1,346 @@
+$(document).ready(function() {
+
+  //reformat breadcrumbs by T4 developer
+  /*if(jQuery('.breadcrumbs ul').length > 0) {
+  	var breadcrumbs = jQuery('.breadcrumbs ul').html();
+	var breadcrumbsLinks = breadcrumbs.split('|');
+	breadcrumbsLinks = breadcrumbsLinks.join('</li><li>');
+	jQuery('.breadcrumbs ul').html('<li>'+ breadcrumbsLinks + '</li>');
+  }*/
+  //Events removes end date if save as start date by T4 developer
+  if(jQuery('.start-date').length > 0 && jQuery('.end-date').length > 0) {
+    jQuery('.event-date').each(function() {
+	    if(jQuery(this).find('.start-date').html() == jQuery(this).find('.end-date').html()) {
+	    	jQuery(this).find('.end-date').addClass('hidden');
+	      	var startDateParent = jQuery(this).find('.start-date').parent();
+          	if(startDateParent.length > 0) {
+	    		startDateParent.html(startDateParent.html().replace(/(\s-\s)/, ''));
+            }
+    	}
+    });
+
+  }
+
+
+/*	$('a').not(':has(img)').filter(function() {
+	   return this.hostname && this.hostname.substr(this.hostname.indexOf('.')) !== location.hostname.substr(location.hostname.indexOf('.'));
+	}).addClass("external-link");
+*/
+	//adds class for mobile nav - can't do it right in the HTML because of T4 restrictions
+	$('.sidebar-nav .currentbranch0').closest('li').addClass('visible-mobile');
+	//adds click arrow element for mobile toggle of menu
+	$('.visible-mobile .currentbranch0').append( "<span class='click-handle'></span>" );
+
+	$('.visible-mobile span.click-handle').click( function(event) {
+		$(this).toggleClass('uparrow');
+		$(this).closest('.visible-mobile').toggleClass('active');
+		$('.visible-mobile > ul').slideToggle(400);
+
+		event.preventDefault();
+	});
+
+
+	$('.mobile-nav .main-nav > ul > li span, .cta-block.hidden-desktop').click(function(event) {
+		$(this).parent().toggleClass('uparrow');
+		$(this).next().slideToggle(400);
+		$(this).parent().siblings().children('.dropdown').slideUp();
+		$(this).parent().siblings().removeClass('uparrow');
+		event.preventDefault();
+	});
+	$('.ancillary-nav p').click(function(event) {
+		$(this).toggleClass('uparrow');
+		$(this).next().slideToggle(300);
+		event.preventDefault();
+	});
+	$('.overlay').click(function() {
+
+		$('body').removeClass('cover');
+		$('.mobile-nav').removeClass('reveal-nav');
+		$('.hamburger').removeClass('open')
+
+	});
+ $('.flexslider').flexslider({
+  		slideshowSpeed: 8000,
+  		animation: 'slide',
+      slideshow: true,
+  		touch:true,
+   		controlNav: true,
+  	});
+
+
+  $('.hamburger').click( function() {
+		$('.mobile-nav').toggleClass('reveal-nav');
+		$('body').toggleClass('cover');
+		$(this).toggleClass('open');
+		$('header').toggleClass('border-bottom');
+	});
+
+
+	$('.carousel').slick({
+		mobileFirst:true,
+		appendArrows: '.slick-nav',
+		responsive: [
+    	{
+
+    	  breakpoint: 680,
+    	  settings: 'unslick'
+
+    	  }
+
+  	]
+  });
+
+  $('.cal-carousel').slick({
+		mobileFirst:true,
+		infinite: false,
+		arrows: false,
+		variableWidth:true,
+		responsive: [
+    	{
+
+    	  breakpoint: 680,
+    	  settings: 'unslick'
+
+    	  }
+
+  	]
+  });
+
+// set the top value for nav on carousels
+$(window).on('load resize', function() {
+  	var height = $('.slide img, .slider-quotes .col.span_1_of_3 img').height();
+	var final = height-45;
+
+		$('.slick-nav').css('top',final);
+
+});
+$(window).on('load resize', function() {
+  	var height = $('.slides img, .slider-quotes .col.span_1_of_3 img').height();
+	var final = height-30;
+
+		$('.flex-direction-nav').css('top',final);
+
+});
+
+  if($('.tweet1').length > 0) {
+	//twitter init
+	$('.tweet1').twittie({
+	     dateFormat: '%b. %d, %Y',
+	     template: '{{tweet}} <div class="date">{{date}}</div>',
+	     count: 3
+	}, function() {
+	    alert('loaded!');
+	});
+  }
+  if($('.tweet2').length > 0) {
+	//twitter init
+	$('.tweet2').twittie2({
+	     dateFormat: '%b. %d, %Y',
+	     template: '{{tweet}} <div class="date">{{date}}</div>',
+	     count: 3
+	}, function() {
+	    alert('loaded!');
+	});
+  }
+
+	$('.square').click(function() {
+		$(this).children().toggleClass('visible');
+		$(this).toggleClass('active');
+		$(this).siblings().children().removeClass('visible');
+		$(this).siblings().removeClass('active')
+	});
+
+	$( '.search-field' ).focus(function() {
+		$(this).attr('placeholder','');
+	});
+
+
+
+	// call matchHeight plugin
+
+    $('.slider-quotes .slide').matchHeight();
+    $('.slider-quotes .col.span_1_of_3').matchHeight();
+    $('.cta-block .table-style').matchHeight();
+	$('.two-boxes .col').matchHeight();
+	$('.col.border-gray').matchHeight();
+	$('.three-quote-row .col').matchHeight();
+    $('.cal-row .col').matchHeight();
+
+	$('#programs li').matchHeight();
+    $('.module-border .col').matchHeight();
+    $('.module .quote').matchHeight();
+	//$('.show-programs .program').matchHeight();
+
+	setTimeout( function() {
+		$('.module-border .col, .red-caption .col, .white-pane .col').matchHeight();
+		$.fn.matchHeight._update()
+	}, 1000);
+
+  	// Fixed the height of the p tag inside the carousel, so the background colour fills the space. added by T4 developer
+  	if(jQuery('.cal-carousel .col p').length > 0) {
+  		var carouselHighestCol = 0;
+
+		jQuery('.cal-carousel .col p').each(function() {
+			var carouselColheight = jQuery(this).height()
+			if( carouselColheight > carouselHighestCol ) {
+				carouselHighestCol = carouselColheight;
+			}
+		});
+
+		jQuery('.cal-carousel .col p').height(carouselHighestCol);
+  	}
+
+  	//moved by T4 developer
+	function readMore(){
+	  	var colHeight = $('.cal-row .col').height();
+
+	  	$('.cal-row .read-more-button').css('height', colHeight);
+	}
+
+	readMore();
+
+	$('.read-more-button').hover(function() {
+		// $(this).siblings().css('left', '0');
+
+		// $(this).parents('.read-more-button').animate({
+		//     width: '23.8%'
+		// }, 300);
+		$(this).addClass('active');
+		}, function() {
+		$(this).removeClass('active');
+	});
+
+	//Explore Programs
+
+
+	$('.show-all').click(function (event) {
+		event.preventDefault();
+		$('#programs input').prop('checked', true);
+		$('.program').addClass('visible');
+
+		matchCount = $('#show-programs').find('.visible').length;
+		$('.match-count').text(matchCount);
+
+		$('.back-to-top').addClass('show');
+		$('.stationary').addClass('show');
+
+	});
+
+	$('.clear').click(function (event) {
+		event.preventDefault();
+
+		$('#programs input').prop('checked', false);
+		$('.program').removeClass('visible');
+		$('.back-to-top').removeClass('show');
+		$('.stationary').removeClass('show');
+
+	});
+
+
+	$('#programs input').change(function(event) {
+		event.preventDefault();
+		if($(this).is(':checked')) {
+			$('.' + $(this).val()).addClass('visible');
+
+			matchCount = $('#show-programs').find('.visible').length;
+			$('.match-count').text(matchCount);
+			$('#show-programs-jump .program-match-jump').addClass('show');
+			$('.stationary').addClass('show');
+
+			if($('.visible').length > 0){
+				$('.back-to-top').addClass('show');
+        	}
+        } else {
+        	var keepChecked = '';
+			$('#programs input:checked').each(function() {
+				keepChecked += ':not(.' + $(this).val() + ')';
+     		});
+			$('.program' + keepChecked).removeClass('visible');
+
+			matchCount = $('#show-programs').find('.visible').length;
+			$('.match-count').text(matchCount);
+
+			if($('.visible').length === 0){
+				$('.back-to-top').removeClass('show');
+				$('.stationary').removeClass('show');
+        	}
+        }
+
+
+	});
+
+
+	$('#show-programs-jump').waypoint(function (direction) {
+        if (direction === "up") {
+        	$('#show-programs-jump .program-match-jump').removeClass('force-hide');
+
+        	if($('#programs input').is(':checked')){
+        		$('#show-programs-jump .program-match-jump').addClass('show');
+        	}
+
+        } else if (direction === "down") {
+        	$('#show-programs-jump .program-match-jump').removeClass('show');
+        	$('#show-programs-jump .program-match-jump').addClass('force-hide');
+
+        }
+    }, { offset:'100%'});
+
+	$(function() {
+	  $('a[href*="#"]:not([href="#"])').click(function() {
+	   if($(this).attr("href").includes("#ex")) return;
+	    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+	      var target = $(this.hash);
+	      target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+	      if (target.length) {
+	        $('html,body').animate({
+	          scrollTop: target.offset().top
+	        }, 500);
+	        return false;
+	      }
+	    }
+	  });
+	});
+
+	$('.youtube').colorbox({iframe:true, innerWidth:640, innerHeight:390, transition: 'none'});
+
+	$('.typical-slider h3 > a, .external-link, .blue-arrow').html(function(){
+		// separate the text by spaces
+		var text= $(this).text().split(' ');
+		// drop the last word and store it in a variable
+		var last = text.pop();
+		// join the text back and if it has more than 1 word add the span tag
+		// to the last word
+		return text.join(" ") + (text.length > 0 ? ' <span class="last-word">'+last+'</span>' : last);
+	});
+
+});
+
+
+
+// Modal window for hiding search
+
+// Get the modal
+var searchmodal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("search-close")[0];
+
+// When the user clicks on the button, open the modal
+    btn.onclick = function() {
+    searchmodal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+    searchmodal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == searchmodal) {
+        searchmodal.style.display = "none";
+    }
+}

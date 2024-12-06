@@ -1,0 +1,136 @@
+/* Auto Complete */
+
+var autocomplete = false;
+function itemSelected(ev) {
+    autocomplete = true;
+    var index = $find("AutoCompleteEx")._selectIndex;
+    var aci = $find("AutoCompleteEx").get_completionList().childNodes[index];
+    var dd = aci._value;
+    $find("AutoCompleteEx").get_element().value = aci._display;
+    document.location.href = dd;
+    return false;
+}
+
+function onClientPopulated(sender, e) {
+    var comletionList = $find("AutoCompleteEx").get_completionList();
+    for (i = 0; i < comletionList.childNodes.length; i++) {
+        var _v = eval(comletionList.childNodes[i]._value);
+        var iname = _v[0];
+        var ibname = _v[1];
+        var iurl = _v[2];
+        comletionList.childNodes[i]._value = iurl;
+        comletionList.childNodes[i]._display = iname;
+        comletionList.childNodes[i].innerHTML = ibname;
+    }
+}
+
+function intlphone(t) {$("#" + t).html("(302) 533-8625"); return false;}
+
+/* Search Functions */
+
+function doSearch(id) {
+    var search = $("#" + id).val();
+    if (search == "" || search == default_values[id]) return false;
+    if (search != null) {
+        document.location.href = "http://www.ticketseating.com/find-tickets/" + cleanInputData(search) + "/";
+    }
+    return false;
+}
+
+function QSearch() {
+    try {
+        var dti = document.getElementById('qsDrop');
+        var dt = dti.value;
+        var se = document.getElementById('qsLoc');
+
+        if (se.value != default_values['qsLoc'] && se.value != "") {
+            if (dt == "0") dt = dti.item(1).value;
+            var sloc = null;
+            var re = /[a-zA-Z]/;
+            var reTest = re.test(se.value);
+            if (!reTest) sloc = "http://www.ticketseating.com/find-tickets/--zip-" + cleanInputData(se.value) + "--for-date-" + cleanInputData(dt) + "/";
+            else sloc = "http://www.ticketseating.com/find-tickets/" + cleanInputData(se.value) + "--for-date-" + cleanInputData(dt) + "/";
+            document.location.href = sloc;
+        } else {
+            alert("Please Enter All Search Values.");
+        }
+    } catch (e) { }
+
+    return false;
+}
+
+
+function setToggle(i, o, d) {
+    if (d == "table-row-group") {
+        if (is_ie) { $("#" + i).css("display", "block") };
+        $("#" + i).css("display", "table-row-group");
+    } else {
+        $("#" + i).css("display", d);
+    }
+    $("#" + o).css("display", "none");
+    return false;
+}
+
+
+
+function ShowConfig(id) {
+    var el = $("#config_" + id);
+    if (el.length) {
+        $("#vdtd div.vdinfo").css("display", "none")
+        el.css("display", "block");
+    }
+}
+
+
+function ShowDiv(id, type, remove, btype) {
+    if (type == 0 && remove != null) {
+        for (i = 0; i < remove.length; i++) {
+            $("#" + remove[i]).css("display", "none");
+        }
+    }
+
+    if (btype == undefined || btype == null) btype = "block";
+    if (type != 0) btype = "none";
+
+    $("#" + id).css("display", btype);
+
+    return false;
+}
+
+
+function openWin(url, w, h) { window.open(url, "VenueImage", "status=0,toolbar=0,scrollbars=0,width=" + w + ",height=" + h); return false; }
+function NLSubmit() {$('#tsRSB_nlbtn').click(); return false;}
+function NLClick() {$("#nls").html("<b style=\"font-size:7pt;\">Validating Email...</b>");}
+function getSizeWH() { var a = 0, b = 0; if (typeof window.innerWidth == "number") { a = window.innerWidth; b = window.innerHeight } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) { a = document.documentElement.clientWidth; b = document.documentElement.clientHeight } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) { a = document.body.clientWidth; b = document.body.clientHeight } return [a, b] }
+function getScrollXY() { var a = 0, b = 0; if (typeof window.pageYOffset == "number") { b = window.pageYOffset; a = window.pageXOffset } else if (document.body && (document.body.scrollLeft || document.body.scrollTop)) { b = document.body.scrollTop; a = document.body.scrollLeft } else if (document.documentElement && (document.documentElement.scrollLeft || document.documentElement.scrollTop)) { b = document.documentElement.scrollTop; a = document.documentElement.scrollLeft } return [a, b] }
+function getCookie(name) { $.cookie(name); }
+function ScrollTo(id) { $("#" + id).scrollTop(); }
+function cleanInputData(a) { a = a.replace(/(?:(\<)|(\>)|(\?)|(\/)|(\\)|(\')|(\"))/gi, ""); if (encodeURIComponent) { a = encodeURIComponent(a); a = a.replace(/\%26/gi, "+"); a = a.replace(/\%20/gi, "+"); a = a.replace(/\++/gi, "-"); a = a.replace(/\-\-/gi, "-"); return a.toLowerCase() } else { a = a.replace(/\&/gi, "+"); a = a.replace(/\s+/gi, "+"); a = a.replace(/\++/gi, "-"); a = a.replace(/\-\-/gi, "-"); return escape(a).toLowerCase() } };
+function doAJAXLoad(r, s) { if (s != null) $('#' + s).css('display', 'block'); if (r != null) $('#' + r).css('display', 'none'); }
+
+
+
+function buyurl(id, price, split, mobile) {
+
+    var m = "";
+    var spsource = $.cookie("ts-source");
+    var adsource = "";
+    if (spsource != null) adsource += "&TSSourceID=" + spsource
+    var utmsource = $.cookie("_utmid");
+    if (utmsource != null) adsource += "&ppcsrc=" + utmsource + "_";
+    if (mobile == 1) { m = "mobile/"; }
+
+    return "https://secure.ticketseating.com/checkout/" + m + "Checkout.aspx?brokerid=3214&sitenumber=1&tgid=" + id + "&treq=" + split + "&evtID=" + eventID + "&price=" + price + "&SessionId=" + makeGuid() + adsource;
+
+}
+
+function makeGuid() {
+    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
+    var guid_length = 5;
+    var guid = '';
+    for (var i = 0; i < guid_length; i++) {
+        var rnum = Math.floor(Math.random() * chars.length);
+        guid += chars.substring(rnum, rnum + 1);
+    }
+    return guid;
+};

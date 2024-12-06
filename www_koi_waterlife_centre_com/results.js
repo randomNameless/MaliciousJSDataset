@@ -1,0 +1,91 @@
+function checkemail(form)
+{
+	var str=form.email.value
+	var filter=/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
+	if (filter.test(str))
+	testresults=true
+	else
+	{
+		testresults=false
+	}
+	return (testresults)
+}
+
+function formsubmit(task,formname,nw,ew,tw)
+{
+	str='addSubscriber';
+	strchk=task.search(str);
+	var form = formname;
+
+	var name = document.getElementById("ccnewsletter_name_module").value;
+	var email = document.getElementById("ccnewsletter_email_module").value;
+	if(name == "")
+	{
+		alert (nw);
+		return false;
+	}
+	if(email == "")
+	{
+		alert (ew);
+		return false;
+	}
+	var atpos=email.indexOf("@");
+	var dotpos=email.lastIndexOf(".");
+		if (atpos<1 || dotpos<atpos+2 || dotpos+2>=email.length)
+	 	 {
+		  	alert(ew);
+		  	return false;
+	 	 }
+	 if(document.getElementById("ccnewsletter") != null)
+	 {
+		 	if(form.terms_condition_ch.checked == false)
+			{
+				alert (tw);
+				return false;
+			}
+	 }
+
+	if(strchk == "0")
+	{
+		form.task.value = "addSubscriber";
+		form.submit();
+	} else if(task == "removeSubscriberByEmail")
+	{
+		form.task.value = "removeSubscriberByEmail";
+		form.submit();
+	}
+}
+
+function reloadCaptcha(formname)
+{
+	document.getElementById('subscribeFormModule'+formname).captcha.src=document.getElementById('subscribeFormModule'+formname).captcha.src+ '?' +new Date();
+}
+function newPopup(url)
+{
+	popupWindow = window.open(url,'popUpWindow','height=700,width=800,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=no')
+}
+
+function loadjscssfile(filename, filetype){
+	 if (filetype=="js"){ //if filename is a external JavaScript file
+	  var fileref=document.createElement('script')
+	  fileref.setAttribute("type","text/javascript")
+	  fileref.setAttribute("src", filename)
+	 }
+	 else if (filetype=="css"){ //if filename is an external CSS file
+	  var fileref=document.createElement("link")
+	  fileref.setAttribute("rel", "stylesheet")
+	  fileref.setAttribute("type", "text/css")
+	  fileref.setAttribute("href", filename)
+	 }
+	 if (typeof fileref!="undefined")
+	  document.getElementsByTagName("head")[0].appendChild(fileref)
+	}
+
+	if(typeof jQuery != 'undefined')
+	{
+
+	}
+	else
+	{
+		loadjscssfile("http://code.jquery.com/jquery-latest.js", "js")
+	}

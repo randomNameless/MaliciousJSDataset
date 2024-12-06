@@ -1,0 +1,56 @@
+$$ = $.noConflict();
+$$(function () {
+    var dialogHtml = '<div class="main_portfolio_full_screen">' + 
+		'<div id="mail-list-dialog">' +
+            '<div id="mail-list-header">' +
+                '<span>Subscribe To Our ABSOLUTEARTS Newsletter</span>' +
+                '<button id="mail-list-close">[X]</button>' +
+            '</div>' +
+            '<div id="mail-list-body">' +
+                '<div id="mail-list-message"><br>receive latest news - art ideas - get savings - be in the know!<br><br></div>' +
+                '<div id="mail-list-message2"><h3>Thank you for signing up.</h3><h5>This window will close momentarily</h5></div>' +
+                '<input id="mail-list-email" type="text" name="email" value="" placeholder="Your Email Address">' +
+            '</div>' +
+            '<div id="mail-list-bottom">' +
+                '<br><button type="submit" id="mail-list-submit">SUBSCRIBE</button>' +
+            '</div>' +
+            
+          '</p>' +
+        '</div>' +
+        '<div id="mail-list-overlay"></div></div>',
+        
+        cookieName  = 'maillist_asked',
+        overlay     = '#mail-list-overlay',
+        dialog      = '#mail-list-dialog',
+        submitUrl   = '/cgi-bin/portfolio/art/newsletter_signup.cgi',
+        submitButton= '#mail-list-submit',
+        message     = '#mail-list-message',
+        message2    = '#mail-list-message2',
+        email       = '#mail-list-email';
+    
+    if (document.cookie.indexOf(cookieName) === -1) {
+        document.cookie = cookieName + '=yes; path=/; domain=.absolutearts.com; max-age=' + 60 * 60 * 24 * 30; // 30 days
+	$$('body').append(dialogHtml);
+        $$(overlay).show();
+        $$(dialog).slideDown();
+        $$('#mail-list-close').on('click', function () {
+            $$(dialog).hide();
+            $$(overlay).hide();
+        });
+        $$(submitButton).on('click', function () {
+            var em = $$(email).val();
+            if (!em.match(/.+\@.+\..+/)) return;
+            $$.post(submitUrl, { email: em })
+            .always(function (res) {
+                $$(submitButton).hide();
+                $$(email).hide();
+                $$(message).hide();
+                $$(message2).show();
+                setTimeout(function () {
+                    $$(dialog).hide();
+                    $$(overlay).hide();
+                }, 3000);
+            });
+        });
+    }
+});

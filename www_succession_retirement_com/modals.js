@@ -1,0 +1,395 @@
+// modal.js - Emerald Connect Modal Class
+// Copyright 2012 Emerald Connect, Inc. All rights reserved.
+// written by casey wasser - last updated 12/27/2012
+var EmeraldModal = {
+  delay: 40,
+  modal_content_height_diff: 80,
+  modal_height_adjustment: 5,
+  modal_centering_adjustment: 8,
+  modal: null,
+  modal_content: null,
+  modal_buttons: null,
+  modal_controls: null,
+  overlay: null,
+  position: [0, 0],
+  setPosition: function () {
+    var d = $G.windowDimensions();
+    var l = Math.floor((d[0] - this.options.width) / 2) - this.modal_centering_adjustment;
+    var t = Math.floor((d[1] - this.options.height) / 2) - this.modal_centering_adjustment;
+    this.position = [l, t];
+  },
+  options: null,
+  setOptions: function (options) {
+    this.options = typeof options == 'undefined' ? {} : options;
+    // defaults
+    var message = '';
+    var controls = []; // ['maximize', 'minimize', 'close']
+    var maxWidth = $G.windowDimensions()[0]; // - 100;
+    var maxHeight = $G.windowDimensions()[1]; // - 100;
+    var okLabel = 'Ok';
+    var cancelLabel = 'Cancel';
+    var okCallback = this.closeAll;
+    var cancelCallback = this.closeAll;
+    // set defaults when null
+    this.options.fade = options.fade == 0 ? 0 : 1;
+    this.options.message = options.message || message;
+    this.options.controls = options.controls || controls;
+    this.options.okLabel = options.okLabel || okLabel;
+    this.options.cancelLabel = options.cancelLabel || cancelLabel;
+    this.options.okCallback = options.okCallback || okCallback;
+    this.options.cancelCallback = options.cancelCallback || cancelCallback;
+    // set dimensions
+    this.options.width = options.width;
+    this.options.height = options.height;
+    this.options.maxWidth = options.maxWidth ? Math.min(options.maxWidth, maxWidth) : maxWidth;
+    this.options.maxHeight = options.maxHeight ? Math.min(options.maxHeight, maxHeight) : maxHeight;
+    if (options.iframe) {
+      this.options.iframe = true;
+      this.options.message = '<iframe id="EmeraldModal_iframe" frameborder="0" src="' + this.options.message + '"></iframe>';
+    }
+    if (options.ajax) {
+      this.options.ajax = true;
+      this.ajaxContent(this.options.message);
+      this.options.message = '<div class="loading"><img src="' + Global.applicationRoot + 'include/images/spacer.gif" /> loading...</div>';
+    }
+    this.options.color = options.color ? options.color : 'white';
+  },
+  closeAll: function (keepOverlay) {
+    if (EmeraldModal.modal) {
+      if (EmeraldModal.options.fade == 0) {
+        EmeraldModal.modal.style.display = 'none';
+        EmeraldModal.modal.parentNode.removeChild(EmeraldModal.modal);
+        if (keepOverlay != true) {
+          EmeraldModal.overlay.style.display = 'none';
+          EmeraldModal.overlay.parentNode.removeChild(EmeraldModal.overlay);
+        }
+      }
+      else {
+        EmeraldModal.fadeOut(EmeraldModal.modal);
+        if (keepOverlay != true) {
+          EmeraldModal.fadeOut(EmeraldModal.overlay);
+        }
+      }
+    }
+  },
+  animateOpacity: function (e, o, d) {
+    o = Math.round(d > 0 ? Number(o + 1) : Number(o - 1));
+    if (e) {
+      var modify = function () {
+        $S.opacity(e, o);
+      }
+      // set opacity
+      modify();
+      // call next step
+      if (d > 0) {
+        // fading in
+        if (e == EmeraldModal.overlay) {
+          // limit overlay max to 70%
+          o = Math.min(o, 7);
+          if (o < 7) {
+            setTimeout(function () {
+              EmeraldModal.animateOpacity(e, o, d);
+            }, EmeraldModal.delay);
+          }
+        }
+        else {
+          if (o < 10) {
+            setTimeout(function () {
+              EmeraldModal.animateOpacity(e, o, d);
+            }, EmeraldModal.delay);
+          }
+        }
+      }
+      else {
+        // fading out
+        if (o > 0) {
+          setTimeout(function () {
+            EmeraldModal.animateOpacity(e, o, d);
+          }, EmeraldModal.delay);
+        }
+        else {
+          // e is invisible, delete it
+          if (e.parentNode) {
+            e.parentNode.removeChild(e);
+          }
+        }
+      }
+    }
+  },
+  fadeIn: function (e) {
+    var o = 0;
+    $S.opacity(e, o);
+    e.style.display = '';
+    this.animateOpacity(e, o, 1);
+  },
+  fadeOut: function (e) {
+    var o = 10;
+    if (typeof e.style.opacity != 'undefined') {
+      o = Math.round(Number(e.style.opacity) * 10);
+    }
+    this.animateOpacity(e, o, -1);
+  },
+  getControls: function () {
+    var controlsElement = EmeraldModal.createDiv(null, null, 'EmeraldModal_controls');
+    // loop to build controls
+    if (this.options.controls.length > 0) {
+      for (i = 0; i < this.options.controls.length; i++) {
+        if (this.options.controls[i].match(/maximize|minimize|close/)) {
+          var controlElement = EmeraldModal.createDiv('EmeraldModal_' + this.options.controls[i], '&nbsp;', 'EmeraldModal_' + this.options.controls[i]);
+          controlsElement.appendChild(controlElement);
+        }
+      }
+    }
+    else {
+      controlsElement.innerHTML = '&nbsp;';
+    }
+    return controlsElement;
+  },
+  getButtons: function (buttonsArr) {
+    var buttonsElement = this.createDiv('EmeraldModal_buttons', null, 'EmeraldModal_buttons');
+    var addButton = function (id, txt) {
+      var button = document.createElement('button');
+      button.setAttribute('type', 'button');
+      button.setAttribute('id', id);
+      button.innerHTML = txt;
+      buttonsElement.appendChild(button);
+    };
+    // loop to build buttons
+    if (buttonsArr.length > 0) {
+      for (i = 0; i < buttonsArr.length; i++) {
+        switch (buttonsArr[i]) {
+          case 'ok':
+            addButton('EmeraldModal_ok', this.options.okLabel);
+            break;
+          case 'cancel':
+            addButton('EmeraldModal_cancel', this.options.cancelLabel);
+            break;
+          case 'back':
+            addButton('EmeraldModal_back', '&lt;');
+            break;
+          case 'next':
+            addButton('EmeraldModal_next', '&gt;');
+            break;
+        }
+      }
+    }
+    else {
+      buttonsElement.innerHTML = '&nbsp;';
+    }
+    return buttonsElement;
+  },
+  createDiv: function (id, txt, className) {
+    var e = document.createElement('div');
+    if (typeof id == 'string') {
+      e.setAttribute('id', id);
+      if (id == 'EmeraldModal') {
+        e.setAttribute('role', className.match('alert') ? 'alertdialog' : 'dialog');
+      }
+    }
+    if (typeof txt == 'string') { e.innerHTML = String(txt); }
+    if (typeof className == 'string') { e.className = className; }
+    return e;
+  },
+  _getModal: function (options, modalType, buttonsArr) {
+    this.setOptions(options);
+    // create modal and overlay to insert
+    var overlay_already_exists = $G.id('EmeraldModal_overlay');
+    if (!overlay_already_exists) {
+      this.overlay = this.createDiv('EmeraldModal_overlay', '&nbsp;', 'EmeraldModal_overlay');
+      this.overlay.style.display = 'none';
+      this.overlay.style.height = $G.windowDimensions()[1] + 'px';
+    }
+    this.modal = this.createDiv('EmeraldModal', null, 'EmeraldModal EmeraldModal_' + this.options.color + ' EmeraldModal_' + modalType);
+    // if controls, create controls div
+    if (this.options.controls.length > 0) {
+      this.modal_controls = this.getControls();
+      this.modal.appendChild(this.modal_controls);
+    }
+    // set content height depending on presence of buttons
+    this.modal_content_height_diff = buttonsArr.length == 0 ? 35 : 80;
+    // create content div
+    this.modal_content = this.createDiv('EmeraldModal_content', this.options.message, 'EmeraldModal_content');
+    this.modal.appendChild(this.modal_content);
+    // if buttons, create buttons div
+    if (buttonsArr.length > 0) {
+      this.modal_buttons = this.getButtons(buttonsArr);
+      this.modal.appendChild(this.modal_buttons);
+    }
+    // add nodes to page
+    $G.body().appendChild(this.modal);
+    if (this.options.width) {
+      this.modal.style.width = this.options.width + 'px';
+    }
+    if (!this.options.height) {
+      this.options.height = $G.id('EmeraldModal').offsetHeight + 20;
+    }
+    this.modal_content.style.height = String(Number(this.options.height - this.modal_content_height_diff)) + 'px';
+    this.modal.style.height = this.options.height + 'px';
+    this.setPosition();
+    this.modal.style.left = Math.max(0, this.position[0]) + 'px';
+    this.modal.style.top = Math.max(0, this.position[1]) + 'px';
+    $S.opacity(this.modal, 0);
+    if (!overlay_already_exists) {
+      $G.body().appendChild(this.overlay);
+    }
+    // IE6,7,8 don't like the fixed positioning
+    if ($G.isIE()) {
+      if ($G.ieVersion() < 9) {
+        this.modal.style.position = 'absolute';
+        this.overlay.style.position = 'absolute';
+        this.modal.style.top = this.position[1] + $G.scrollY() + 'px';
+        this.modal.style.left = this.position[0] + $G.scrollX() + 'px';
+        this.overlay.style.top = $G.scrollY() + 'px';
+        this.overlay.style.left = $G.scrollX() + 'px';
+      }
+    }
+    // reset height
+    if (typeof this.options.height == 'undefined') {
+      var mh = Math.min(Number(this.modal.offsetHeight + this.modal_height_adjustment), this.options.maxHeight);
+      var ch = mh - this.modal_content_height_diff
+      if (ch < 20) {
+        mh = 400;
+        ch = mh - this.modal_content_height_diff;
+      }
+      this.modal.style.height = mh + 'px';
+      this.modal_content.style.height = ch + 'px';
+      this.modal.style.top = Math.max(0, Math.round(Number($G.windowHeight() - mh) / 2)) + 'px'
+    }
+    // reset width
+    if (typeof this.options.width == 'undefined') {
+      var mw = Math.min(this.modal.offsetWidth, this.options.maxWidth);
+      this.modal.style.width = mw + 'px';
+      this.modal.style.left = Math.max(0, Math.round(Number($G.windowWidth() - mw) / 2)) + 'px'
+    }
+    // if iframe, resize iframe
+    var iframeElement = $G.id('EmeraldModal_iframe');
+    if (iframeElement) {
+      // this.modal_content.style.overflow = 'hidden';
+      iframeElement.style.height = this.modal_content.style.height;
+    }
+    // set buttons
+    var okButton = $G.id('EmeraldModal_ok');
+    var cancelButton = $G.id('EmeraldModal_cancel');
+    var backButton = $G.id('EmeraldModal_back');
+    var nextButton = $G.id('EmeraldModal_next');
+    // set controls
+    var closeControl = $G.id('EmeraldModal_close');
+    var minimizeControl = $G.id('EmeraldModal_minimize');
+    var maximizeControl = $G.id('EmeraldModal_maximize');
+    if (options.fade == 0) {
+      // show w/o fade
+      this.modal.style.display = '';
+      $S.opacity(this.modal, 10);
+      if (!overlay_already_exists) {
+        this.overlay.style.display = '';
+        $S.opacity(this.overlay, 8);
+      }
+    }
+    else {
+      // fade in
+      this.fadeIn(this.modal);
+      if (!overlay_already_exists) { this.fadeIn(this.overlay); }
+    }
+    if (okButton) {
+      okButton.focus();
+    }
+    // event handlers
+    if (okButton) { okButton.onclick = this.options.okCallback; }
+    if (cancelButton) { cancelButton.onclick = this.options.cancelCallback; }
+    if (backButton) { backButton.onclick = this.options.backCallback; }
+    if (nextButton) { nextButton.onclick = this.options.nextCallback; }
+    if (closeControl) { closeControl.onclick = this.options.cancelCallback; }
+    if (this.overlay) { this.overlay.onclick = this.options.cancelCallback; }
+    // ESC key closes modal
+    var cancel = this.options.cancelCallback;
+    document.onkeydown = checkKeycode;
+    function checkKeycode(e) {
+      var keycode;
+      if (window.event) { keycode = window.event.keyCode; }
+      else if (e) { keycode = e.which; }
+      if (Number(keycode) == 27) { cancel(); }
+    }
+    //Eliminate double scrollbars
+    jQuery('#EmeraldModal_content').height(jQuery('#EmeraldModal_content').height()+5)
+  },
+  getModal: function (options, modalType, buttonsArr) {
+    // decide how to call
+    if ($G.id('EmeraldModal')) {
+      this.closeAll(true);
+      setTimeout(function () {
+        EmeraldModal._getModal(options, modalType, buttonsArr);
+      }, 1000);
+    }
+    else {
+      EmeraldModal._getModal(options, modalType, buttonsArr);
+    }
+  },
+  ajaxContent: function (url) {
+    var xmlhttp;
+    if (!window.XMLHttpRequest) { // IE6,5.. 
+      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    else {
+      xmlhttp = new XMLHttpRequest();
+    }
+    xmlhttp.onreadystatechange = function () {
+      setTimeout(function () {
+        var content_target = $G.id('EmeraldModal_content');
+        if (content_target) {
+          if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            var txt = xmlhttp.responseText
+            txt = txt.match('</head>') ? txt.split('</head>')[1].replace('</html>', '').replace('<body', '<div').replace('</body', '</div') : txt;
+            content_target.innerHTML = txt;
+          }
+          else {
+            content_target.innerHTML = 'Error, Status = ' + xmlhttp.status;
+          }
+        }
+      }, 250);
+    }
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+  },
+  info: function (options) {
+    this.getModal(options, 'info', []);
+  },
+  image: function (options) {
+    if (!options.ajax) {
+      options.message = '<div style="text-align:center;"><img src="' + options.message + '" alt="" /></div>';
+    }
+    options.width = options.width || 800;
+    options.height = options.height || 600;
+    options.controls = ['close'];
+    this.getModal(options, 'info', []);
+  },
+  images: function (options) { this.getModal(options, 'info', ['back', 'next']); },
+  alert: function (options) {
+    var getAlertTable = function (message) {
+      if (!options.ajax) {
+        return '<div class="alert_message">' + message + '</div>';
+      }
+      else {
+        return message;
+      }
+    };
+    if (typeof options == 'string') {
+      // for "alert('txt')" type calls
+      var message = options;
+      options = {
+        message: getAlertTable(message),
+        width: 220
+      };
+    }
+    else {
+      // for properly formatted calls
+      options.message = getAlertTable(options.message);
+      options.width = options.width || 220;
+    }
+    this.getModal(options, 'alert', ['ok']);
+  },
+  confirm: function (options) {
+    options.message = options.message;
+    options.width = options.width || 220;
+    this.getModal(options, 'confirm', ['ok', 'cancel']);
+  }
+};

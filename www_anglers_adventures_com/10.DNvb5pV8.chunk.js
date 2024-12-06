@@ -1,0 +1,1 @@
+function t(t,n){let e,o=Date.now()-2*t;const r=function(){return o=Date.now(),n(...arguments)},a=()=>clearTimeout(e),c=function(){const n=Date.now();n-o>=t&&(o=Date.now()),a();for(var c=arguments.length,u=new Array(c),i=0;i<c;i++)u[i]=arguments[i];e=setTimeout(r,o-n+t,...u)};return c.cancel=a,c}export{t};
