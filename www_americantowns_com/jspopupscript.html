@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jspopupscript.html</title>
+</head>
+<body>
+
+<script>
+var FORMPOPUP = (function ($) {
+  var intf = {};
+  var $iframeElement;
+  var $overlayElement;
+  var $whatsNewElement;
+  intf.isIpadDetected = false;
+  intf.isNewsCookieSet = false;
+  intf.toggleFlag = false;
+  intf.townsValue = '';
+  intf.passLOState = false;
+  intf.connectUrl = '';
+  intf.stateOfSubmission =false;
+
+  //To check domain
+  var url = window.location.hostname;
+  var domainUrl = url.substring(url.indexOf('.'));
+
+  //Element Object Initialization
+  intf.init = function(obj) {
+    var cookiearray = document.cookie.split(";");
+    intf.connectUrl = $('#header').attr('data-domain');
+    $iframeElement = obj.iframeElement;
+    $overlayElement = obj.overlayElement;
+    var $whatsNewElem = obj.whatsNewElement;
+    var stateOfSubmission = $whatsNewElem.attr('data-apisubmission');
+    intf.stateOfSubmission = (stateOfSubmission === 'inactive') ? false : true;
+    var dataAttr4Newsltr = $('#main').attr('data-newsletter');
+    var tmpCName = '';
+    var townStateCValue = '';
+    var passLogoutState = false;
+    var issBtSet = false;
+    for(var i = 0; i< cookiearray.length;i++) {
+        var splitValue = cookiearray[i].split('=');
+        var nameOrg = splitValue[0];
+        var cookieValue = splitValue[1];
+        nameOrg = nameOrg.trim();
+        tmpCName = 'newsFeedShownOnSite';
+        if(nameOrg === tmpCName && cookieValue === '1' ) {
+            intf.isNewsCookieSet = true;
+        } else if(nameOrg === 'ct' && cookieValue) {
+            if(!issBtSet) {
+                townStateCValue = cookieValue;
+            }
+        } else if(nameOrg === 'bt' && cookieValue) {
+            issBtSet = true;
+            townStateCValue = cookieValue;
+        } else if(nameOrg === 'userloggedOut' && cookieValue === '1') {
+            passLogoutState = true;
+        }
+    }
+    intf.townsValue = townStateCValue;
+    if ((dataAttr4Newsltr === 'addevent') || (dataAttr4Newsltr === 'addorg') || (dataAttr4Newsltr === 'addarticle') || (dataAttr4Newsltr === 'addphoto')) {
+        intf.isNewsCookieSet = true;
+        var newUrl = intf.connectUrl;
+        var typeOfAddForm = '';
+        switch (dataAttr4Newsltr) {
+            case 'addevent': typeOfAddForm = '/?type=event&tsv='+townStateCValue; break;
+            case 'addorg': typeOfAddForm = '/?type=org&tsv='+townStateCValue; break;
+            case 'addarticle': typeOfAddForm = '/?type=article&tsv='+townStateCValue; break;
+            case 'addphoto': typeOfAddForm = '/?type=photo&tsv='+townStateCValue;
+        }
+        var changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + typeOfAddForm+ '" frameborder="5" allowfullscreen></iframe>';
+        $iframeElement.append(changedIframeSrc);
+        intf.popupshow(false);
+    }
+    intf.passLOState = passLogoutState;
+    if(!intf.stateOfSubmission) {
+        intf.isNewsCookieSet = false;        
+    }
+  };
+
+  intf.checkIPADPlatform = function() {
+      if(/iPad/.test(navigator.userAgent)) {
+          intf.isIpadDetected = true;
+      }
+  };
+
+  //Append Iframe and Overlay Popup
+  intf.createstructure = function(struct) {
+    $('body').append(struct);
+  };
+
+  //Code for Displaying Iframe
+  intf.popupshow = function(setNewsCookie) {
+
+    $iframeElement.show();
+    $overlayElement.show();
+    if(intf.isIpadDetected) {
+        $('body').addClass('body-overflow');
+        $('.iframe-popup').css({'overflow-x':'hidden', 'overflow-y':'scroll', '-webkit-overflow-scrolling': 'touch'});
+    }
+    if(setNewsCookie) {
+      var myDate = new Date();
+      var tmpCName = 'newsFeedShownOnSite';
+      myDate.setMonth(myDate.getMonth() + 12);
+      myDate = myDate.toUTCString();
+      document.cookie = tmpCName+"=1;expires=" + myDate + ";path=/";
+      if(intf.stateOfSubmission) {
+         intf.toggleFlag = true; 
+         intf.isNewsCookieSet = true;
+      }
+    }
+  };
+
+  //Code for Displaying Iframe
+  intf.popuphide = function() {
+    if(intf.toggleFlag) {
+        var $iframePopup = $('.iframe-popup'); 
+        $iframePopup.find('iframe').removeClass('hidden');
+        $iframePopup.find('#whats-new').addClass('hidden');
+        $('.iframe-popup .close-popup').removeClass('hidden');
+        $iframePopup.removeClass('remove-bg-spinner');
+        intf.toggleFlag = false;
+    } else {
+        if(intf.isIpadDetected) {
+            $('body').removeClass('body-overflow');
+        }
+        $iframeElement.hide();
+        $overlayElement.hide();
+        if (typeof formsApiClosePopupCallback == 'function')
+          formsApiClosePopupCallback();
+    }
+  };
+  return intf;
+}(jQuery));
+
+(function($, d, w) {
+  $(d).ready(function() {
+    $('#whats-new').addClass('hidden');
+    var struct = '<div class="overlay"></div><div class="iframe-popup"><span class="close-popup" title="Close">CLOSE</span>';
+    FORMPOPUP.createstructure(struct);
+
+    //To check domain
+    var url = window.location.hostname;
+
+    //Initializing Element Object
+    var initialtionObj = {
+      bodyElement: $('body'),
+      iframeElement: $('body').find('.iframe-popup'),
+      overlayElement: $('body').find('.overlay'),
+      whatsNewElement: $('body').find('#whats-new')
+    };
+
+    FORMPOPUP.init(initialtionObj);
+    var connectUrl = FORMPOPUP.connectUrl;
+
+    //Click for Displaying Iframe
+    $('a.add-org-article, a.add-org-event, a.add-events, a.add-org, a.add-articles, a.add-photos, a.edit-events, a.edit-org, a.edit-articles, a.edit-photos, a.edit-current-event, a.edit-current-org, a.edit-current-article, a.edit-current-photos, a.edit-press-release, a.formsapi-login, a.formsapi-register, a.openMyprofileInApi').on('click', function(eventx) {
+      eventx.preventDefault();
+      eventx.stopPropagation();
+      var stat4News = FORMPOPUP.isNewsCookieSet;
+      var passState = FORMPOPUP.passLOState;
+      var stateChangedValue = passState ? '&userLoggedOut=1' : '';
+      var parentURL = '&parentUrl='+url;
+      var newUrl = connectUrl;
+      var currentUrl = $(this).attr('href');
+      var id = currentUrl.substring(currentUrl.lastIndexOf('/') + 1);
+      var $whatsNewsStructure =  $('#whats-new');
+      var formsSubmission = FORMPOPUP.stateOfSubmission;
+      var $iframeMainContainer = $('.iframe-popup');
+      var setNewsCookie = false; 
+      var isRegistrationHit = false;
+      var changedIframeSrc = $iframeMainContainer.find('iframe').attr('src');
+      var townState = FORMPOPUP.townsValue;
+        if(!$whatsNewsStructure.length && !stat4News) {
+            stat4News = true;
+            FORMPOPUP.isNewsCookieSet = true;
+        }
+        if(stat4News) {
+            if ($(this).hasClass('add-events')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/?type=event&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('add-org')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/?type=org&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('add-articles')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/?type=article&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('add-photos')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/?type=photo&tsv='+ townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-events')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/modify?type=event&tsv='+ townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-org')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/modify?type=org&tsv='+ townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-articles')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/modify?type=article&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-photos')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/modify?type=photo&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('add-org-event')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/' + id + '?type=event&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('add-org-article')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/' + id + '?type=article&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-current-event')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/forms/' + id + '?type=event&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-current-org')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/forms/' + id + '?type=org&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-current-article')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/forms/' + id + '?type=article&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-current-photo')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/forms/' + id + '?type=photo&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-press-release')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/press_releases/add/' + id + '?tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('formsapi-login')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/modlogin?type=login&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('formsapi-register')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/modlogin?type=register&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+                isRegistrationHit = formsSubmission ? true : false;
+            } else if ($(this).hasClass('openMyprofileInApi')) {
+                changedIframeSrc = '<iframe width="560" height="315" src="//' + newUrl + '/myprofile-api?tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            }
+        } else {
+            if ($(this).hasClass('add-events')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/?type=event&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('add-org')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/?type=org&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('add-articles')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/?type=article&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('add-photos')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/?type=photo&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-events')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/modify?type=event&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-org')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/modify?type=org&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-articles')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/modify?type=article&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-photos')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/modify?type=photo&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('add-org-event')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/' + id + '?type=event&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('add-org-article')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/' + id + '?type=article&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-current-event')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/forms/' + id + '?type=event&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-current-org')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/forms/' + id + '?type=org&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-current-article')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/forms/' + id + '?type=article&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-current-photo')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/forms/' + id + '?type=photo&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('edit-press-release')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/press_releases/add/' + id + '?tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('formsapi-login')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/modlogin?type=login&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            } else if ($(this).hasClass('formsapi-register')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/modlogin?type=register&tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+                isRegistrationHit = formsSubmission ? true : false;
+            } else if ($(this).hasClass('openMyprofileInApi')) {
+                changedIframeSrc = '<iframe class="hidden" width="560" height="315" src="//' + newUrl + '/myprofile-api?tsv=' + townState + parentURL + stateChangedValue + '" frameborder="5" allowfullscreen></iframe>';
+            }
+        }
+        $iframeMainContainer.find('iframe, #whats-new').remove();
+        $iframeMainContainer.append(changedIframeSrc);
+        if (!stat4News && !isRegistrationHit) {
+            var newsStructure = $whatsNewsStructure.clone();
+            newsStructure = newsStructure.removeClass('hidden');
+            $iframeMainContainer.append(newsStructure).addClass('remove-bg-spinner');
+            $iframeMainContainer.find('.close-popup').addClass('hidden');
+            setNewsCookie = true;
+        } else if(!stat4News && isRegistrationHit) {
+            $iframeMainContainer.find('iframe').removeClass('hidden');
+        }
+
+      // To detect close button on iPad
+        if( /iPad/i.test(navigator.userAgent) ) {
+            $('.close-popup').addClass('close-popup-ipad');
+        } else {
+            $('.close-popup').removeClass('close-popup-ipad');
+	}
+      var myDate = new Date();
+      myDate.setMonth(myDate.getMonth() + 1);
+      if(passState) {
+          var mstime = myDate.getTime();
+          var expTime = mstime - (2 * 24 * 60* 60*1000);
+          var expDate = new Date();
+          expDate.setTime(expTime);
+          expDate = expDate.toUTCString();
+          document.cookie = "userloggedOut=0;expires=" + expDate + ";path=/";
+          FORMPOPUP.passLOState = false;
+      }
+      FORMPOPUP.popupshow(setNewsCookie);
+    });
+
+    //Click for Hiding Iframe
+    $('.close-popup, .overlay').on('click', FORMPOPUP.popuphide);
+    $('.iframe-popup').on('click', '.news-close', FORMPOPUP.popuphide);
+    $('#user-nav > li > a.log-out-cookie').on('click', function(event) {
+        event.preventDefault();
+        var logOuturl = $(this).attr('href');
+        var tmpNewDate = new Date();
+        var mstime = tmpNewDate.getTime();
+        var twoWeaksTime = mstime + (14 * 24 * 60* 60*1000);
+        var expTime = mstime - (14 * 24 * 60* 60*1000);
+        var expDate = new Date();
+        var authStr = '';
+        expDate.setTime(expTime);
+        tmpNewDate.setTime(twoWeaksTime);
+        expDate = expDate.toUTCString();
+        tmpNewDate = tmpNewDate.toUTCString();
+        document.cookie = "userloggedOut=1;expires=" + tmpNewDate + ";path=/";
+        document.cookie = "CakeCookie[Auth]="+authStr+" ;expires=" + expDate + ";path=/";
+        $.get(logOuturl).done(function() {location.reload();});
+    });
+    FORMPOPUP.checkIPADPlatform();
+    
+    var isValidJsonData = function(tmpData) {
+        try {
+            var tempD = JSON.parse(tmpData);
+            if((tempD['dmnUrl'] === url) && (tempD['fromAPITest'] === 'logoutP')) {
+                var authStr = '';
+                var expDate = new Date();
+                var curr = expDate.getTime();
+                var expTime = curr - (14 * 24 * 60* 60*1000);
+                expDate.setTime(expTime);
+                expDate = expDate.toUTCString();
+                document.cookie = "CakeCookie[Auth]="+authStr+" ;expires=" + expDate + ";path=/";
+                return true;
+            }
+        } catch (e) {
+            return false;
+        }
+        return false;
+    };
+    
+    var isUserLoggedIn = function(tmpData) {
+        try {
+            var tempD = JSON.parse(tmpData);
+            if((tempD['state'] === 1) && (tempD['authurl'] === url) ) {
+                var newDateT = new Date();
+                var curr = newDateT.getTime();
+                var twoWeeksPeriod = curr + (14 * 24 * 60* 60*1000);
+                newDateT.setTime(twoWeeksPeriod);
+                newDateT = newDateT.toUTCString();
+                document.cookie = "CakeCookie[Auth]="+tempD['encStr']+" ;expires=" + newDateT + ";path=/";
+                return true;
+            }
+        } catch (e) {
+            return false;
+        }
+        return false;
+    };
+    
+    var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+            var eventer = window[eventMethod];
+            var messageEvent = (eventMethod === "attachEvent") ? "onmessage" : "message";
+
+            // Listen to message from child window
+            eventer(messageEvent,function(e) {
+                var tmpFlag = isValidJsonData(e.data);
+                var isuserLogged = isUserLoggedIn(e.data);
+                if(tmpFlag) {
+                    $('#user-nav > li.logout').addClass('hidden-anchor');
+                    $('#user-nav > li.my-profile').addClass('hidden-anchor');
+                    $('#user-nav > li.login').removeClass('hidden-anchor');
+                    $('#user-nav > li.register').removeClass('hidden-anchor');
+                    $('.close-popup, .overlay').trigger('click');
+                    $.get('/logout').done(function() {location.reload();});
+                } else if(isuserLogged) {
+                    $('#user-nav > li.logout').removeClass('hidden-anchor');
+                    $('#user-nav > li.my-profile').removeClass('hidden-anchor');
+                    $('#user-nav > li.login').addClass('hidden-anchor');
+                    $('#user-nav > li.register').addClass('hidden-anchor');
+                }
+            });
+  });
+}(jQuery, document, window));
+
+</script>
+
+</body>
+</html>

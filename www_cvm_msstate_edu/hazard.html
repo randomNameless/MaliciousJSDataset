@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hazard.html</title>
+</head>
+<body>
+
+<script>
+// scope everything with self invoking anonymous function
+(function() {
+    var httpRequest;
+    var oldIE;
+    var bannerCount = 1;
+    var skipNavElement = false;
+
+    if (('XDomainRequest' in window) && (window.XDomainRequest !== null)) //ie 9, no support for <= ie 8
+        oldIE = true;
+    else // everything else
+        oldIE = false;
+
+    if (document.addEventListener) // attach loaded events to dom
+        document.addEventListener("DOMContentLoaded", fetch_em_banner, false);
+    else if (document.attachEvent) // for IE <= 8
+        document.attachEvent("onreadystatechange", fetch_em_banner);
+
+    // send the request
+    function fetch_em_banner() {
+        var a = window.location.toString();
+
+        //var banner_src = 'https://www4.emergency.msstate.edu/everbridge.php';
+        var banner_src = 'https://www.emergency.msstate.edu/everbridge.php';
+
+        // create the right type of ajax object
+        if (oldIE == true) {
+            httpRequest = new XDomainRequest();
+            httpRequest.onload = process_em_banner_return;
+        } else {
+            httpRequest = new XMLHttpRequest();
+            httpRequest.onreadystatechange = process_em_banner_return;
+        }
+
+        if ((a.search('bannertest=Y') != -1) || (a.search('bannertest=y') != -1))
+            banner_src += '?bannertest=y';
+        else
+            banner_src += '?bannertest=n';
+            
+        if (a.search('org=test') != -1)
+            banner_src += '&org=test';
+        else
+            banner_src += '&org=prod';
+
+        httpRequest.open('GET', banner_src);
+        httpRequest.send(null);
+    }
+
+    // process the return and get the data needed for banner
+    function process_em_banner_return() {
+        var bannerStatus = '';
+        var title = '';
+
+        if (oldIE) {
+            var rssFeed = new ActiveXObject("Microsoft.XMLDOM");
+            rssFeed.async = false;
+            rssFeed.loadXML(httpRequest.responseText);
+            var items = rssFeed.getElementsByTagName('item');
+
+            if (items.length > 0) {
+                for (i = 1; i < items.length + 1; i++) {
+                    bannerStatus = rssFeed.getElementsByTagName('title')[i].text;
+                    title = rssFeed.getElementsByTagName('title')[i].text;
+                    title = title.replace(/{Remote}|{Closed}|{Advisory}|{Alert}/gi, "");
+
+                    if (title.length > 90)
+                        title_short = title.substring(0, title.lastIndexOf(' ', 90)) + '...';
+                    else
+                        title_short = title;
+
+                    displayBanner(bannerStatus, title);
+                }
+            }
+        } else {
+            if (httpRequest.readyState === 4) {
+                if (httpRequest.status === 200) {
+                    var rssFeed = httpRequest.responseXML;
+                    var items = rssFeed.getElementsByTagName('item');
+
+                    if (items.length > 0) {
+                        for (i = 1; i < items.length + 1; i++) {
+                            bannerStatus = rssFeed.getElementsByTagName('title')[i].textContent;
+                            title = rssFeed.getElementsByTagName('title')[i].textContent;
+                            title = title.replace(/{Remote}|{Closed}|{Advisory}|{Alert}/gi, "");
+
+                            if (title.length > 90)
+                                title_short = title.substring(0, title.lastIndexOf(' ', 90)) + '...';
+                            else
+                                title_short = title;
+
+                            displayBanner(bannerStatus.trim(), title_short.trim());
+                        }
+
+                        // if we put the banners after the skip links, then add a skip to banners link so screen readers know there is a banner without them having to sit through them every page load
+                        if (skipNavElement !== false) {
+                            var link = document.createElement('a');
+                            link.className = 'skipnav-link';
+                            link.href = '#hazard-' + (bannerCount - 1);
+                            link.innerText = 'Skip to Maroon Alert banner';
+
+                            skipNavElement.insertBefore(link, skipNavElement.firstChild);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // use the formatted return to actually display
+    function displayBanner(bannerStatus, title) {
+        var section = document.createElement('section');
+        var p = document.createElement('p');
+        var link = document.createElement('link');
+        var banner_type;
+
+        section.id = 'hazard-' + bannerCount;
+
+        if (bannerStatus.search(/{ALERT}/gi) !== -1) {
+            banner_type = 'ALERT';
+            section.className = 'hazard-alert';
+            p.innerHTML = '<span class="title">MAROON ' + banner_type + '<\/span> ' + title + '&nbsp;&nbsp;<a href="https:\/\/www.emergency.msstate.edu\/">MORE INFO<span class="sr-only"> on this emergency</span><\/a>';
+        } else if (bannerStatus.search(/{ADVISORY}/gi) !== -1) {
+            banner_type = 'ADVISORY';
+            section.className = 'hazard-advisory';
+            p.innerHTML = '<span class="title">MAROON ' + banner_type + '<\/span> ' + title + '&nbsp;&nbsp;<a href="https:\/\/www.emergency.msstate.edu\/">MORE INFO<span class="sr-only"> on this emergency</span><\/a>';
+        } else if (bannerStatus.search(/{CLOSED}/gi) !== -1) {
+            banner_type = 'CLOSED';
+            section.className = 'hazard-closed';
+            p.innerHTML = '<span class="title">UNIVERSITY ' + banner_type + '<\/span> ' + title + '&nbsp;&nbsp;<a href="https:\/\/www.emergency.msstate.edu\/">MORE INFO<span class="sr-only"> on this emergency</span><\/a>';
+        } else if (bannerStatus.search(/{REMOTE}/gi) !== -1) {
+            banner_type = 'REMOTE';
+            section.className = 'hazard-remote';
+            p.innerHTML = '<span class="title">' + banner_type + ' OPERATIONS<\/span> ' + title + '&nbsp;&nbsp;<a href="https:\/\/www.emergency.msstate.edu\/">MORE INFO<span class="sr-only"> on this emergency</span><\/a>';
+        }
+
+        section.className += ' hazard';
+
+        section.setAttribute('data-aria-polite', 'assertive');
+        section.setAttribute('aria-label', 'Hazard Banner ' + bannerCount);
+        section.appendChild(p);
+
+
+        // find the first element that is actually a tag (not whitespace)
+        var elementToInsertBefore = '';
+        var children = document.body.childNodes
+        var i = 0;
+        var node;
+
+        while (elementToInsertBefore == '') {
+            node = children[i++];
+            if (node.nodeType === 1) {
+                elementToInsertBefore = node;
+            }
+        }
+
+        // if the first thing is skip links, then put the banners after those
+        if (elementToInsertBefore.tagName.toLowerCase() == 'nav' && (elementToInsertBefore.className == 'sr-only' || elementToInsertBefore.className == 'skipnav-nav')) {
+            skipNavElement = elementToInsertBefore;
+            elementToInsertBefore = elementToInsertBefore.nextSibling;
+        }
+
+        document.body.insertBefore(section, elementToInsertBefore);
+
+        // only do these things once (in case there are multiple banners)
+        if (bannerCount == 1) {
+            link.href = 'https://cdn01.its.msstate.edu/i/emergency/1.6/hazard.css';
+            link.media = 'screen';
+            link.rel = 'stylesheet';
+            document.body.appendChild(link);
+        }
+
+        bannerCount++;
+    }
+}());
+</script>
+
+</body>
+</html>

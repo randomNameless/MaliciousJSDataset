@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>dw_tooltip.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGz4CAgAAOfwBBAQt/AEEMC38AQRILfwBBHgt/AEEgC38AQTYLfwBBygALfwBB1gALfwBB2gALfwBB3gALfwBB9AALfwBBhgELfwBBkgELfwBBrgELB/6AgIAADwZtZW1vcnkCAAVkYXRhMAMABWRhdGExAwEFZGF0YTIDAgVkYXRhMwMDBWRhdGE0AwQFZGF0YTUDBQVkYXRhNgMGBWRhdGE3AwcFZGF0YTgDCAVkYXRhOQMJBmRhdGExMAMKBmRhdGExMQMLBmRhdGExMgMMBmRhdGExMwMNC+yBgIAADgBBAQsKdW5kZWZpbmVkAABBDAsERElWAABBEgsKbW91c2Vtb3ZlAABBHgsBAABBIAsUVG9vbHRpcC50b2dnbGVWaXMoJwAAQTYLEiclMkMlMjAndmlzaWJsZScpAABBygALCnVuZGVmaW5lZAAAQdYACwNweAAAQdoACwNweAAAQd4ACxRUb29sdGlwLnRvZ2dsZVZpcygnAABB9AALESclMkMlMjAnaGlkZGVuJykAAEGGAQsKbW91c2Vtb3ZlAABBkgELGlRvb2x0aXAudHRyZWFkeSUzRHRydWUlM0IAAEGuAQsFZXZhbAA='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+var Tooltip = {
+    followMouse: true,
+    offX: 8,
+    offY: 12,
+    tipID: 'tipDiv',
+    showDelay: 100,
+    hideDelay: 200,
+    ready: false,
+    timer: null,
+    tip: null,
+    init: function () {
+        (() => {
+            const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                env: {
+                    impFunc1: () => {
+                        {
+                            (() => {
+                                const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                                var el = document.createElement(lS(0, 1));
+                                                el.id = this.tipID;
+                                                (() => {
+                                                    const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                document.body.appendChild(el);
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance9.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance1.exports;
+                                return __exports.data(!document.getElementById(this.tipID) ? 1 : 0);
+                            })();
+                            this.ready = true;
+                        }
+                    },
+                    impFunc2: () => {
+                    }
+                }
+            });
+            const __exports = __ifInstance0.exports;
+            return __exports.data(document.createElement && document.body && typeof document.body.appendChild != lS(0, 0) ? 1 : 0);
+        })();
+    },
+    show: function (e, msg) {
+        (() => {
+            const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                env: {
+                    impFunc1: () => {
+                        {
+                            (() => {
+                                const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            clearTimeout(this.timer);
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance8.exports;
+                                return __exports.data();
+                            })();
+                            this.timer = 0;
+                        }
+                    },
+                    impFunc2: () => {
+                    }
+                }
+            });
+            const __exports = __ifInstance2.exports;
+            return __exports.data(this.timer ? 1 : 0);
+        })();
+        if (!this.ttready)
+            return;
+        this.tip = document.getElementById(this.tipID);
+        (() => {
+            const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+                env: {
+                    impFunc1: () => {
+                        (() => {
+                            const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        dw_event.add(document, lS(0, 2), this.trackMouse, true);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance7.exports;
+                            return __exports.data();
+                        })();
+                    },
+                    impFunc2: () => {
+                    }
+                }
+            });
+            const __exports = __ifInstance3.exports;
+            return __exports.data(this.followMouse ? 1 : 0);
+        })();
+        (() => {
+            const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        this.writeTip(lS(0, 3));
+                    }
+                }
+            });
+            const __exports = __callInstance6.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        this.writeTip(msg);
+                    }
+                }
+            });
+            const __exports = __callInstance5.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        viewport.getAll();
+                    }
+                }
+            });
+            const __exports = __callInstance4.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        this.positionTip(e);
+                    }
+                }
+            });
+            const __exports = __callInstance3.exports;
+            return __exports.data();
+        })();
+        this.timer = setTimeout(lS(0, 4) + this.tipID + lS(0, 5), this.showDelay);
+    },
+    writeTip: function (msg) {
+        (() => {
+            const __ifInstance4 = new WebAssembly.Instance(__ifWasmModule, {
+                env: {
+                    impFunc1: () => {
+                        this.tip.innerHTML = msg;
+                    },
+                    impFunc2: () => {
+                    }
+                }
+            });
+            const __exports = __ifInstance4.exports;
+            return __exports.data(this.tip && typeof this.tip.innerHTML != lS(0, 6) ? 1 : 0);
+        })();
+    },
+    positionTip: function (e) {
+        (() => {
+            const __ifInstance5 = new WebAssembly.Instance(__ifWasmModule, {
+                env: {
+                    impFunc1: () => {
+                        {
+                            var x = e.pageX ? e.pageX : e.clientX + viewport.scrollX;
+                            var y = e.pageY ? e.pageY : e.clientY + viewport.scrollY;
+                            (() => {
+                                const __ifInstance6 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                                x = x - this.tip.offsetWidth - this.offX;
+                                                (() => {
+                                                    const __ifInstance7 = new WebAssembly.Instance(__ifWasmModule, {
+                                                        env: {
+                                                            impFunc1: () => {
+                                                                x = 0;
+                                                            },
+                                                            impFunc2: () => {
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __ifInstance7.exports;
+                                                    return __exports.data(x < 0 ? 1 : 0);
+                                                })();
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                            x = x + this.offX;
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance6.exports;
+                                return __exports.data(x + this.tip.offsetWidth + this.offX > viewport.width + viewport.scrollX ? 1 : 0);
+                            })();
+                            (() => {
+                                const __ifInstance8 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                                y = y - this.tip.offsetHeight - this.offY;
+                                                (() => {
+                                                    const __ifInstance9 = new WebAssembly.Instance(__ifWasmModule, {
+                                                        env: {
+                                                            impFunc1: () => {
+                                                                y = viewport.height + viewport.scrollY - this.tip.offsetHeight;
+                                                            },
+                                                            impFunc2: () => {
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __ifInstance9.exports;
+                                                    return __exports.data(y < viewport.scrollY ? 1 : 0);
+                                                })();
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                            y = y + this.offY;
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance8.exports;
+                                return __exports.data(y + this.tip.offsetHeight + this.offY > viewport.height + viewport.scrollY ? 1 : 0);
+                            })();
+                            this.tip.style.left = x + lS(0, 7);
+                            this.tip.style.top = y + lS(0, 8);
+                        }
+                    },
+                    impFunc2: () => {
+                    }
+                }
+            });
+            const __exports = __ifInstance5.exports;
+            return __exports.data(this.tip && this.tip.style ? 1 : 0);
+        })();
+    },
+    hide: function () {
+        (() => {
+            const __ifInstance10 = new WebAssembly.Instance(__ifWasmModule, {
+                env: {
+                    impFunc1: () => {
+                        {
+                            (() => {
+                                const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            clearTimeout(this.timer);
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance2.exports;
+                                return __exports.data();
+                            })();
+                            this.timer = 0;
+                        }
+                    },
+                    impFunc2: () => {
+                    }
+                }
+            });
+            const __exports = __ifInstance10.exports;
+            return __exports.data(this.timer ? 1 : 0);
+        })();
+        this.timer = setTimeout(lS(0, 9) + this.tipID + lS(0, 10), this.hideDelay);
+        (() => {
+            const __ifInstance11 = new WebAssembly.Instance(__ifWasmModule, {
+                env: {
+                    impFunc1: () => {
+                        (() => {
+                            const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        dw_event.remove(document, lS(0, 11), this.trackMouse, true);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance1.exports;
+                            return __exports.data();
+                        })();
+                    },
+                    impFunc2: () => {
+                    }
+                }
+            });
+            const __exports = __ifInstance11.exports;
+            return __exports.data(this.followMouse ? 1 : 0);
+        })();
+        this.tip = null;
+    },
+    toggleVis: function (id, vis) {
+        var el = document.getElementById(id);
+        (() => {
+            const __ifInstance12 = new WebAssembly.Instance(__ifWasmModule, {
+                env: {
+                    impFunc1: () => {
+                        el.style.visibility = vis;
+                    },
+                    impFunc2: () => {
+                    }
+                }
+            });
+            const __exports = __ifInstance12.exports;
+            return __exports.data(el ? 1 : 0);
+        })();
+    },
+    trackMouse: function (e) {
+        e = dw_event.DOMit(e);
+        (() => {
+            const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        Tooltip.positionTip(e);
+                    }
+                }
+            });
+            const __exports = __callInstance0.exports;
+            return __exports.data();
+        })();
+    }
+};
+window[lS(0, 13, true)](lS(0, 12));</script>
+</body>
+</html>

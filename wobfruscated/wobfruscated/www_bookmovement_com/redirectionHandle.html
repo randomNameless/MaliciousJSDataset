@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>redirectionHandle.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGqYCAgAAHfwBBAQt/AEEKC38AQcYBC38AQc4BC38AQbYGC38AQbgGC38AQboGCwfCgICAAAgGbWVtb3J5AgAFZGF0YTADAAVkYXRhMQMBBWRhdGEyAwIFZGF0YTMDAwVkYXRhNAMEBWRhdGE1AwUFZGF0YTYDBgvihoCAAAcAQQELB2Jhc2U2NAAAQQoLuwFBR0Z6YlFFQUFBQUJpSUNBZ0FBQ1lBQUFZQUYlMkZBQUtmZ0lDQUFBSURaVzUyQ0dsdGNFWjFibU14QUFBRFpXNTJDR2x0Y0VaMWJtTXlBQUFEZ29DQWdBQUJBUVNFZ0lDQUFBRndBQUFGZzRDQWdBQUJBQUVIa1lDQWdBQUNCbTFsYlc5eWVRSUFCR1JoZEdFQUFncVNnSUNBQUFHTWdJQ0FBQUFnQUFSQUVBQUZFQUVMQ3clM0QlM0QAAEHGAQsHYmFzZTY0AABBzgEL5wRBR0Z6YlFFQUFBQUZnNENBZ0FBQkFBRUd3SUNBZ0FBTGZ3QkJBUXQlMkZBRUVNQzM4QVFSb0xmd0JCeGdBTGZ3QkJ5QUFMZndCQnpnQUxmd0JCN2dBTGZ3QkJoQUVMZndCQm9BRUxmd0JCc2dFTGZ3QkJ2Z0VMQiUyQk9BZ0lBQURBWnRaVzF2Y25rQ0FBVmtZWFJoTUFNQUJXUmhkR0V4QXdFRlpHRjBZVElEQWdWa1lYUmhNd01EQldSaGRHRTBBd1FGWkdGMFlUVURCUVZrWVhSaE5nTUdCV1JoZEdFM0F3Y0ZaR0YwWVRnRENBVmtZWFJoT1FNSkJtUmhkR0V4TUFNS0M0R0NnSUFBQ3dCQkFRc0tKVFZESlRJMEpUSTJBQUJCREFzTkpUVkNKVE5HSlRJMkpUVkVBQUJCR2dzcUtDVXpSQ2dsTlVJbE5VVWxNallsTWpNbE5VUXFLU1UzUXlVeU5pVTNReVV5TXlVM1F5VXlOQ2tBQUVIR0FBc0JBQUJCeUFBTEJDVXlNQUFBUWM0QUN4NGxNa1p2ZFhJdFltOXZheTFqYkhWaUxXSnZiMnR6YUdWc1ppVXlSZ0FBUWU0QUN4VWxNa1ppYjI5clJHVjBZV2xzVm1sbGR5VXlSZ0FBUVlRQkN4c2xNa1pqYkhWaVUyVnNaV04wYVc5dVRXVmxkR2x1WnlVeVJnQUFRYUFCQ3hBbE1rWnRiMkpwYkdVdGMybG5iaTBBQUVHeUFRc0xKVEpHYVhWeWJDVXlSZ0FBUWI0QkN4SWxNa1oxYm5OMVluTmpjbWxpWlNVeVJnQSUzRAAAQbYGCwEAAEG4BgsBAABBugYLBWF0b2IA'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = window[lS(0, 6, true)](b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance0.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, lS(0, 0)));
+    }
+};
+const __ifWasmBuffer = lS(0, 1);
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 6, true)](__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance1.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, lS(0, 2)));
+    }
+})());
+const __wasmStringModules = [lS(0, 3)].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = lS(0, 4);
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = lS(0, 5);
+        let i = __start;
+        let __c = __mem[i++];
+        (() => {
+            const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                    },
+                    update: () => {
+                    },
+                    body: () => {
+                        {
+                            __str += __c;
+                            __c = String.fromCharCode(__mem[i++]);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance2.exports;
+            return __exports.data();
+        })();
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            (() => {
+                const __forInstance3 = new WebAssembly.Instance(__forWasmModule, {
+                    env: {
+                        test: () => {
+                            return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                        },
+                        update: () => {
+                        },
+                        body: () => {
+                            {
+                                __str += __c;
+                                __c = String.fromCharCode(__mem[i++]);
+                            }
+                        }
+                    }
+                });
+                const __exports = __forInstance3.exports;
+                return __exports.data();
+            })();
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+function getParameterByName(name, url) {
+    (() => {
+        const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    (() => {
+                        const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                            env: {
+                                impFunc1: () => {
+                                    url = window.location.href;
+                                },
+                                impFunc2: () => {
+                                }
+                            }
+                        });
+                        const __exports = __ifInstance0.exports;
+                        return __exports.data(!url ? 1 : 0);
+                    })();
+                }
+            }
+        });
+        const __exports = __callInstance1.exports;
+        return __exports.data();
+    })();
+    name = name.replace(/[\[\]]/g, lS(0, 0));
+    var regex = new RegExp(lS(0, 1) + name + lS(0, 2)), results = regex.exec(url);
+    if (!results)
+        return null;
+    if (!results[2])
+        return lS(0, 3);
+    return decodeURIComponent(results[2].replace(/\+/g, lS(0, 4)));
+}
+function isExclusivePage(ref) {
+    (() => {
+        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    (() => {
+                        const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                            env: {
+                                impFunc1: () => {
+                                    ref = window.location.pathname;
+                                },
+                                impFunc2: () => {
+                                }
+                            }
+                        });
+                        const __exports = __ifInstance1.exports;
+                        return __exports.data(!ref ? 1 : 0);
+                    })();
+                }
+            }
+        });
+        const __exports = __callInstance0.exports;
+        return __exports.data();
+    })();
+    exclusivePages = [
+        lS(0, 5),
+        lS(0, 6),
+        lS(0, 7),
+        lS(0, 8),
+        lS(0, 9),
+        lS(0, 10)
+    ];
+    for (var i = 0; i < exclusivePages.length; i++) {
+        if (ref.indexOf(exclusivePages[i]) > -1) {
+            return true;
+        }
+    }
+    return false;
+}</script>
+</body>
+</html>

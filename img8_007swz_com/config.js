@@ -1,1 +1,0 @@
-var DTPath = "//www.007swz.com/";var DTMob = "https://m.007swz.com/";var SKPath = "//www.007swz.com/skin/b2b/";var MEPath = "//www.007swz.com/member/";var DTEditor = "ueditor";var CKDomain = ".007swz.com";var CKPath = "/";var CKPrex = "DQS_";

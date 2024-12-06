@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>main.html</title>
+</head>
+<body>
+
+<script>
+function stickyRelocate() {
+	var $stickyAnchor = $('#sticky-anchor');
+	if ($stickyAnchor.length) {
+		var windowTop = $(window).scrollTop();
+		var divTop = $stickyAnchor.offset().top;
+		$('.aa_page_nav', $stickyAnchor).toggleClass('sticky', windowTop > divTop - 36);
+	}
+}
+
+function compactList(list) {
+	var $list = $(list);
+	var min_rows = $list.data('min-rows') || 7;
+	var $rows = $list.children('dd');
+	if ($rows.length > min_rows + 1) {
+		$rows.slice(min_rows).stop().slideUp(0);
+		$list.append('<dd class="more">⯆ ⯆ ⯆</dd>').mouseenter(function() {
+			$rows.slice(min_rows).stop().slideDown('fast', function() { $list.children('dd.more').hide(); });
+
+		}).mouseleave(function() {
+			$rows.slice(min_rows).stop().slideUp('fast', function() {$list.children('dd.more').show();});
+		});
+	}
+}
+
+function registerqTip() {
+	// qTip2 Tooltips (general options)
+	var qtipOptions = {
+		position: { my: 'bottom left', at: 'top right' },
+		show: { solo: true },
+		hide: { fixed: true, delay: 500 },
+		style: {classes: 'qtip-shadow' }
+	};
+
+	// qTip2 HDLoader edit icon & notes, Dead Links
+	$('div.hdloader-list a.edit, div.hdloader-list .notes abbr, span.dead_link, a.dead_link').qtip(Object.assign({}, qtipOptions, {}));
+
+	// qTip2 contact me tooltip on links to my profile
+	$('a.contact-option').qtip(Object.assign({}, qtipOptions, {
+		content: { text: '<a href="/about/contact" style="text-decoration:none;">✉ contact me</a>' },
+		position: { my: 'bottom center', at: 'top center' },
+	}));
+
+	// qTip2 bubble information tooltips
+	$('span.bubble-icon').each(function() {
+		$(this).qtip(Object.assign({}, qtipOptions, {
+			content: { text: $(this).next('span.bubble') },
+			hide: { fixed: true, delay: $(this).next('span.bubble').html().indexOf('<a ') >= 0 ? 500 : 50 },
+			style: { classes: $(this).hasClass('bubble-icon-kana') ? 'qtip-shadow qtip-jpn' : 'qtip-shadow' }
+		}));
+	});
+
+	// qTip2 Affiliate Links
+	$('a[href*="amazon.com"], a[href*="amzn.to"]').filter(function(){ return this.href.match(/(?:amzn\.to)|(?:absoluteanime-20)/); }).qtip(Object.assign({}, qtipOptions, {
+		content: { text: 'This is an affiliate link. As an Amazon Associate I earn from qualifying purchases.' },
+		hide: { fixed: false, delay: 0 },
+		position: { my: 'bottom center', at: 'top center' },
+	}));
+
+	// qTip2 Page Previews
+	if ($.fn.qtip) {
+		//$(".section a[href], .aa_section_content a[href]").not(':has(img), [onclick], [href|="#"], [href*="!"], [href*=".php"], [href*=".jpg"], [href*=".gif"], [href*=".png"], [href*=".zip"], [href*=".rar"], .no-preview, data-no-preview').each(function(i) {
+		$(".section a[href], .aa_section_content a[href]").not(':has(img), [onclick], [href|="#"], [href*="!"], [href^="mailto:"], .no-preview, data-no-preview').filter(function() {
+			var href = $(this).attr('href');
+			//var result = href.indexOf('.') == -1 || href.indexOf('.htm') > 0 || href.indexOf('.html') > 0 || href.indexOf('.php') > 0; // No file extension or htm, html, or php file extension;
+			var lastDotPos = href.lastIndexOf('.');
+			var noFileExt = lastDotPos == -1 || (lastDotPos < href.lastIndexOf('/')); // No file extension if no dot or the last dot is before the last directory separator
+			var result = noFileExt || href.match(/\.(htm|html|php)/); // No file extension or htm, html, or php file extension
+			result = result && !$(this).hasClass('ext');	// Link has already been classified as external
+			if (result && href.indexOf('//') >=0 && href.indexOf('absoluteanime.com') == -1) {	// A // indicates a full URL and absoluteanime.com does not exist so an external link
+				result = false;
+			}
+			//console.log('AA:' + href + ':' + (result ? 'true' : 'false'));
+			return result;
+			//return !href.match(/\.(?:php|jpg|jpeg|gif|png|webp|zip|rar|7z|mpg|mpeg|webm|wmv|wma|mp3|wav|mid|midi)/);
+		}).each(function(i) {
+			if ($(this).closest('.aa-pagination').length) {
+				return;
+			}
+			if (this.href.indexOf('absoluteanime.com') >= 0 && this.href.split("#")[0] != window.location.href.split("#")[0])   // not the same page that we're currently on if we disregard the hash anchor
+			{
+				var previewUrl = this.href.split("#")[0] + (this.href.indexOf('?') == -1 ? '?' : '&') + 'preview=1' + ($('body').hasClass('nsfw') ? '&show-nsfw=1' : ''); //2020-10-23: Added show-nsfw=1
+				$(this).attr("data-preview", previewUrl);
+			}
+		});
+	}
+	$('#aa_main').on('mouseenter', 'a[data-preview]:not([aria-describedby])', function(event) {
+	/*
+		var href = $(this).prop('href');
+		if (href.match(/\.(?:avi|mpg|mpeg)/)) {
+			$(this).qtip(Object.assign({}, qtipOptions, {
+				content:{ text: '<video controls><source="' + href + '">'},
+				show: { event: event.type, ready: true, solo:true },
+				hide: { fixed: false, delay:0, leave:true, inactive:60000},
+				position: { my: 'bottom left', at: 'top right', target:'mouse', viewport:$(window), adjust:{x:10, y:-5, method:'flipinvert'} },
+				style: { classes: 'qtip-shadow qtip-page-preview' },
+				events: { show: function(event, api) { setTimeout(function(){ api.reposition(event); }, 100) }}
+			}));
+			return;
+		}
+	*/
+		$.ajax({
+			url: $(this).data('preview'),
+			context: this,
+		})
+		.then(function(content) {
+			//console.log($(this).is(':hover'));
+			if ($(this).is(':hover') && content && $.type(content) == "string" && !content.match(/^<!DOCTYPE/i) && !content.match(/^<(?:html|script)/i)) {
+				//console.log(content);
+				// Remove ezoic HTML
+				content = content.replace(/\s*<div .*?style='display:none'>[\s\S]+<\/div>\s*/g, '');
+				content = content.replace(/\s*<script[\s\S]+<\/script>\s*/g, '');
+				content = content.replace(/$\s+^/g, '');
+				//console.log(content);
+				if (!content) {
+					return;
+				}
+				$(this).qtip(Object.assign({}, qtipOptions, {
+					overwrite: false, // Make sure the tooltip won't be overridden once created
+					content:{ text: content},
+					show: { event: event.type, ready: true, solo:true },
+					hide: { fixed: false, delay:0, leave:true, inactive:60000},
+					position: { my: 'bottom left', at: 'top right', target:'mouse', viewport:$(window), adjust:{x:10, y:-5, method:'flipinvert'} },
+					style: { classes: 'qtip-shadow qtip-page-preview' },
+					events: { show: function(event, api) { setTimeout(function(){ api.reposition(event); }, 100) }}
+				}), event);
+
+			}
+		}, function(xhr, status, error) {
+			console.log(status + ':' + error);
+			//api.set('content.text', status + ':' + error);
+		});
+	});
+}
+
+
+function hideSocialShareBtns() {
+	var $socialBtns = null;
+	if ($('#mobile-navbar').is(':visible')) {
+		$socialBtns = $('.aa_section_header .social-btns');
+	} else {
+		$socialBtns = $('.aa_section_header .social-btns .social-btn').nextAll().wrapAll('<span class="social-share-btns"/>').parent(); // Everything after the Like button
+	}
+	if ($socialBtns.length) {
+		var $shareIcon = $('<i class="material-icons share-icon" title="Share on Social Media">share</i>');
+		$socialBtns.before($shareIcon);
+		$socialBtns.hide();
+		$shareIcon.click(function() {
+			$socialBtns.toggle();
+		});
+		$(document).click(function(event) {
+			if (!$(event.target).closest('.social-btns').length && event.target != $shareIcon[0]) {
+				$socialBtns.hide();
+			}
+		});
+	}
+}
+
+function galleryAutoHeight() {
+	// Each gallery on the page
+	$("ul.gallery.auto-height").not('.clean').each(function() {
+		var rowY = 0, rowThumbH = 0, rowCaptionH = 0, rowCnt = 0;
+		var $gallery = $(this);
+
+		// Each image in the current gallery
+		$("li", this).each(function() {
+			var $pos = $(this).position();
+			var y = Math.round($pos.top);
+			var $caption = $(".caption", this);
+			var $thumb = $("a", this);
+
+			// New row
+			if (rowY != y) {
+				rowCnt++;
+				rowThumbH = 0;
+				rowCaptionH = 0;
+				rowY = y;
+			}
+			$(this).addClass("gallery-row-" + rowCnt);
+			if ($caption.length) {
+				rowCaptionH = Math.max(rowCaptionH, $caption.outerHeight());
+				$(".gallery-row-" + rowCnt + " .caption", $gallery).outerHeight(rowCaptionH);
+			}
+			rowThumbH = Math.max(rowThumbH, $thumb.outerHeight());  //2018-04-02: Changed height() to outerHeight() (see the difference in about/gallery/2002_burney_falls/)
+			$("a", this).addClass("a-h-" + $thumb.outerHeight() + "  row-h-" + rowThumbH);
+			$(".gallery-row-" + rowCnt + " a", $gallery).outerHeight(rowThumbH);
+		});
+	});
+}
+
+function processConfigForm() {
+	var bgsrc_dir = path['root'] + '!bin/skin3/bg-art/blurred/';
+	function displayBgArt(url) {
+		$('body').css({'background':'url("' + url + '") no-repeat fixed center top', 'background-size':'cover'});
+	}
+
+	$('#aa_wrapper').on('change', 'input[name=bg_opaque]', function() {
+		var opaque = $(this).is(':checked');
+		setCookie('bg_opaque', opaque);
+		$('body').toggleClass('opaque', opaque).toggleClass('alpha', !opaque);
+		$('input[name=bg_opaque]').prop('checked', opaque); // Sync sidebar and config page checkboxes
+	});
+
+	$('#aa_wrapper').on('change', 'input[name=bg_art_off]', function() {
+	console.log('here');
+		var off = $(this).is(':checked');
+		setCookie('bg_art_off', off);
+		$('input[name=bg_art_off]').prop('checked', off); // Sync sidebar and config page checkboxes
+		if (off) {
+			$('body').css('background', '');
+		} else {
+			displayBgArt($('body').data('bg') || '');
+		}
+	});
+
+	$('#aa_main').on('change', 'input[name=bg_art_file]', function() {
+		var bgsrc =  $(this).val();
+		setCookie('bg_art_file', bgsrc);
+		setCookie('bg_art_off', false);
+		displayBgArt(bgsrc_dir + bgsrc);
+		$('input[name=bg_art_off]').prop('checked', false);
+	})
+
+	$('#aa_main').on('click', 'form.aa-config .restore-defaults a', function(e) {
+		e.preventDefault();
+		$('input[name=bg_opaque]').prop('checked', false).change();
+		$('input[name=bg_art_off]').prop('checked', false).change();
+		setCookie('bg_art_file', '', 0);
+		displayBgArt(bgsrc_dir + $('form.aa-config').data('default-art'));
+	});
+}
+
+function copyToClipboard(txt) {
+	var $temp = $("<textarea>");
+	$("body").append($temp);
+	$temp.val(txt).select();
+	document.execCommand("copy");
+	$temp.remove();
+}
+
+function domReady() {
+ 	//$('#aa_footer .sponsored-links a').attr('rel', 'sponsored');
+
+	// Keep sticky objects in place
+	$(window).on('ready scroll', stickyRelocate);
+
+	// Compact Sidebar Lists that are too long
+	compactList('#aa_sidebar .aa_site_nav');
+	compactList($('#aa_sidebar .aa_page_nav').filter(':first'));
+
+	// Tooltips (including page previews)
+	registerqTip();
+
+	// Hide Social Media Share Buttons
+	hideSocialShareBtns();
+
+	// Process configure preferences form
+	processConfigForm();
+
+	// Feedback Form
+	$("#aa_main, #colorbox").on('change', "form#feedback label input[type=checkbox]", function(e) {
+		var show = $(this).is(':checked');
+		$(this).closest('label').nextAll(".additional_info").first().toggle(show);
+	});
+
+	// FAQs
+	$("#aa_main, #colorbox").on('click', '.aa_faq a.question', function(e) {
+		e.preventDefault();
+		$(this).closest('dt').next('dd').slideToggle(function() {
+			$(this).clearQueue();   // We need this for the File Explorer page when loading via AJAX, otherwise it will open then close
+		});
+	});
+
+	// Display the warning box for adult content
+	if ($("#section-adult_confirmation").length == 0) {
+		var $adultImages = $("img[class^='warn-'],img[class*=' warn-']");
+		if ($adultImages.length > 0) {
+			$.ajax({
+				url:path['php'] + "warn.php",
+				data:"ajax=true",
+				success:function(data){
+					$("#aa_main").prepend(data);
+				}
+			});
+		}
+	}
+
+	// Wait for images to finish loading or the a heights may be incorrect
+	$(window).on('load', function() {
+		galleryAutoHeight();
+	});
+
+	// Mobile version of profile page facts: hide empty rows
+	$(window).on('resize',function() {
+		if ($(window).width() <= 768) {
+			$('table.profile_stats tr').filter(function() {
+				return $(this).find('td.cell').filter(function() {
+					return ! $.trim($(this).text());
+				}).length;
+			}).hide();
+		}
+	}).trigger('resize');
+
+	function addSocialLinks() {
+		// Add tweet button for each update
+		$('.aa_site_updates dt a').each(function() {
+			var $dt = $(this).closest('dt');
+			var txt = $.trim($dt.next('dd').text());
+			var url = 'https://www.absoluteanime.com/updates#' + $dt.attr('id'); // leading space to separate from the text
+			/*
+			// Facebook
+			var $a = $('<a href="https://www.facebook.com/sharer/sharer.php?app_id=109244792700&kid_directed_site=0&sdk=joey&u=' + encodeURIComponent(url) + '&display=popup&ref=plugin&src=share_button">FB Post</a>');
+			$a.click(function(e) {
+				FB.ui({
+					method:'share',
+					href: url,
+					quote: txt,
+				}, function(response){});
+			});
+			$(this).after($a);
+			*/
+			// Twitter
+			var maxTxtLen = 280 - url.length + 1;
+			txt = (txt.length > maxTxtLen ? txt.substr(0, maxTxtLen - 3) + '...' : txt) + ' ' + url;
+			var $a = $('<a href="http://twitter.com/intent/tweet?text=' + encodeURIComponent(txt) + '" class="tweet">tweet</a>');
+			$a.click(function(e) { return !socialPopup($(this).prop('href')); });
+			$(this).after($a);
+		});
+
+		// Updates page: allow each update to be copied to the clipboard
+		$('.aa_site_updates dt a:first-of-type').after().click(function() {
+			copyToClipboard($(this).closest('dt').next('dd').data('copy-text'));
+			return false;
+		});
+		$('.aa_site_updates dt a.tweet').click(function() {
+			var txt = $(this).attr('href').replace(/^.*?text=/, '');
+			txt = decodeURIComponent(txt);
+			copyToClipboard(txt);
+		});
+		$('.aa_site_updates dd').each(function() {
+			var append = "\n\nhttps://www.absoluteanime.com/updates#" + $(this).prev('dt').attr('id');
+			var txt = $.trim($(this).text());
+			$(this).attr('data-copy-text', $.trim(txt + append));
+		});
+	}
+	addSocialLinks();
+
+	const hash = window.location.hash;
+	let found = hash ? hash.match(/^#update_(\d{4}-\d{2}-\d{2})$/) : false;
+	if (found) {
+		const dateRequest = found[1];
+		if ($('dt#update_' + dateRequest).length === 0) {
+			$.ajax({
+				location: '/updates',
+				data: {date: dateRequest.substring(0, 7), ajax: 'html-load'}
+			}).done(function(html) {
+				if (html) {
+					$('#aa_main main').html(html);
+					addSocialLinks();
+				}
+			}).fail(function(jqXHR) {
+				console.log(jqXHR);
+				showMsgBox('error', jqXHR.responseText);
+			});
+		}
+	}
+
+	// Open submission forms in a popup overlay
+	$('body').on('click', 'a[href*="/about/contact"], a[href*="/about/contact"], a[href*="/about/add-anime"], a[href*="/about/add-char"], a[href*="/about/add-hdloader"]', function() {
+		if (!window.matchMedia("(max-width: 767px)").matches) {
+			var href = $(this).prop('href');
+			if (href) {
+				var split = href.split('?', 2); // Query string will be in split[1] if it exists
+				var data = split[1] ? JSON.parse('{"' + split[1].replace(/&/g, '","').replace(/=/g,'":"') + '"}', function(key, value) { return key===""?value:decodeURIComponent(value) }) : {}; // Convert query string into an Javascript object
+				event.preventDefault(); //prevent default action
+				$.colorbox($.extend({}, colorBoxOpts, {href:href, maxWidth:'880px', maxHeight:'80%', title:'', data:$.extend(data, {'ajax-overlay': 1})}));
+			}
+		}
+	});
+
+	// Floating Scroll to top button
+	// Check to see if the window is top if not then display button
+	$(window).scroll(function(){
+		if ($(this).scrollTop() > 100) {
+			$('.scrollToTop').fadeIn();
+		} else {
+			$('.scrollToTop').fadeOut();
+		}
+	});
+	//Click event to scroll to top
+	$('.scrollToTop').click(function(){
+		$('html, body').animate({scrollTop : 0},800);
+		return false;
+	});
+
+	// Discord chat
+	let $discordChatBtn = $('#discord-chat-btn');
+	//console.log($discordChatBtn);
+	if ($discordChatBtn.length === 0) {
+		$discordChatBtn = $('<img src="/!bin/discord-56x56.png" id="discord-chat-btn" title="Click to Load">');
+		$("body").append($discordChatBtn)
+	}
+	$discordChatBtn.on('click', function() {
+		$(this).remove();
+		$.getScript("https://cdn.jsdelivr.net/npm/@widgetbot/crate@3", function(data, textStatus, jqxhr) {
+			let crate = new Crate({
+				server: '662398180255596544',
+				channel: '662398197817409556',
+				shard: 'https://e.widgetbot.io',
+			});
+			crate.toggle(true);
+		});
+	});
+}
+
+// Document is ready
+$(function() {
+	domReady();
+});
+
+// Facebook
+(function(d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) return;
+		js = d.createElement(s); js.id = id;
+		js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v8.0&appId=257832210900002";
+		fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+
+// Pinterest
+$.getScript("//assets.pinterest.com/js/pinit.js");
+
+// viglink (added 2018-01-22)
+/* removed 2018-06-15 because some amazon links were going to https://www.viglink.com/shop/merchants instead
+if (window.location.href.indexOf('article') == -1) {
+	var vglnk = { key: 'c6d67fb99ad8f61dad51d693f49614e2' };
+	(function(d, t) {
+		var s = d.createElement(t); s.type = 'text/javascript'; s.async = true;
+		s.src = '//cdn.viglink.com/api/vglnk.js';
+		var r = d.getElementsByTagName(t)[0]; r.parentNode.insertBefore(s, r);
+	}(document, 'script'));
+}
+*/
+// Google Analytics
+//(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-1024242-1', 'auto'); ga('send', 'pageview');
+
+</script>
+
+</body>
+</html>

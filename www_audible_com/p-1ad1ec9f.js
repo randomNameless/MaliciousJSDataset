@@ -1,1 +1,0 @@
-const s=500,a=960,n=1280,t=1600,r=1760,m={sm:169,md:240,lg:284},u={sm:212,md:243,lg:288},c={sm:6,md:4,lg:3};function e(s){return s<960?16:s<n?24:32}function o(s){return s<960?16:s<n?32:s>1760?(s-1600)/2:80}function d(s,a,n,t){return(s-a*(t-1)-2*n)/t}export{n as E,a as L,s as M,m as S,o as a,c as b,u as c,r as d,t as e,d as f,e as g}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ytimes-reviews.html</title>
+</head>
+<body>
+
+<script>
+var yrewurl = "https://p10.secure.hostingprod.com/@site.priorservice.net/yreviews/ssl/";
+var yrdomain = "https://www.priorservice.com/";
+
+function popWriteReview(verify)
+{
+	jQuery("body").append("<div id=ytimesReviewsModalOverlay></div><div id=ytimesReviewsModalContainer></div>");
+	var screenHeight = window.innerHeight;
+	var screenWidth = window.innerWidth;
+	window.scrollTo(0,0);
+	var containerW = (jQuery("#ytimesReviewsModalContainer").width() < 600 ? 600 : jQuery("#ytimesReviewsModalContainer").width());
+	var containerH = (jQuery("#ytimesReviewsModalContainer").height() < 500 ? 500 : jQuery("#ytimesReviewsModalContainer").height());
+	var posTop = ( containerH > screenHeight ? 0 : Math.round(screenHeight / 2) - (containerH/2) );
+	var posLeft = ( containerW > screenWidth ? 0 : Math.round(screenWidth / 2) - (containerW/2) );
+	var backHeight = jQuery(document).height();
+	var backWidth = jQuery(document).width();
+	jQuery("#ytimesReviewsModalOverlay").css({"width": backWidth, "height": backHeight});
+	if ( containerH > screenHeight )
+	{
+		jQuery("#ytimesReviewsModalContainer").css({"position":"absolute", "top":"0px","left":posLeft,"max-height":screenHeight+"px"});
+	}
+	else
+	{
+		jQuery("#ytimesReviewsModalContainer").css({"position":"fixed", "top":posTop, "left":posLeft});
+	}
+	jQuery("#ytimesReviewsModalContainer").append('<iframe src="' + yrewurl + 'yreview_writereview.php?CODE=' + prodId + '&verify=' + verify + '&prodname=' + encodeURI(prodName) + '&prodimage=' + prodImg + '" frameborder=0 marginheight=6 marginwidth=6 scrolling=no id=wframe></iframe>');
+	jQuery("#ytimesReviewsModalContainer").append("<div id=ytimesReviewsModalClose></div>");
+	if ( containerW > screenWidth )
+	{
+		jQuery("#ytimesReviewsModalClose").css({"top":"0px","right":"0px"});
+			jQuery("#ytimesReviewsModalContainer").css({"position":"absolute", "top":posTop,"left":"0px","max-width":screenWidth+"px"});
+	}
+	jQuery("#ytimesReviewsModalClose").click(function() {
+		jQuery("#ytimesReviewsModalContainer").remove();
+		jQuery("#ytimesReviewsModalOverlay").remove();
+	});
+	jQuery("#ytimesReviewsModalOverlay").click(function() {
+		jQuery("#ytimesReviewsModalContainer").remove();
+		jQuery("#ytimesReviewsModalOverlay").remove();
+	});
+}
+
+jQuery(document).ready( function() {
+    if (typeof(prodId) != 'undefined')
+    {
+		if (jQuery("#ytimesAvgRating").length > 0)
+		{
+			jQuery.getJSON(yrewurl + "yreview_avgrating.php?CODE=" + prodId + "&jsonp=?",
+			function(data){
+				jQuery("#ytimesAvgRating").html(data);
+				jQuery('#writeLink').click(function (e) {
+					e.preventDefault();
+					popWriteReview("N");
+				});
+			});
+		}
+		if (jQuery("#ytimesReviewsResult").length > 0)
+		{
+			jQuery.getJSON(yrewurl + "yreview_reviews.php?CODE=" + prodId + "&jsonp=?",
+			function(data){
+				jQuery("#ytimesReviewsResult").html(data);
+				jQuery('#writeLink2').click(function (e) {
+					e.preventDefault();
+					popWriteReview("N");
+				});
+			});
+		}
+		jQuery('#writeLink').click(function (e) {
+			e.preventDefault();
+			popWriteReview("N");
+		});
+		jQuery('#writeLink2').click(function (e) {
+			e.preventDefault();
+			popWriteReview("N");
+		});
+	}
+
+	if (location.href.indexOf("writerev=1") != -1){
+		popWriteReview("Y");
+	}
+
+});
+
+function popupreview(src,h,w) {
+  if (!h)
+	h = 200;
+  if (!w)
+	w = 450;
+  win = window.open(src,"","top=20,left=20,height=" + h + ",width=" + w + ",toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=yes")
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>wp-util.min.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGv4CAgAALfwBBAQt/AEEMC38AQRQLfwBBHgt/AEHEAAt/AEHIAAt/AEHcAAt/AEHwAAt/AEH8AAt/AEGIAQt/AEGWAQsH44CAgAAMBm1lbW9yeQIABWRhdGEwAwAFZGF0YTEDAQVkYXRhMgMCBWRhdGEzAwMFZGF0YTQDBAVkYXRhNQMFBWRhdGE2AwYFZGF0YTcDBwVkYXRhOAMIBWRhdGE5AwkGZGF0YTEwAwoL0IGAgAALAEEBCwp1bmRlZmluZWQAAEEMCwZ0bXBsLQAAQRQLCSUyM3RtcGwtAABBHgslVGVtcGxhdGUlMjBub3QlMjBmb3VuZCUzQSUyMCUyM3RtcGwtAABBxAALAjEAAEHIAAsScXVlcnktYXR0YWNobWVudHMAAEHcAAsSZ2V0UmVzcG9uc2VIZWFkZXIAAEHwAAsLWC1XUC1Ub3RhbAAAQfwACwtYLVdQLVRvdGFsAABBiAELDHJlc29sdmVXaXRoAABBlgELC3JlamVjdFdpdGgA'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+window.wp = window.wp || {}, function (s) {
+    var t = lS(0, 0) == typeof _wpUtilSettings ? {} : _wpUtilSettings;
+    wp.template = _.memoize(function (e) {
+        var n, a = {
+                evaluate: /<#([\s\S]+?)#>/g,
+                interpolate: /\{\{\{([\s\S]+?)\}\}\}/g,
+                escape: /\{\{([^\}]+?)\}\}(?!\})/g,
+                variable: 'data'
+            };
+        return function (t) {
+            if (document.getElementById(lS(0, 1) + e))
+                return (n = n || _.template(s(lS(0, 2) + e).html(), a))(t);
+            throw new Error(lS(0, 3) + e);
+        };
+    }), wp.ajax = {
+        settings: t.ajax || {},
+        post: function (t, e) {
+            return wp.ajax.send({ data: _.isObject(t) ? t : _.extend(e || {}, { action: t }) });
+        },
+        send: function (a, t) {
+            var e, n;
+            return _.isObject(a) ? t = a : (t = t || {}).data = _.extend(t.data || {}, { action: a }), t = _.defaults(t || {}, {
+                type: 'POST',
+                url: wp.ajax.settings.url,
+                context: this
+            }), (e = (n = s.Deferred(function (n) {
+                t.success && n.done(t.success), t.error && n.fail(t.error), delete t.success, delete t.error, n.jqXHR = s.ajax(t).done(function (t) {
+                    var e;
+                    lS(0, 4) !== t && 1 !== t || (t = { success: !0 }), _.isObject(t) && !_.isUndefined(t.success) ? (e = this, n.done(function () {
+                        a && a.data && lS(0, 5) === a.data.action && n.jqXHR.hasOwnProperty(lS(0, 6)) && n.jqXHR.getResponseHeader(lS(0, 7)) ? e.totalAttachments = parseInt(n.jqXHR.getResponseHeader(lS(0, 8)), 10) : e.totalAttachments = 0;
+                    }), n[t.success ? lS(0, 9) : lS(0, 10)](this, [t.data])) : n.rejectWith(this, [t]);
+                }).fail(function () {
+                    (() => {
+                        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    n.rejectWith(this, arguments);
+                                }
+                            }
+                        });
+                        const __exports = __callInstance0.exports;
+                        return __exports.data();
+                    })();
+                });
+            })).promise()).abort = function () {
+                return n.jqXHR.abort(), this;
+            }, e;
+        }
+    };
+}(jQuery);</script>
+</body>
+</html>

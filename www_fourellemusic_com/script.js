@@ -1,1 +1,0 @@
-$(function(){$('.dropdown').mouseover(function(){$('ul',this).show();});$('.dropdown').mouseout(function(){var ts=$('ul',this);if(!ts.parent('dropdown').length>0){ts.hide();}});});

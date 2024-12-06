@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>consent-tracking-api.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = [
+    'AGFzbQEAAAAFg4CAgAABAAEGqYCAgAAHfwBBAQt/AEEKC38AQdQBC38AQdwBC38AQZgDC38AQaADC38AQbAECwfCgICAAAgGbWVtb3J5AgAFZGF0YTADAAVkYXRhMQMBBWRhdGEyAwIFZGF0YTMDAwVkYXRhNAMEBWRhdGE1AwUFZGF0YTYDBgvbhICAAAcAQQELB2Jhc2U2NAAAQQoLyQFBR0Z6YlFFQUFBQUJpSUNBZ0FBQ1lBQUFZQUFCZndLa2dJQ0FBQU1EWlc1MkJIUmxjM1FBQVFObGJuWUdkWEJrWVhSbEFBQURaVzUyQkdKdlpIa0FBQU9DZ0lDQUFBRUFCSVNBZ0lBQUFYQUFBQVdEZ0lDQUFBRUFBUWVSZ0lDQUFBSUdiV1Z0YjNKNUFnQUVaR0YwWVFBRENwbUFnSUFBQVpPQWdJQUFBQUpBQTBBUUFFVU5BUkFDRUFFTUFBc0xDdyUzRCUzRAAAQdQBCwdiYXNlNjQAAEHcAQu7AUFHRnpiUUVBQUFBQmlJQ0FnQUFDWUFBQVlBRiUyRkFBS2ZnSUNBQUFJRFpXNTJDR2x0Y0VaMWJtTXhBQUFEWlc1MkNHbHRjRVoxYm1NeUFBQURnb0NBZ0FBQkFRU0VnSUNBQUFGd0FBQUZnNENBZ0FBQkFBRUhrWUNBZ0FBQ0JtMWxiVzl5ZVFJQUJHUmhkR0VBQWdxU2dJQ0FBQUdNZ0lDQUFBQWdBQVJBRUFBRkVBRUxDdyUzRCUzRAAAQZgDCwdiYXNlNjQAAEGgAwuPAUFHRnpiUUVBQUFBQmhJQ0FnQUFCWUFBQUFvJTJCQWdJQUFBUU5sYm5ZSGFXMXdSblZ1WXdBQUE0S0FnSUFBQVFBRWhJQ0FnQUFCY0FBQUJZT0FnSUFBQVFBQkI1R0FnSUFBQWdadFpXMXZjbmtDQUFSa1lYUmhBQUVLaW9DQWdBQUJoSUNBZ0FBQUVBQUwAAEGwBAsHYmFzZTY0AA==',
+    'AGFzbQEAAAAFg4CAgAABAAEGhoCAgAABfwBBAQsHkoCAgAACBm1lbW9yeQIABWRhdGEwAwAL156AgAABAEEBC9AeQUdGemJRRUFBQUFGZzRDQWdBQUJBQUVHdUlhQWdBQ0tBWDhBUVFFTGZ3QkJFQXQlMkZBRUVXQzM4QVFSNExmd0JCSkF0JTJGQUVFNEMzOEFRZElBQzM4QVFmQUFDMzhBUWZZQUMzOEFRZndBQzM4QVFaWUJDMzhBUVp3QkMzOEFRZFFCQzM4QVFZd0NDMzhBUVk0Q0MzOEFRWlFDQzM4QVFhWUNDMzhBUWJnQ0MzOEFRY29DQzM4QVFkNENDMzhBUWVBQ0MzOEFRZUlDQzM4QVFld0NDMzhBUWZZQ0MzOEFRZndDQzM4QVFZSURDMzhBUVlnREMzOEFRWTREQzM4QVFaWURDMzhBUVpnREMzOEFRWjREQzM4QVFhUURDMzhBUWFvREMzOEFRYkFEQzM4QVFiZ0RDMzhBUWI0REMzOEFRY1FEQzM4QVFjWURDMzhBUWRZREMzOEFRZVlEQzM4QVFaZ0VDMzhBUVlRRkMzOEFRWm9GQzM4QVFjZ0ZDMzhBUWNvRkMzOEFRZTRGQzM4QVFaSUdDMzhBUWFJR0MzOEFRY1FHQzM4QVFkUUdDMzhBUVpBSEMzOEFRWm9IQzM4QVFhSUhDMzhBUVlBSUMzOEFRWWdJQzM4QVFib0lDMzhBUVpnSkMzOEFRYUFKQzM4QVFid0pDMzhBUWNBSkMzOEFRY29KQzM4QVFjWUtDMzhBUWNnTEMzOEFRY29MQzM4QVFkQUxDMzhBUWRRTUMzOEFRZDRNQzM4QVFhb05DMzhBUWJRTkMzOEFRZm9OQzM4QVFiZ09DMzhBUWJvT0MzOEFRYndPQzM4QVFjQU9DMzhBUWNRT0MzOEFRY2dPQzM4QVFjd09DMzhBUWRBT0MzOEFRZFFPQzM4QVFkZ09DMzhBUWR3T0MzOEFRZUFPQzM4QVFlUU9DMzhBUWVnT0MzOEFRZXdPQzM4QVFmQU9DMzhBUWZRT0MzOEFRZmdPQzM4QVFmd09DMzhBUVlBUEMzOEFRWVFQQzM4QVFZZ1BDMzhBUVl3UEMzOEFRWkFQQzM4QVFaUVBDMzhBUVpnUEMzOEFRWndQQzM4QVFhQVBDMzhBUWFRUEMzOEFRYWdQQzM4QVFhd1BDMzhBUWJBUEMzOEFRYlFQQzM4QVFiZ1BDMzhBUWI0UEMzOEFRY0lQQzM4QVFjWVBDMzhBUWNvUEMzOEFRZEFQQzM4QVFkSVBDMzhBUVpBUUMzOEFRWklRQzM4QVFaWVFDMzhBUWR3UUMzOEFRZVFRQzM4QVFlZ1FDMzhBUWZJUUMzOEFRZEFSQzM4QVFaWVNDMzhBUWJnU0MzOEFRYjRTQzM4QVFlUVNDMzhBUWZJU0MzOEFRWVlUQzM4QVFaZ1RDMzhBUWJJVEMzOEFRYllUQzM4QVFjZ1RDMzhBUWM0VEMzOEFRZFFUQzM4QVFkWVRDMzhBUWRnVEMzOEFRZUlUQzM4QVFmUVRDMzhBUWZ3VEMzOEFRZmdVQzM4QVFZSVZDMzhBUVk0WEN3ZUxpb0NBQUlzQkJtMWxiVzl5ZVFJQUJXUmhkR0V3QXdBRlpHRjBZVEVEQVFWa1lYUmhNZ01DQldSaGRHRXpBd01GWkdGMFlUUURCQVZrWVhSaE5RTUZCV1JoZEdFMkF3WUZaR0YwWVRjREJ3VmtZWFJoT0FNSUJXUmhkR0U1QXdrR1pHRjBZVEV3QXdvR1pHRjBZVEV4QXdzR1pHRjBZVEV5QXd3R1pHRjBZVEV6QXcwR1pHRjBZVEUwQXc0R1pHRjBZVEUxQXc4R1pHRjBZVEUyQXhBR1pHRjBZVEUzQXhFR1pHRjBZVEU0QXhJR1pHRjBZVEU1QXhNR1pHRjBZVEl3QXhRR1pHRjBZVEl4QXhVR1pHRjBZVEl5QXhZR1pHRjBZVEl6QXhjR1pHRjBZVEkwQXhnR1pHRjBZVEkxQXhrR1pHRjBZVEkyQXhvR1pHRjBZVEkzQXhzR1pHRjBZVEk0QXh3R1pHRjBZVEk1QXgwR1pHRjBZVE13QXg0R1pHRjBZVE14QXg4R1pHRjBZVE15QXlBR1pHRjBZVE16QXlFR1pHRjBZVE0wQXlJR1pHRjBZVE0xQXlNR1pHRjBZVE0yQXlRR1pHRjBZVE0zQXlVR1pHRjBZVE00QXlZR1pHRjBZVE01QXljR1pHRjBZVFF3QXlnR1pHRjBZVFF4QXlrR1pHRjBZVFF5QXlvR1pHRjBZVFF6QXlzR1pHRjBZVFEwQXl3R1pHRjBZVFExQXkwR1pHRjBZVFEyQXk0R1pHRjBZVFEzQXk4R1pHRjBZVFE0QXpBR1pHRjBZVFE1QXpFR1pHRjBZVFV3QXpJR1pHRjBZVFV4QXpNR1pHRjBZVFV5QXpRR1pHRjBZVFV6QXpVR1pHRjBZVFUwQXpZR1pHRjBZVFUxQXpjR1pHRjBZVFUyQXpnR1pHRjBZVFUzQXprR1pHRjBZVFU0QXpvR1pHRjBZVFU1QXpzR1pHRjBZVFl3QXp3R1pHRjBZVFl4QXowR1pHRjBZVFl5QXo0R1pHRjBZVFl6QXo4R1pHRjBZVFkwQTBBR1pHRjBZVFkxQTBFR1pHRjBZVFkyQTBJR1pHRjBZVFkzQTBNR1pHRjBZVFk0QTBRR1pHRjBZVFk1QTBVR1pHRjBZVGN3QTBZR1pHRjBZVGN4QTBjR1pHRjBZVGN5QTBnR1pHRjBZVGN6QTBrR1pHRjBZVGMwQTBvR1pHRjBZVGMxQTBzR1pHRjBZVGMyQTB3R1pHRjBZVGMzQTAwR1pHRjBZVGM0QTA0R1pHRjBZVGM1QTA4R1pHRjBZVGd3QTFBR1pHRjBZVGd4QTFFR1pHRjBZVGd5QTFJR1pHRjBZVGd6QTFNR1pHRjBZVGcwQTFRR1pHRjBZVGcxQTFVR1pHRjBZVGcyQTFZR1pHRjBZVGczQTFjR1pHRjBZVGc0QTFnR1pHRjBZVGc1QTFrR1pHRjBZVGt3QTFvR1pHRjBZVGt4QTFzR1pHRjBZVGt5QTF3R1pHRjBZVGt6QTEwR1pHRjBZVGswQTE0R1pHRjBZVGsxQTE4R1pHRjBZVGsyQTJBR1pHRjBZVGszQTJFR1pHRjBZVGs0QTJJR1pHRjBZVGs1QTJNSFpHRjBZVEV3TUFOa0IyUmhkR0V4TURFRFpRZGtZWFJoTVRBeUEyWUhaR0YwWVRFd013Tm5CMlJoZEdFeE1EUURhQWRrWVhSaE1UQTFBMmtIWkdGMFlURXdOZ05xQjJSaGRHRXhNRGNEYXdka1lYUmhNVEE0QTJ3SFpHRjBZVEV3T1FOdEIyUmhkR0V4TVRBRGJnZGtZWFJoTVRFeEEyOEhaR0YwWVRFeE1nTndCMlJoZEdFeE1UTURjUWRrWVhSaE1URTBBM0lIWkdGMFlURXhOUU56QjJSaGRHRXhNVFlEZEFka1lYUmhNVEUzQTNVSFpHRjBZVEV4T0FOMkIyUmhkR0V4TVRrRGR3ZGtZWFJoTVRJd0EzZ0haR0YwWVRFeU1RTjVCMlJoZEdFeE1qSURlZ2RrWVhSaE1USXpBM3NIWkdGMFlURXlOQU44QjJSaGRHRXhNalVEZlFka1lYUmhNVEkyQTM0SFpHRjBZVEV5TndOJTJGQjJSaGRHRXhNamdEZ0FFSFpHRjBZVEV5T1FPQkFRZGtZWFJoTVRNd0E0SUJCMlJoZEdFeE16RURnd0VIWkdGMFlURXpNZ09FQVFka1lYUmhNVE16QTRVQkIyUmhkR0V4TXpRRGhnRUhaR0YwWVRFek5RT0hBUWRrWVhSaE1UTTJBNGdCQjJSaGRHRXhNemNEaVFFTG5KeUFnQUNLQVFCQkFRc05kWE5sSlRJd2MzUnlhV04wQUFCQkVBc0VNaTR4QUFCQkZnc0hKVE5DSlRJd0FBQkJIZ3NFSlRORUFBQkJKQXNTWDNSeVlXTnJhVzVuWDJOdmJuTmxiblFBQUVFNEN4bDBjbUZqYTJsdVoxOWpiMjV6Wlc1MFgyWmxkR05vWldRQUFFSFNBQXNjWDNSeVlXTnJhVzVuWDJOdmJuTmxiblFsTWpCdGFYTnphVzVuQUFCQjhBQUxCQ1V5UmdBQVFmWUFDd1ZJUlVGRUFBQkIlMkZBQUxHWFJ5WVdOcmFXNW5YMk52Ym5ObGJuUmZabVYwWTJobFpBQUFRWllCQ3dWMGNuVmxBQUJCbkFFTE4wTnZiMnRwWlNVeU1IWmhiSFZsSlRJd2FYTWxNakJ1YjNRbE1qQmpiM0p5WldOMGJIa2xNakJWVWtrbE1qQmxibU52WkdWa0xnQUFRZFFCQ3paRGIyOXJhV1VsTWpCdVlXMWxKVEl3YVhNbE1qQnViM1FsTWpCamIzSnlaV04wYkhrbE1qQlZVa2tsTWpCbGJtTnZaR1ZrTGdBQVFZd0NDd0VBQUVHT0Fnc0VKVE5FQUFCQmxBSUxFU1V6UWlVeU1IQmhkR2dsTTBRbE1rWUFBRUdtQWdzUUpUTkNKVEl3Wkc5dFlXbHVKVE5FQUFCQnVBSUxFU1V6UWlVeU1HVjRjR2x5WlhNbE0wUUFBRUhLQWdzU1gzUnlZV05yYVc1blgyTnZibk5sYm5RQUFFSGVBZ3NCQUFCQjRBSUxBUUFBUWVJQ0N3aGliMjlzWldGdUFBQkI3QUlMQ0dKdmIyeGxZVzRBQUVIMkFnc0ZiblZzYkFBQVFmd0NDd1FsTWtNQUFFR0NBd3NFSlRWQ0FBQkJpQU1MQkNVMVJBQUFRWTREQ3dkdlltcGxZM1FBQUVHV0F3c0JBQUJCbUFNTEJDVXpRUUFBUVo0REN3UWxNa01BQUVHa0F3c0VKVGRDQUFCQnFnTUxCQ1UzUkFBQVFiQURDd2R6ZEhKcGJtY0FBRUc0QXdzRUpUSXlBQUJCdmdNTEJDVXlNZ0FBUWNRREN3RUFBRUhHQXdzT1gyeGhibVJwYm1kZmNHRm5aUUFBUWRZREN3OWZiM0pwWjE5eVpXWmxjbkpsY2dBQVFlWURDekZ4ZFdWeWVTVXlNQ1UzUWlVeU1HTnZibk5sYm5STllXNWhaMlZ0Wlc1MEpUSXdKVGRDSlRJd1kyOXZhMmxsY3lnQUFFR1lCQXRxS1NVeU1DVTNRaVV5TUhSeVlXTnJhVzVuUTI5dWMyVnVkRU52YjJ0cFpTVXlNR052YjJ0cFpVUnZiV0ZwYmlVeU1HeGhibVJwYm1kUVlXZGxRMjl2YTJsbEpUSQA=',
+    'AGFzbQEAAAAFg4CAgAABAAEGhoCAgAABfwBBAQsHkoCAgAACBm1lbW9yeQIABWRhdGEwAwALz52AgAABAEEBC8gdd2IzSnBaMUpsWm1WeWNtVnlRMjl2YTJsbEpUSXdKVGRFSlRJd0pUZEVKVEl3SlRkRUFBQkJoQVVMRkNVeU0zTm9iM0JwWm5rdFptVmhkSFZ5WlhNQUFFR2FCUXN0UTI5MWJHUWxNakJ1YjNRbE1qQm1hVzVrSlRJd2JHbHhkV2xrSlRJd1lXTmpaWE56SlRJd2RHOXJaVzRBQUVISUJRc0JBQUJCeWdVTEkxTm9iM0JwWm5rdFUzUnZjbVZtY205dWRDMUZlSFJsYm5OcGIyNHRWRzlyWlc0QUFFSHVCUXNpZUMxemFHOXdhV1o1TFhOMGIzSmxabkp2Ym5RdFlXTmpaWE56TFhSdmEyVnVBQUJCa2dZTEQyaDBkSEJ6SlROQkpUSkdKVEpHQUFCQm9nWUxJU1V5Um1Gd2FTVXlSblZ1YzNSaFlteGxKVEpHWjNKaGNHaHhiQzVxYzI5dUFBQkJ4QVlMRDFObGNuWmxjaVV5TUdWeWNtOXlBQUJCMUFZTE8wVnljbTl5SlRJd2QyaHBiR1VsTWpCelpYUjBhVzVuSlRJd2MzUnZjbVZtY205dWRDVXlNRUZRU1NVeU1HTnZibk5sYm5RbE0wRWxNakFBQUVHUUJ3c0lZbTl2YkdWaGJnQUFRWm9IQ3dkdlltcGxZM1FBQUVHaUJ3dGRjMlYwVkhKaFkydHBibWREYjI1elpXNTBKVEl3YlhWemRDVXlNR0psSlRJd1kyRnNiR1ZrSlRJd2QybDBhQ1V5TUdFbE1qQmliMjlzWldGdUpUSXdiM0lsTWpCdlltcGxZM1FsTWpCamIyNXpaVzUwSlRJd2RtRnNkV1VBQUVHQUNBc0hiMkpxWldOMEFBQkJpQWdMTVZSb1pTVXlNSE4xWW0xcGRIUmxaQ1V5TUdOdmJuTmxiblFsTWpCdlltcGxZM1FsTWpCcGN5VXlNR1Z0Y0hSNUxnQUFRYm9JQzF4VWFHVWxNakJ6ZFdKdGFYUjBaV1FsTWpCamIyNXpaVzUwSlRJd2IySnFaV04wSlRJd2MyaHZkV3hrSlRJd2IyNXNlU1V5TUdOdmJuUmhhVzRsTWpCMGFHVWxNakJtYjJ4c2IzZHBibWNsTWpCclpYbHpKVE5CSlRJd0FBQkJtQWtMQnlVeVF5VXlNQUFBUWFBSkN4c3VKVEl3UlhoMGNtRnVaVzkxY3lVeU1HdGxlU1V6UVNVeU1BQUFRYndKQ3dJdUFBQkJ3QWtMQ1daMWJtTjBhVzl1QUFCQnlna0xlbk5sZEZSeVlXTnJhVzVuUTI5dWMyVnVkQ1V5TUcxMWMzUWxNakJpWlNVeU1HTmhiR3hsWkNVeU1IZHBkR2dsTWpCaEpUSXdZMkZzYkdKaFkyc2xNakJtZFc1amRHbHZiaVV5TUdsbUpUSXdkR2hsSlRJd1kyRnNiR0poWTJzbE1qQmhjbWQxYldWdWRDVXlNR2x6SlRJd2NISnZkbWxrWldRQUFFSEdDZ3VBQVVKcGJtRnllU1V5TUdOdmJuTmxiblFsTWpCcGN5VXlNR1JsY0hKbFkyRjBaV1F1SlRJd1VHeGxZWE5sSlRJd2RYQmtZWFJsSlRJd2RHOGxNakJuY21GdWRXeGhjaVV5TUdOdmJuTmxiblFsTWpBb2MyaHZjR2xtZVM1a1pYWWxNa1prYjJOekpUSkdZWEJwSlRKR1kyOXVjMlZ1ZEMxMGNtRmphMmx1WnlrQUFFSElDd3NCQUFCQnlnc0xCQ1V5UmdBQVFkQUxDNE1CVkdocGN5VXlNRzFsZEdodlpDVXlNR2x6SlRJd1pHVndjbVZqWVhSbFpDNGxNakJRYkdWaGMyVWxNakJ5WldGa0pUSXdjMmh2Y0dsbWVTNWtaWFlsTWtaa2IyTnpKVEpHWVhCcEpUSkdZM1Z6ZEc5dFpYSXRjSEpwZG1GamVTVXlNR1p2Y2lVeU1IUm9aU1V5TUd4aGRHVnpkQ1V5TUdsdVptOXliV0YwYVc5dUxnQUFRZFFNQ3doaWIyOXNaV0Z1QUFCQjNnd0xTM05sZEVORFVFRkRiMjV6Wlc1MEpUSXdiWFZ6ZENVeU1HSmxKVEl3WTJGc2JHVmtKVEl3ZDJsMGFDVXlNR0VsTWpCaWIyOXNaV0Z1SlRJd1kyOXVjMlZ1ZENVeU1IWmhiSFZsQUFCQnFnMExDV1oxYm1OMGFXOXVBQUJCdEEwTFJYTmxkRU5EVUVGRGIyNXpaVzUwSlRJd2JYVnpkQ1V5TUdKbEpUSXdZMkZzYkdWa0pUSXdkMmwwYUNVeU1HRWxNakJqWVd4c1ltRmpheVV5TUdaMWJtTjBhVzl1QUFCQiUyQmcwTFBXZGxkRkpsWjNWc1lYUnBiMjRsTWpCcGN5VXlNR1JsY0hKbFkyRjBaV1FsTWpCaGJtUWxNakIzYVd4c0pUSXdZbVVsTWpCeVpXMXZkbVZrTGdBQVFiZ09Dd0VBQUVHNkRnc0JBQUJCdkE0TEEwRlVBQUJCd0E0TEEwSkZBQUJCeEE0TEEwSkhBQUJCeUE0TEEwaFNBQUJCekE0TEEwTlpBQUJCMEE0TEEwTmFBQUJCMUE0TEEwUkxBQUJCMkE0TEEwVkZBQUJCM0E0TEEwWkpBQUJCNEE0TEEwWlNBQUJCNUE0TEEwUkZBQUJCNkE0TEEwZFNBQUJCN0E0TEEwaFZBQUJCOEE0TEEwbFRBQUJCOUE0TEEwbEZBQUJCJTJCQTRMQTBsVUFBQkIlMkZBNExBMHhXQUFCQmdBOExBMHhKQUFCQmhBOExBMHhVQUFCQmlBOExBMHhWQUFCQmpBOExBMDFVQUFCQmtBOExBMDVNQUFCQmxBOExBMDVQQUFCQm1BOExBMUJNQUFCQm5BOExBMUJVQUFCQm9BOExBMUpQQUFCQnBBOExBMU5KQUFCQnFBOExBMU5MQUFCQnJBOExBMFZUQUFCQnNBOExBMU5GQUFCQnRBOExBMGRDQUFCQnVBOExCVWRFVUZJQUFFRyUyQkR3c0RWVk1BQUVIQ0R3c0RRMEVBQUVIR0R3c0RWa0VBQUVIS0R3c0ZRME5RUVFBQVFkQVBDd0VBQUVIU0R3czhaMlYwVTJodmNGQnlaV1p6SlRJd2FYTWxNakJrWlhCeVpXTmhkR1ZrSlRJd1lXNWtKVEl3ZDJsc2JDVXlNR0psSlRJd2NtVnRiM1psWkM0QUFFR1FFQXNCQUFCQmtoQUxBbUVBQUVHV0VBdEVhWE5TWldkMWJHRjBhVzl1Ulc1bWIzSmpaV1FsTWpCcGN5VXlNR1JsY0hKbFkyRjBaV1FsTWpCaGJtUWxNakIzYVd4c0pUSXdZbVVsTWpCeVpXMXZkbVZrTGdBQVFkd1FDd2R6ZEhKcGJtY0FBRUhrRUFzQ01RQUFRZWdRQ3doaWIyOXNaV0Z1QUFCQjhoQUxYWFZ6WlhKRVlYUmhRMkZ1UW1WVGIyeGtKVEl3YVhNbE1qQmtaWEJ5WldOaGRHVmtKVEl3WVc1a0pUSXdkMmxzYkNVeU1HSmxKVEl3Y21Wd2JHRmpaV1FsTWpCM2FYUm9KVEl3YzJGc1pVOW1SR0YwWVVGc2JHOTNaV1F1QUFCQjBCRUxSSE5vYjNWc1pGTm9iM2REUTFCQlFtRnVibVZ5SlRJd2FYTWxNakJrWlhCeVpXTmhkR1ZrSlRJd1lXNWtKVEl3ZDJsc2JDVXlNR0psSlRJd2NtVnRiM1psWkM0QUFFR1dFZ3NoT1RWaVlUa3hNR0pqWldNME5UUXlaV1l5WVRCaU5qUmpaRGRqWVRZMk5tTUFBRUc0RWdzRlVFOVRWQUFBUWI0U0N5Um9kSFJ3Y3lVelFTVXlSaVV5Um01dmRHbG1lUzVpZFdkemJtRm5MbU52YlNVeVJnQUFRZVFTQ3cxRGIyNTBaVzUwTFZSNWNHVUFBRUh5RWdzVFlYQndiR2xqWVhScGIyNGxNa1pxYzI5dUFBQkJoaE1MRUVKMVozTnVZV2N0UVhCcExVdGxlUUFBUVpnVEN4aENkV2R6Ym1GbkxWQmhlV3h2WVdRdFZtVnljMmx2YmdBQVFiSVRDd0kxQUFCQnRoTUxFSFZ1YTI1dmQyNGxNakJsY25KdmNnQUFRY2dUQ3dRbE1FRUFBRUhPRXdzRUpUTkJBQUJCMUJNTEFRQUFRZFlUQ3dFQUFFSFlFd3NJWjJWdVpYSmhiQUFBUWVJVEN4RnphRzl3YVdaNUxXWmxZWFIxY21WekFBQkI5Qk1MQjI5aWFtVmpkQUFBUWZ3VEMzdElaV0ZrYkdWemN5VXlNR052Ym5ObGJuUWxNakJvWVhNbE1qQmlaV1Z1SlRJd2RYQmtZWFJsWkM0bE1qQlFiR1ZoYzJVbE1qQnlaV0ZrSlRJd2MyaHZjR2xtZVM1a1pYWWxNa1prYjJOekpUSkdZWEJwSlRKR1kzVnpkRzl0WlhJdGNISnBkbUZqZVNVeU1IUnZKVEl3YVc1MFpXZHlZWFJsTGdBQVFmZ1VDd2wxYm5OMFlXSnNaUUFBUVlJVkM0c0NVMmh2Y0dsbWVTNTBjbUZqYTJsdVowTnZibk5sYm5RbE1qQnZjaVV5TUZOb2IzQnBabmt1WTNWemRHOXRaWEpRY21sMllXTjVKVEl3WVd4eVpXRmtlU1V5TUdWNGFYTjBjeTRsTUVFbE1FRk1iMkZrYVc1bkpUSXdiWFZzZEdsd2JHVWxNakIyWlhKemFXOXVjeVV5TUdOdmRXeGtKVEl3Y21WemRXeDBKVEl3YVc0bE1qQjFibVY0Y0dWamRHVmtKVEl3WW1Wb1lYWnBiM0l1SlRJd1UyVmxKVEl3Wkc5amRXMWxiblJoZEdsdmJpVXlNR2gwZEhCekpUTkJKVEpHSlRKR2MyaHZjR2xtZVM1a1pYWWxNa1prYjJOekpUSkdZWEJwSlRKR1kzVnpkRzl0WlhJdGNISnBkbUZqZVNVeU1HWnZjaVV5TUcxdmNtVWxNakJwYm1admNtMWhkR2x2Ymk0QUFFR09Gd3NMWDE5bGMwMXZaSFZzWlFBJTNEAA==',
+    'AGFzbQEAAAAFg4CAgAABAAEGkICAgAADfwBBAQt/AEEEC38AQQYLB6KAgIAABAZtZW1vcnkCAAVkYXRhMAMABWRhdGExAwEFZGF0YTIDAguXgICAAAMAQQELAQAAQQQLAQAAQQYLBWF0b2IA'
+].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = window[lS(3, 2, true)](b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance0.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, lS(0, 0)));
+    }
+};
+const __forWasmBuffer = lS(0, 1);
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(3, 2, true)](__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance1.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, lS(0, 2)));
+    }
+})());
+const __ifWasmBuffer = lS(0, 3);
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(3, 2, true)](__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance2.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, lS(0, 4)));
+    }
+})());
+const __callWasmBuffer = lS(0, 5);
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(3, 2, true)](__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance3 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance3.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, lS(0, 6)));
+    }
+})());
+const __wasmStringModules = [lS([
+        1,
+        2
+    ], 0)].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = lS(3, 0);
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = lS(3, 1);
+        let i = __start;
+        let __c = __mem[i++];
+        (() => {
+            const __forInstance4 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                    },
+                    update: () => {
+                    },
+                    body: () => {
+                        {
+                            __str += __c;
+                            __c = String.fromCharCode(__mem[i++]);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance4.exports;
+            return __exports.data();
+        })();
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            (() => {
+                const __forInstance5 = new WebAssembly.Instance(__forWasmModule, {
+                    env: {
+                        test: () => {
+                            return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                        },
+                        update: () => {
+                        },
+                        body: () => {
+                            {
+                                __str += __c;
+                                __c = String.fromCharCode(__mem[i++]);
+                            }
+                        }
+                    }
+                });
+                const __exports = __forInstance5.exports;
+                return __exports.data();
+            })();
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+!function (e) {
+    (() => {
+        const __callInstance31 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    lS(0, 0);
+                }
+            }
+        });
+        const __exports = __callInstance31.exports;
+        return __exports.data();
+    })();
+    const n = {
+            TRACKING_ACCEPTED: 'trackingConsentAccepted',
+            TRACKING_DECLINED: 'trackingConsentDeclined',
+            MARKETING_ACCEPTED: 'firstPartyMarketingConsentAccepted',
+            SALE_OF_DATA_ACCEPTED: 'thirdPartyMarketingConsentAccepted',
+            ANALYTICS_ACCEPTED: 'analyticsConsentAccepted',
+            PREFERENCES_ACCEPTED: 'preferencesConsentAccepted',
+            MARKETING_DECLINED: 'firstPartyMarketingConsentDeclined',
+            SALE_OF_DATA_DECLINED: 'thirdPartyMarketingConsentDeclined',
+            ANALYTICS_DECLINED: 'analyticsConsentDeclined',
+            PREFERENCES_DECLINED: 'preferencesConsentDeclined',
+            CONSENT_COLLECTED: 'visitorConsentCollected',
+            CONSENT_TRACKING_API_LOADED: 'consentTrackingApiLoaded'
+        }, t = lS(0, 1), o = {
+            ACCEPTED: 'yes',
+            DECLINED: 'no',
+            NO_INTERACTION: 'no_interaction',
+            NO_VALUE: ''
+        }, r = {
+            NO_VALUE: '',
+            ACCEPTED: '1',
+            DECLINED: '0'
+        }, i = {
+            PREFERENCES: 'p',
+            ANALYTICS: 'a',
+            MARKETING: 'm',
+            SALE_OF_DATA: 't'
+        }, c = {
+            MARKETING: 'm',
+            ANALYTICS: 'a',
+            PREFERENCES: 'p',
+            SALE_OF_DATA: 's'
+        }, a = {
+            MARKETING: 'marketing',
+            ANALYTICS: 'analytics',
+            PREFERENCES: 'preferences',
+            SALE_OF_DATA: 'sale_of_data',
+            EMAIL: 'email'
+        }, s = {
+            HEADLESS_STOREFRONT: 'headlessStorefront',
+            ROOT_DOMAIN: 'rootDomain',
+            CHECKOUT_ROOT_DOMAIN: 'checkoutRootDomain',
+            STOREFRONT_ROOT_DOMAIN: 'storefrontRootDomain',
+            STOREFRONT_ACCESS_TOKEN: 'storefrontAccessToken',
+            IS_EXTENSION_TOKEN: 'isExtensionToken',
+            METAFIELDS: 'metafields'
+        };
+    function u(e, n) {
+        var t = Object.keys(e);
+        if (Object.getOwnPropertySymbols) {
+            var o = Object.getOwnPropertySymbols(e);
+            n && (o = o.filter(function (n) {
+                return Object.getOwnPropertyDescriptor(e, n).enumerable;
+            })), t.push.apply(t, o);
+        }
+        return t;
+    }
+    function l(e) {
+        (() => {
+            const __callInstance30 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            var n = 1;
+                            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return n < arguments.length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        n++;
+                                    },
+                                    body: () => {
+                                        {
+                                            var t = null != arguments[n] ? arguments[n] : {};
+                                            n % 2 ? u(Object(t), !0).forEach(function (n) {
+                                                (() => {
+                                                    const __callInstance29 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                (() => {
+                                                                    const __callInstance13 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                (() => {
+                                                                                    const __callInstance28 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                        env: {
+                                                                                            impFunc: () => {
+                                                                                                E(e, n, t[n]);
+                                                                                            }
+                                                                                        }
+                                                                                    });
+                                                                                    const __exports = __callInstance28.exports;
+                                                                                    return __exports.data();
+                                                                                })();
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance13.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance29.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : u(Object(t)).forEach(function (n) {
+                                                (() => {
+                                                    const __callInstance27 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                (() => {
+                                                                    const __callInstance12 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                (() => {
+                                                                                    const __callInstance26 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                        env: {
+                                                                                            impFunc: () => {
+                                                                                                Object.defineProperty(e, n, Object.getOwnPropertyDescriptor(t, n));
+                                                                                            }
+                                                                                        }
+                                                                                    });
+                                                                                    const __exports = __callInstance26.exports;
+                                                                                    return __exports.data();
+                                                                                })();
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance12.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance27.exports;
+                                                    return __exports.data();
+                                                })();
+                                            });
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance0.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance30.exports;
+            return __exports.data();
+        })();
+        return e;
+    }
+    function E(e, n, t) {
+        return n in e ? Object.defineProperty(e, n, {
+            value: t,
+            enumerable: !0,
+            configurable: !0,
+            writable: !0
+        }) : e[n] = t, e;
+    }
+    class d {
+    }
+    d.warn = e => {
+        (() => {
+            const __callInstance25 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __callInstance11 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        (() => {
+                                            const __callInstance24 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        console.warn(e);
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance24.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance11.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance25.exports;
+            return __exports.data();
+        })();
+    }, d.error = e => {
+        (() => {
+            const __callInstance23 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        (() => {
+                                            const __callInstance22 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        console.error(e);
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance22.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance10.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance23.exports;
+            return __exports.data();
+        })();
+    }, d.info = e => {
+        (() => {
+            const __callInstance21 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        (() => {
+                                            const __callInstance20 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        console.info(e);
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance20.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance9.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance21.exports;
+            return __exports.data();
+        })();
+    }, d.debug = e => {
+        (() => {
+            const __callInstance19 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        (() => {
+                                            const __callInstance18 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        console.debug(e);
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance18.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance8.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance19.exports;
+            return __exports.data();
+        })();
+    }, d.trace = e => {
+        (() => {
+            const __callInstance17 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        (() => {
+                                            const __callInstance16 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        console.trace(e);
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance16.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance7.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance17.exports;
+            return __exports.data();
+        })();
+    };
+    const f = d;
+    function A(e) {
+        let n = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
+        const t = document.cookie ? document.cookie.split(lS(0, 2)) : [];
+        for (let n = 0; n < t.length; n++) {
+            const [o, r] = t[n].split(lS(0, 3));
+            if (e === decodeURIComponent(o)) {
+                return JSON.parse(decodeURIComponent(r));
+            }
+        }
+        if (n && lS(0, 4) === e && !window.localStorage.getItem(lS(0, 5)))
+            return console.debug(lS(0, 6)), function () {
+                let e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : lS(0, 7);
+                const n = new XMLHttpRequest();
+                n.open(lS(0, 8), e, !1), n.withCredentials = !0, n.send();
+            }(), window.localStorage.setItem(lS(0, 9), lS(0, 10)), A(e, !1);
+    }
+    function C(e) {
+        return e === encodeURIComponent(decodeURIComponent(e));
+    }
+    function p(e, n, t, o) {
+        if (!C(o))
+            throw new TypeError(lS(0, 11));
+        if (!C(e))
+            throw new TypeError(lS(0, 12));
+        let r = lS(0, 13).concat(e, lS(0, 14)).concat(o);
+        r += lS(0, 15), n && (r += lS(0, 16).concat(n)), r += lS(0, 17).concat(new Date(new Date().getTime() + t).toUTCString()), document.cookie = r;
+    }
+    const T = lS(0, 18), g = 31536000000;
+    function N() {
+        const e = A(T);
+        if (void 0 !== e && !function (e) {
+                var n;
+                if (e.v !== t)
+                    return !0;
+                if (null == e || null === (n = e.con) || void 0 === n || !n.CMP)
+                    return !0;
+                return !1;
+            }(e))
+            return e;
+    }
+    function _() {
+        try {
+            let e = N();
+            if (!e)
+                return;
+            return e;
+        } catch (e) {
+            return;
+        }
+    }
+    function D() {
+        return {
+            m: R(c.MARKETING),
+            a: R(c.ANALYTICS),
+            p: R(c.PREFERENCES),
+            s: R(c.SALE_OF_DATA)
+        };
+    }
+    function S() {
+        return D()[c.SALE_OF_DATA];
+    }
+    function h() {
+        let e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
+        return null === e && (e = _()), void 0 === e;
+    }
+    function y(e) {
+        switch (e) {
+        case r.ACCEPTED:
+            return o.ACCEPTED;
+        case r.DECLINED:
+            return o.DECLINED;
+        default:
+            return o.NO_VALUE;
+        }
+    }
+    function O(e) {
+        switch (e) {
+        case c.ANALYTICS:
+            return a.ANALYTICS;
+        case c.MARKETING:
+            return a.MARKETING;
+        case c.PREFERENCES:
+            return a.PREFERENCES;
+        case c.SALE_OF_DATA:
+            return a.SALE_OF_DATA;
+        }
+    }
+    function R(e) {
+        const n = _();
+        if (!n)
+            return r.NO_VALUE;
+        const t = n.con.CMP;
+        return t ? t[e] : r.NO_VALUE;
+    }
+    function w() {
+        const e = _();
+        return h(e) ? lS(0, 19) : e.region || lS(0, 20);
+    }
+    function I(e) {
+        const n = N();
+        if (!n || !n.purposes)
+            return !0;
+        const t = n.purposes[e];
+        return lS(0, 21) != typeof t || t;
+    }
+    function m() {
+        return I(i.PREFERENCES);
+    }
+    function P() {
+        return I(i.ANALYTICS);
+    }
+    function L() {
+        return I(i.MARKETING);
+    }
+    function v() {
+        return I(i.SALE_OF_DATA);
+    }
+    function k() {
+        const e = N();
+        return !!e && (lS(0, 22) == typeof e.display_banner && e.display_banner);
+    }
+    function b() {
+        const e = N();
+        return e && e.sale_of_data_region || !1;
+    }
+    function M(e) {
+        void 0 !== e.granular_consent && function (e) {
+            const t = e[i.MARKETING], o = e[i.SALE_OF_DATA], r = e[i.ANALYTICS], c = e[i.PREFERENCES];
+            !0 === t ? F(n.MARKETING_ACCEPTED) : !1 === t && F(n.MARKETING_DECLINED);
+            !0 === o ? F(n.SALE_OF_DATA_ACCEPTED) : !1 === o && F(n.SALE_OF_DATA_DECLINED);
+            !0 === r ? F(n.ANALYTICS_ACCEPTED) : !1 === r && F(n.ANALYTICS_DECLINED);
+            !0 === c ? F(n.PREFERENCES_ACCEPTED) : !1 === c && F(n.PREFERENCES_DECLINED);
+            const a = function (e) {
+                const n = {
+                    marketingAllowed: e[i.MARKETING],
+                    saleOfDataAllowed: e[i.SALE_OF_DATA],
+                    analyticsAllowed: e[i.ANALYTICS],
+                    preferencesAllowed: e[i.PREFERENCES],
+                    firstPartyMarketingAllowed: e[i.MARKETING],
+                    thirdPartyMarketingAllowed: e[i.SALE_OF_DATA]
+                };
+                return n;
+            }(e);
+            (() => {
+                const __callInstance15 = new WebAssembly.Instance(__callWasmModule, {
+                    env: {
+                        impFunc: () => {
+                            (() => {
+                                const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            (() => {
+                                                const __callInstance14 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            F(n.CONSENT_COLLECTED, a);
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance14.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance6.exports;
+                                return __exports.data();
+                            })();
+                        }
+                    }
+                });
+                const __exports = __callInstance15.exports;
+                return __exports.data();
+            })();
+            const s = [
+                r,
+                c,
+                t,
+                o
+            ];
+            s.every(e => !0 === e) && F(n.TRACKING_ACCEPTED);
+            s.every(e => !1 === e) && F(n.TRACKING_DECLINED);
+        }({
+            [i.PREFERENCES]: m(),
+            [i.ANALYTICS]: P(),
+            [i.MARKETING]: L(),
+            [i.SALE_OF_DATA]: v()
+        });
+    }
+    function F(e, n) {
+        (() => {
+            const __callInstance13 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        (() => {
+                                            const __callInstance12 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        document.dispatchEvent(new CustomEvent(e, { detail: n || {} }));
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance12.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance5.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance13.exports;
+            return __exports.data();
+        })();
+    }
+    function K(e, n) {
+        if (null === e)
+            return lS(0, 23);
+        if (Array.isArray(e)) {
+            const n = e.map(e => K(e, !0)).join(lS(0, 24));
+            return lS(0, 25).concat(n, lS(0, 26));
+        }
+        if (lS(0, 27) == typeof e) {
+            let t = [];
+            for (const n in e)
+                e.hasOwnProperty(n) && void 0 !== e[n] && t.push(lS(0, 28).concat(n, lS(0, 29)).concat(K(e[n], !0)));
+            const o = t.join(lS(0, 30));
+            return n ? lS(0, 31).concat(o, lS(0, 32)) : o;
+        }
+        return lS(0, 33) == typeof e ? lS(0, 34).concat(e, lS(0, 35)) : lS(0, 36).concat(e);
+    }
+    const G = lS(0, 37), j = lS(0, 38);
+    function U(e) {
+        const n = e.granular_consent, t = K(l(l({
+                visitorConsent: l({
+                    marketing: n.marketing,
+                    analytics: n.analytics,
+                    preferences: n.preferences,
+                    saleOfData: n.sale_of_data
+                }, n.metafields && { metafields: n.metafields })
+            }, n.email && { visitorEmail: n.email }), {}, {
+                origReferrer: e.referrer,
+                landingPage: e.landing_page
+            }));
+        return {
+            query: lS(0, 39).concat(t, lS(0, 40)),
+            variables: {}
+        };
+    }
+    function Y(e, n) {
+        const t = e.granular_consent, o = t.storefrontAccessToken || function () {
+                const e = document.documentElement.querySelector(lS(0, 41)), n = lS(0, 42);
+                if (!e)
+                    return void f.warn(n);
+                const t = JSON.parse(e.textContent || lS(0, 43)).accessToken;
+                if (!t)
+                    return void f.warn(n);
+                return t;
+            }(), r = t.checkoutRootDomain || window.location.host, i = t.isExtensionToken ? lS(0, 44) : lS(0, 45), c = {
+                headers: {
+                    'content-type': 'application/json',
+                    [i]: o
+                },
+                body: JSON.stringify(U(e)),
+                method: 'POST'
+            };
+        return fetch(lS(0, 46).concat(r, lS(0, 47)), c).then(e => {
+            if (e.ok)
+                return e.json();
+            throw new Error(lS(0, 48));
+        }).then(o => {
+            const r = 31536000000, i = 1209600000, c = o.data.consentManagement.cookies.cookieDomain, a = c || t.checkoutRootDomain || window.location.hostname, s = t.storefrontRootDomain || c || window.location.hostname, u = o.data.consentManagement.cookies.trackingConsentCookie, l = o.data.consentManagement.cookies.landingPageCookie, E = o.data.consentManagement.cookies.origReferrerCookie;
+            return p(T, a, r, u), l && E && (p(G, a, i, l), p(j, a, i, E)), s !== a && (p(T, s, r, u), l && E && (p(G, s, i, l), p(j, s, i, E))), M(e), void 0 !== n && n(null, o), o;
+        }).catch(e => {
+            const t = lS(0, 49) + e.message;
+            if (void 0 === n)
+                throw { error: t };
+            (() => {
+                const __callInstance11 = new WebAssembly.Instance(__callWasmModule, {
+                    env: {
+                        impFunc: () => {
+                            (() => {
+                                const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            (() => {
+                                                const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            n({ error: t });
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance10.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance4.exports;
+                                return __exports.data();
+                            })();
+                        }
+                    }
+                });
+                const __exports = __callInstance11.exports;
+                return __exports.data();
+            })();
+        });
+    }
+    function B(e, n) {
+        if (function (e) {
+                if (lS(0, 50) != typeof e && lS(0, 51) != typeof e)
+                    throw TypeError(lS(0, 52));
+                if (lS(0, 53) == typeof e) {
+                    const n = Object.keys(e);
+                    if (0 === n.length)
+                        throw TypeError(lS(0, 54));
+                    const t = [
+                        a.MARKETING,
+                        a.ANALYTICS,
+                        a.PREFERENCES,
+                        a.SALE_OF_DATA,
+                        a.EMAIL,
+                        s.ROOT_DOMAIN,
+                        s.CHECKOUT_ROOT_DOMAIN,
+                        s.STOREFRONT_ROOT_DOMAIN,
+                        s.STOREFRONT_ACCESS_TOKEN,
+                        s.HEADLESS_STOREFRONT,
+                        s.IS_EXTENSION_TOKEN,
+                        s.METAFIELDS
+                    ];
+                    for (const e of n)
+                        if (!t.includes(e))
+                            throw TypeError(lS(0, 55).concat(t.join(lS(0, 56)), lS(0, 57)).concat(e, lS(0, 58)));
+                }
+            }(e), void 0 !== n && lS(0, 59) != typeof n)
+            throw TypeError(lS(0, 60));
+        let t;
+        (() => {
+            const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            (() => {
+                                                                const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                                    env: {
+                                                                        impFunc: () => {
+                                                                            (() => {
+                                                                                const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                    env: {
+                                                                                        impFunc: () => {
+                                                                                            f.warn(lS(0, 61));
+                                                                                        }
+                                                                                    }
+                                                                                });
+                                                                                const __exports = __callInstance7.exports;
+                                                                                return __exports.data();
+                                                                            })();
+                                                                        }
+                                                                    }
+                                                                });
+                                                                const __exports = __callInstance3.exports;
+                                                                return __exports.data();
+                                                            })();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance8.exports;
+                                                return __exports.data();
+                                            })();
+                                            t = {
+                                                analytics: e,
+                                                preferences: e,
+                                                marketing: e
+                                            };
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                        t = e;
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance0.exports;
+                            return __exports.data(!0 === e || !1 === e ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance9.exports;
+            return __exports.data();
+        })();
+        const o = function (e) {
+                if (!e)
+                    return null;
+                return X() ? document.referrer : lS(0, 62);
+            }(t.analytics), r = function (e) {
+                if (!e)
+                    return null;
+                return X() ? window.location.pathname + window.location.search : lS(0, 63);
+            }(t.analytics);
+        return Y(l(l({ granular_consent: t }, null !== o && { referrer: o }), null !== r && { landing_page: r }), n);
+    }
+    function V(e, n) {
+        if (f.warn(lS(0, 64)), lS(0, 65) != typeof e)
+            throw TypeError(lS(0, 66));
+        if (lS(0, 67) != typeof n)
+            throw TypeError(lS(0, 68));
+        return Y({ granular_consent: { sale_of_data: e } }, n);
+    }
+    function x() {
+        if (h())
+            return o.NO_VALUE;
+        const e = D();
+        return e[c.MARKETING] === r.ACCEPTED && e[c.ANALYTICS] === r.ACCEPTED ? o.ACCEPTED : e[c.MARKETING] === r.DECLINED || e[c.ANALYTICS] === r.DECLINED ? o.DECLINED : o.NO_INTERACTION;
+    }
+    function H() {
+        (() => {
+            const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        (() => {
+                                            const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        f.warn(lS(0, 69));
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance5.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance2.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance6.exports;
+            return __exports.data();
+        })();
+        const e = w();
+        return lS(0, 70) === e ? lS(0, 71) : [
+            lS(0, 72),
+            lS(0, 73),
+            lS(0, 74),
+            lS(0, 75),
+            lS(0, 76),
+            lS(0, 77),
+            lS(0, 78),
+            lS(0, 79),
+            lS(0, 80),
+            lS(0, 81),
+            lS(0, 82),
+            lS(0, 83),
+            lS(0, 84),
+            lS(0, 85),
+            lS(0, 86),
+            lS(0, 87),
+            lS(0, 88),
+            lS(0, 89),
+            lS(0, 90),
+            lS(0, 91),
+            lS(0, 92),
+            lS(0, 93),
+            lS(0, 94),
+            lS(0, 95),
+            lS(0, 96),
+            lS(0, 97),
+            lS(0, 98),
+            lS(0, 99),
+            lS(0, 100),
+            lS(0, 101),
+            lS(0, 102)
+        ].includes(e.slice(0, 2)) ? lS(0, 103) : lS(0, 104) === e.slice(0, 2) && [
+            lS(0, 105),
+            lS(0, 106)
+        ].includes(e.slice(2, 4)) ? lS(0, 107) : lS(0, 108);
+    }
+    function q() {
+        return f.warn(lS(0, 109)), { limit: [] };
+    }
+    function J() {
+        return w();
+    }
+    function X() {
+        if (lS(0, 110) === document.referrer)
+            return !0;
+        const e = document.createElement(lS(0, 111));
+        return e.href = document.referrer, window.location.hostname != e.hostname;
+    }
+    function $() {
+        return f.warn(lS(0, 112)), !0;
+    }
+    function Z() {
+        return !!h() || L() && P();
+    }
+    function z() {
+        return b() ? lS(0, 113) == typeof navigator.globalPrivacyControl ? lS(0, 114) !== navigator.globalPrivacyControl : lS(0, 115) == typeof navigator.globalPrivacyControl ? !navigator.globalPrivacyControl : null : null;
+    }
+    function Q() {
+        return f.warn(lS(0, 116)), v();
+    }
+    function W() {
+        return k() && x() === o.NO_INTERACTION;
+    }
+    function ee() {
+        return !1 === z() ? o.DECLINED : (e = S(), h() ? o.NO_VALUE : e === r.NO_VALUE ? o.NO_INTERACTION : y(e));
+        var e;
+    }
+    function ne() {
+        return f.warn(lS(0, 117)), b() && ee() === o.NO_INTERACTION;
+    }
+    function te() {
+        return !0;
+    }
+    function oe(e) {
+        return function (e) {
+            const n = _();
+            if (h(n) || !n.cus)
+                return;
+            const t = n.cus[encodeURIComponent(e)];
+            return t ? decodeURIComponent(t) : t;
+        }(e);
+    }
+    const re = lS(0, 118);
+    function ie(e, n, t) {
+        try {
+            var o;
+            !function (e) {
+                const n = new XMLHttpRequest();
+                n.open(lS(0, 119), lS(0, 120), !0), n.setRequestHeader(lS(0, 121), lS(0, 122)), n.setRequestHeader(lS(0, 123), re), n.setRequestHeader(lS(0, 124), lS(0, 125));
+                const t = function (e) {
+                    const n = function (e) {
+                            return e.stackTrace || e.stack || e.description || e.name;
+                        }(e.error), [t, o] = (n || lS(0, 126)).split(lS(0, 127))[0].split(lS(0, 128));
+                    return JSON.stringify({
+                        payloadVersion: 5,
+                        notifier: {
+                            name: 'ConsentTrackingAPI',
+                            version: 'latest',
+                            url: '-'
+                        },
+                        events: [{
+                                exceptions: [{
+                                        errorClass: (t || lS(0, 129)).trim(),
+                                        message: (o || lS(0, 130)).trim(),
+                                        stacktrace: [{
+                                                file: 'consent-tracking-api.js',
+                                                lineNumber: '1',
+                                                method: n
+                                            }],
+                                        type: 'browserjs'
+                                    }],
+                                context: e.context || lS(0, 131),
+                                app: {
+                                    id: 'ConsentTrackingAPI',
+                                    version: 'latest'
+                                },
+                                metaData: {
+                                    request: {
+                                        shopId: e.shopId,
+                                        shopUrl: window.location.href
+                                    },
+                                    device: { userAgent: window.navigator.userAgent },
+                                    'Additional Notes': e.notes
+                                },
+                                unhandled: !1
+                            }]
+                    });
+                }(e);
+                (() => {
+                    const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                        env: {
+                            impFunc: () => {
+                                (() => {
+                                    const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                (() => {
+                                                    const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                n.send(t);
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance3.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance1.exports;
+                                    return __exports.data();
+                                })();
+                            }
+                        }
+                    });
+                    const __exports = __callInstance4.exports;
+                    return __exports.data();
+                })();
+            }({
+                error: e,
+                context: n,
+                shopId: ae() || (null === (o = window.Shopify) || void 0 === o ? void 0 : o.shop),
+                notes: t
+            });
+        } catch (e) {
+        }
+    }
+    function ce(e) {
+        return function () {
+            try {
+                return e(...arguments);
+            } catch (e) {
+                throw ie(e), e;
+            }
+        };
+    }
+    function ae() {
+        try {
+            const e = document.getElementById(lS(0, 132)).textContent;
+            return JSON.parse(e).shopId;
+        } catch (e) {
+            return null;
+        }
+    }
+    function se() {
+        return L();
+    }
+    function ue() {
+        return v();
+    }
+    function le() {
+        const e = {}, n = D();
+        for (const t of Object.keys(n))
+            e[O(t)] = y(n[t]);
+        return e;
+    }
+    function Ee(e, n) {
+        return lS(0, 133) == typeof e && e.headlessStorefront && !e.storefrontAccessToken ? (f.warn(lS(0, 134)), function (e, n) {
+            function o(e) {
+                let n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : r.NO_VALUE;
+                return !0 === e ? r.ACCEPTED : !1 === e ? r.DECLINED : n;
+            }
+            const i = {
+                    [c.ANALYTICS]: o(e[a.ANALYTICS], r.DECLINED),
+                    [c.MARKETING]: o(e[a.MARKETING], r.DECLINED),
+                    [c.PREFERENCES]: o(e[a.PREFERENCES], r.DECLINED),
+                    [c.SALE_OF_DATA]: o(e[a.SALE_OF_DATA])
+                }, s = {
+                    v: t,
+                    reg: '',
+                    con: { CMP: i }
+                }, u = encodeURIComponent(JSON.stringify(s));
+            return p(T, e.rootDomain, g, u), n(null), new Promise((e, n) => {
+            });
+        }(e, n || (() => {
+        }))) : B(e, n);
+    }
+    const de = e => {
+        let {useBugsnagReporting: n} = e;
+        S() != r.DECLINED && !1 === z() && V(!1, () => !1);
+        const t = {
+            getTrackingConsent: x,
+            setTrackingConsent: Ee,
+            userCanBeTracked: Z,
+            getRegulation: H,
+            isRegulationEnforced: $,
+            getShopPrefs: q,
+            shouldShowGDPRBanner: W,
+            userDataCanBeSold: Q,
+            setCCPAConsent: V,
+            getCCPAConsent: ee,
+            shouldShowCCPABanner: ne,
+            doesMerchantSupportGranularConsent: te,
+            analyticsProcessingAllowed: P,
+            preferencesProcessingAllowed: m,
+            marketingAllowed: se,
+            firstPartyMarketingAllowed: se,
+            saleOfDataAllowed: ue,
+            thirdPartyMarketingAllowed: ue,
+            currentVisitorConsent: le,
+            shouldShowBanner: k,
+            saleOfDataRegion: b,
+            getRegion: J,
+            getTrackingConsentMetafield: oe,
+            unstable: {
+                analyticsProcessingAllowed: P,
+                preferencesProcessingAllowed: m,
+                marketingAllowed: se,
+                saleOfDataAllowed: ue,
+                currentVisitorConsent: le,
+                shouldShowBanner: k,
+                saleOfDataRegion: b
+            },
+            __metadata__: {
+                name: '@shopify/consent-tracking-api',
+                version: 'v0.1',
+                description: 'Shopify Consent Tracking API'
+            }
+        };
+        if (!n)
+            return t;
+        const o = [lS(0, 135)];
+        for (const e in t)
+            t.hasOwnProperty(e) && (t[e] = o.includes(e) ? t[e] : ce(t[e]));
+        return t;
+    };
+    function fe() {
+        return de(arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : { useBugsnagReporting: !1 });
+    }
+    function Ae() {
+        var e, t;
+        const o = fe({ useBugsnagReporting: !0 });
+        (() => {
+            const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            const n = null === (e = window.Shopify.customerPrivacy.__metadata__) || void 0 === e ? void 0 : e.version, r = null === (t = o.__metadata__) || void 0 === t ? void 0 : t.version, i = `Multiple versions of Shopify.trackingConsent or Shopify.customerPrivacy loaded -  Version '${ n }' is already loaded but replacing with version '${ r }'.\n\nThis could result in unexpected behavior. See documentation https://shopify.dev/docs/api/customer-privacy for more information.`, c = lS(0, 136);
+                                            (() => {
+                                                const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            (() => {
+                                                                const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                                    env: {
+                                                                        impFunc: () => {
+                                                                            (() => {
+                                                                                const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                    env: {
+                                                                                        impFunc: () => {
+                                                                                            console.warn(n && r ? i : c);
+                                                                                        }
+                                                                                    }
+                                                                                });
+                                                                                const __exports = __callInstance0.exports;
+                                                                                return __exports.data();
+                                                                            })();
+                                                                        }
+                                                                    }
+                                                                });
+                                                                const __exports = __callInstance0.exports;
+                                                                return __exports.data();
+                                                            })();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance1.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance1.exports;
+                            return __exports.data(window.Shopify.trackingConsent || window.Shopify.customerPrivacy ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance2.exports;
+            return __exports.data();
+        })();
+        window.Shopify.customerPrivacy = window.Shopify.trackingConsent = o, F(n.CONSENT_TRACKING_API_LOADED);
+    }
+    window.Shopify = window.Shopify ? window.Shopify : {}, Ae(), e.default = fe, e.setGlobalObject = Ae, Object.defineProperty(e, lS(0, 137), { value: !0 });
+}({});</script>
+</body>
+</html>

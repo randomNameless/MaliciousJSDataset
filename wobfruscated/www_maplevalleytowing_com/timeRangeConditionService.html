@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>timeRangeConditionService.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGkICAgAADfwBBAQt/AEEIC38AQRALB6KAgIAABAZtZW1vcnkCAAVkYXRhMAMABWRhdGExAwEFZGF0YTIDAguigICAAAMAQQELBmVuLVVTAABBCAsGZW4tVVMAAEEQCwZlbi1VUwA='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+function isInRange(originStartTime, originEndTime, allDayEnabled = false, settingsRrule, timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone) {
+    const now = new Date();
+    const currentTime = timeZone ? new Date(now.toLocaleString(lS(0, 0), { timeZone })) : now;
+    let startTime = new Date(originStartTime.toLocaleString(lS(0, 1), { timeZone }));
+    let endTime = new Date(originEndTime.toLocaleString(lS(0, 2), { timeZone }));
+    (() => {
+        const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        (() => {
+                            const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        startTime.setHours(0, 0, 0, 0);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance9.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        endTime.setHours(23, 59, 59, 999);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance8.exports;
+                            return __exports.data();
+                        })();
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance0.exports;
+        return __exports.data(allDayEnabled ? 1 : 0);
+    })();
+    if (settingsRrule && rrule) {
+        const recurringRule = rrule.rrulestr(settingsRrule);
+        recurringRule.options = {
+            ...recurringRule.options,
+            tzid: timeZone,
+            dtstart: startTime,
+            until: getEndDate(endTime, recurringRule.options, currentTime, originStartTime, originEndTime, allDayEnabled)
+        };
+        const betweenOccurrences = measureFunctionExecutionTime(() => recurringRule.between(recurringRule.options.dtstart, recurringRule.options.until, true));
+        return betweenOccurrences.some(occurrence => {
+            if (!allDayEnabled) {
+                (() => {
+                    const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                        env: {
+                            impFunc: () => {
+                                setTimeFromAnotherDate(occurrence, originEndTime);
+                            }
+                        }
+                    });
+                    const __exports = __callInstance7.exports;
+                    return __exports.data();
+                })();
+                return compareDates(currentTime, occurrence, true) && compareDatesIgnoringSeconds(currentTime, occurrence) <= 0;
+            }
+            return compareDates(currentTime, occurrence, allDayEnabled);
+        });
+    }
+    return compareDatesIgnoringSeconds(currentTime, startTime) >= 0 && compareDatesIgnoringSeconds(currentTime, endTime) <= 0;
+}
+function shouldShowRuleObjectForDateTimeRange(ruleObjName, settings, actionType) {
+    const settingsStartTime = new Date(settings.start_time);
+    const settingsEndTime = new Date(settings.end_time);
+    const settingsAllDayEnabled = parseBoolean(settings.all_day_enabled);
+    const settingsRrule = settings.rrule;
+    const settingsTimeZone = settings.timezone;
+    if (settingsStartTime && settingsEndTime) {
+        const cookieName = getSmartRuleCookieName(ruleObjName, actionType);
+        return isInRange(settingsStartTime, settingsEndTime, settingsAllDayEnabled, settingsRrule, settingsTimeZone) && getCookie(cookieName) === null && !hasCookieOfType(actionType);
+    }
+    return true;
+}
+function compareDates(date1, date2, allDay) {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    if (allDay) {
+        const year1 = d1.getFullYear();
+        const month1 = d1.getMonth();
+        const day1 = d1.getDate();
+        const year2 = d2.getFullYear();
+        const month2 = d2.getMonth();
+        const day2 = d2.getDate();
+        return year1 === year2 && month1 === month2 && day1 === day2;
+    } else {
+        (() => {
+            const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        d1.setSeconds(0, 0);
+                    }
+                }
+            });
+            const __exports = __callInstance6.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        d2.setSeconds(0, 0);
+                    }
+                }
+            });
+            const __exports = __callInstance5.exports;
+            return __exports.data();
+        })();
+        return d1.getTime() === d2.getTime();
+    }
+}
+function compareDatesIgnoringSeconds(date1, date2) {
+    let d1 = new Date(date1.getTime());
+    let d2 = new Date(date2.getTime());
+    (() => {
+        const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    d1.setSeconds(0, 0);
+                }
+            }
+        });
+        const __exports = __callInstance4.exports;
+        return __exports.data();
+    })();
+    (() => {
+        const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    d2.setSeconds(0, 0);
+                }
+            }
+        });
+        const __exports = __callInstance3.exports;
+        return __exports.data();
+    })();
+    if (d1.getTime() === d2.getTime()) {
+        return 0;
+    } else if (d1.getTime() < d2.getTime()) {
+        return -1;
+    } else {
+        return 1;
+    }
+}
+function getEndDate(endTime, options, currentTime, originStartTime, originEndTime, allDay) {
+    if (options.until) {
+        if (allDay) {
+            return options.until;
+        }
+        return setTimeFromAnotherDate(options.until, originEndTime);
+    }
+    const isOriginStartTimeEqualsToOriginEndTime = compareDates(originStartTime, originEndTime, true);
+    if (!isOriginStartTimeEqualsToOriginEndTime) {
+        return endTime;
+    }
+    const isEndTimeBeforeCurrentTime = compareDatesIgnoringSeconds(endTime, currentTime) < 0;
+    if (isOriginStartTimeEqualsToOriginEndTime && isEndTimeBeforeCurrentTime) {
+        const tmrw = new Date(currentTime);
+        (() => {
+            const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        tmrw.setDate(currentTime.getDate() + 1);
+                    }
+                }
+            });
+            const __exports = __callInstance2.exports;
+            return __exports.data();
+        })();
+        return tmrw;
+    }
+    return currentTime;
+}
+function setTimeFromAnotherDate(targetDate, sourceDate) {
+    const hours = sourceDate.getHours();
+    const minutes = sourceDate.getMinutes();
+    const seconds = sourceDate.getSeconds();
+    const milliseconds = sourceDate.getMilliseconds();
+    (() => {
+        const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    targetDate.setHours(hours, minutes, seconds, milliseconds);
+                }
+            }
+        });
+        const __exports = __callInstance1.exports;
+        return __exports.data();
+    })();
+    return targetDate;
+}
+function measureFunctionExecutionTime(callback) {
+    const startTime = performance.now();
+    const res = callback();
+    const endTime = performance.now();
+    const duration = endTime - startTime;
+    (() => {
+        const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        (() => {
+                            const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        window.runtime.API.logService.warn(`The RRULE function took more than a second: ${ duration.toFixed(3) } ms`);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance0.exports;
+                            return __exports.data();
+                        })();
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance1.exports;
+        return __exports.data(duration > 1000 ? 1 : 0);
+    })();
+    return res;
+}
+window.timeRangeConditionService = { isInRange };</script>
+</body>
+</html>

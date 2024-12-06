@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>reklamko_not_rus.html</title>
+</head>
+<body>
+
+<script>
+// load Google AdManager
+rqw(function (r) {
+    r(["https://securepubads.g.doubleclick.net/tag/js/gpt.js"], 
+        function () {
+
+
+            window.googletag = window.googletag || { cmd: [] };
+
+            googletag.cmd.push(function() {
+
+            googletag.pubads().enableLazyLoad({
+                // Fetch slots within 5 viewports.
+                fetchMarginPercent: 200,
+                // Render slots within 2 viewports.
+                renderMarginPercent: 200,
+                // Double the above values on mobile, where viewports are smaller
+                // and users tend to scroll faster.
+                mobileScaling: 2,
+            });
+
+
+            // Enable SRA and services.
+            googletag.pubads().enableSingleRequest();
+            googletag.pubads().collapseEmptyDivs();
+            googletag.enableServices();
+            });
+
+
+
+            jqw(function ($) {
+                $(function () {
+
+                    function AdManager_create_banner(containerId, div_style, slot, sizes){
+                        const container = document.getElementById(containerId);
+                        if (container) {
+                            const div = document.createElement('div');
+                            div.id = 'div-gpt-ad-'+containerId;
+                            div.style.cssText = div_style;
+                            container.appendChild(div);
+
+                            googletag.cmd.push(function() {
+                                googletag.defineSlot(slot, sizes, div.id).addService(googletag.pubads());
+                            });
+                            googletag.cmd.push(function() { googletag.display(div.id); });
+                        }
+                    }
+                        
+                        
+                    
+                    
+                    
+
+                    let AdManager_banners = []
+
+                    const middle_style = (window.innerWidth>=1300) ? 'min-width: 800px; min-height: 250px;' : 'min-width: 650px; min-height: 250px;';
+                    const middle_slot  = (window.innerWidth>=1300) ? '/22720552842,22744570741/irecommend/800x250_1' : '/22720552842,22744570741/irecommend/650x250_1';
+                    const middle_sizes = (window.innerWidth>=1300) ? [800, 250] : [650, 250];
+
+                    switch(Adapt.getCurrentState()){
+                        case 'min':
+                        case 'middle':
+                            AdManager_banners = [
+                                ['b_mobmiddle1', 'min-width: 336px; min-height: 280px;', '/22720552842,22744570741/irecommend/336x280_1', [[300, 250], [336, 280]] ],
+                                ['b_mobmiddle2', 'min-width: 336px; min-height: 280px;', '/22720552842,22744570741/irecommend/336x280_1', [[300, 250], [336, 280]] ],
+                                ['b_mobmiddle3', 'min-width: 336px; min-height: 280px;', '/22720552842,22744570741/irecommend/336x280_1', [[300, 250], [336, 280]] ],
+                                ['b_mobdown1',   'min-width: 336px; min-height: 280px;', '/22720552842,22744570741/irecommend/336x280_1', [[300, 250], [336, 280]] ]
+                            ];
+                            break;
+                        case 'full':
+                            AdManager_banners = [
+                                ['b_sidebar1', 'min-width: 300px; min-height: 600px;', '/22720552842,22744570741/irecommend/300x600_1', [[300, 600], [240, 400], [160, 600]] ],
+                                ['b_middle1', middle_style, middle_slot, middle_sizes],
+                                ['b_middle2', middle_style, middle_slot, middle_sizes],
+                                ['b_middle3', middle_style, middle_slot, middle_sizes],
+                                ['b_footer1', 'min-width: 970px; min-height: 250px;', '/22720552842,22744570741/irecommend/970x250_1',  [970, 250] ]
+                            ];
+                            break;
+                    }
+
+
+
+
+                    //    mfeed
+                    try{
+                        if(['review', 'product'].includes(window.Drupal.settings.site.type) && window.Drupal.settings.site.uid<=1){
+
+                            let page_elements_filtered = [];
+                    
+                            let review_text = document.querySelector('div.reviewText div');
+                            if(!!review_text){
+                                let review_elements = review_text.children;
+                                for (let element of review_elements) {
+                                    if(element.previousSibling.clientHeight>=100) page_elements_filtered.push(element);
+                                }
+                            }
+                    
+                            let reviews = document.querySelectorAll('ul.list-comments li.item:not(:first-child), div.seealso-block-content div.teaser-item:not(:first-child)');
+                    
+                            for (let element of reviews) {
+                                page_elements_filtered.push(element);
+                            }
+                    
+                    
+                            for(let i=1; i<=10 && page_elements_filtered.length>i*3; i++){
+                    
+                                let containerId = 'b_mfeed-'+i;
+                    
+                                let element = page_elements_filtered[i*3-1];
+                                let b1 = ( element.parentElement.nodeName=='UL' ? document.createElement('li') : document.createElement('div') );
+                                b1.classList.add('item');
+                
+                                if(element.getBoundingClientRect().top-screen.height>=0){
+                                    if( window.innerWidth<650 ){
+                                        const div = document.createElement('div');
+                                        div.id = containerId;
+                                        div.className = 'mfeed';
+                                        div.style.cssText = 'text-align: center; min-height:0px; width:100%; margin-left: -15px; margin-right: -15px; margin-top: 0px; margin-bottom: 8px; padding-left: 15px; padding-right: 15px;';
+                                        b1.appendChild(div);
+                                        element.parentNode.insertBefore(b1, element);
+
+                                        AdManager_banners.push( [containerId, 'min-width: 336px; min-height: 280px;', '/22720552842,22744570741/irecommend/336x280_1', [[300, 250], [336, 280]] ] );
+                                    }
+                                }
+                            }
+                    
+                        }
+                    }catch(e){}
+
+
+                    try{
+                        AdManager_banners.forEach(params => {
+                            AdManager_create_banner(...params);
+                        });
+                    }catch(e){}
+
+
+                });
+            });
+
+
+
+        }
+    );
+});
+
+
+</script>
+
+</body>
+</html>

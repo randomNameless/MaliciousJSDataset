@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>jquery.init.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGwYCAgAALfwBBAQt/AEEKC38AQdQBC38AQdwBC38AQZgDC38AQaADC38AQbAEC38AQbgEC38AQbgUC38AQboUC38AQbwUCwfjgICAAAwGbWVtb3J5AgAFZGF0YTADAAVkYXRhMQMBBWRhdGEyAwIFZGF0YTMDAwVkYXRhNAMEBWRhdGE1AwUFZGF0YTYDBgVkYXRhNwMHBWRhdGE4AwgFZGF0YTkDCQZkYXRhMTADCgv6lICAAAsAQQELB2Jhc2U2NAAAQQoLyQFBR0Z6YlFFQUFBQUJpSUNBZ0FBQ1lBQUFZQUFCZndLa2dJQ0FBQU1EWlc1MkJIUmxjM1FBQVFObGJuWUdkWEJrWVhSbEFBQURaVzUyQkdKdlpIa0FBQU9DZ0lDQUFBRUFCSVNBZ0lBQUFYQUFBQVdEZ0lDQUFBRUFBUWVSZ0lDQUFBSUdiV1Z0YjNKNUFnQUVaR0YwWVFBRENwbUFnSUFBQVpPQWdJQUFBQUpBQTBBUUFFVU5BUkFDRUFFTUFBc0xDdyUzRCUzRAAAQdQBCwdiYXNlNjQAAEHcAQu7AUFHRnpiUUVBQUFBQmlJQ0FnQUFDWUFBQVlBRiUyRkFBS2ZnSUNBQUFJRFpXNTJDR2x0Y0VaMWJtTXhBQUFEWlc1MkNHbHRjRVoxYm1NeUFBQURnb0NBZ0FBQkFRU0VnSUNBQUFGd0FBQUZnNENBZ0FBQkFBRUhrWUNBZ0FBQ0JtMWxiVzl5ZVFJQUJHUmhkR0VBQWdxU2dJQ0FBQUdNZ0lDQUFBQWdBQVJBRUFBRkVBRUxDdyUzRCUzRAAAQZgDCwdiYXNlNjQAAEGgAwuPAUFHRnpiUUVBQUFBQmhJQ0FnQUFCWUFBQUFvJTJCQWdJQUFBUU5sYm5ZSGFXMXdSblZ1WXdBQUE0S0FnSUFBQVFBRWhJQ0FnQUFCY0FBQUJZT0FnSUFBQVFBQkI1R0FnSUFBQWdadFpXMXZjbmtDQUFSa1lYUmhBQUVLaW9DQWdBQUJoSUNBZ0FBQUVBQUwAAEGwBAsHYmFzZTY0AABBuAQL/w9BR0Z6YlFFQUFBQUZnNENBZ0FBQkFBRUdxSUtBZ0FBeWZ3QkJBUXQlMkZBRUVFQzM4QVFSWUxmd0JCT0F0JTJGQUVFJTJCQzM4QVFjQUFDMzhBUWNvQUMzOEFRZEFBQzM4QVFkSUFDMzhBUWR3QUMzOEFRZW9BQzM4QVFmUUFDMzhBUVlZQkMzOEFRWWdCQzM4QVFZNEJDMzhBUVpRQkMzOEFRYm9CQzM4QVFjb0JDMzhBUWRZQkMzOEFRZGdCQzM4QVFlUUJDMzhBUWU0QkMzOEFRZmdCQzM4QVFZQUNDMzhBUVk0Q0MzOEFRWm9DQzM4QVFhWUNDMzhBUWF3Q0MzOEFRYklDQzM4QVFib0NDMzhBUWI0Q0MzOEFRY1FDQzM4QVFjb0NDMzhBUWR3Q0MzOEFRWUlEQzM4QVFaSURDMzhBUVo0REMzOEFRYUFEQzM4QVFhd0RDMzhBUWJZREMzOEFRY0FEQzM4QVFjZ0RDMzhBUWRZREMzOEFRZUlEQzM4QVFlNERDMzhBUWZRREMzOEFRZm9EQzM4QVFZSUVDMzhBUVlZRUMzOEFRWXdFQ3dmQ2c0Q0FBRE1HYldWdGIzSjVBZ0FGWkdGMFlUQURBQVZrWVhSaE1RTUJCV1JoZEdFeUF3SUZaR0YwWVRNREF3VmtZWFJoTkFNRUJXUmhkR0UxQXdVRlpHRjBZVFlEQmdWa1lYUmhOd01IQldSaGRHRTRBd2dGWkdGMFlUa0RDUVprWVhSaE1UQURDZ1prWVhSaE1URURDd1prWVhSaE1USUREQVprWVhSaE1UTUREUVprWVhSaE1UUUREZ1prWVhSaE1UVUREd1prWVhSaE1UWURFQVprWVhSaE1UY0RFUVprWVhSaE1UZ0RFZ1prWVhSaE1Ua0RFd1prWVhSaE1qQURGQVprWVhSaE1qRURGUVprWVhSaE1qSURGZ1prWVhSaE1qTURGd1prWVhSaE1qUURHQVprWVhSaE1qVURHUVprWVhSaE1qWURHZ1prWVhSaE1qY0RHd1prWVhSaE1qZ0RIQVprWVhSaE1qa0RIUVprWVhSaE16QURIZ1prWVhSaE16RURId1prWVhSaE16SURJQVprWVhSaE16TURJUVprWVhSaE16UURJZ1prWVhSaE16VURJd1prWVhSaE16WURKQVprWVhSaE16Y0RKUVprWVhSaE16Z0RKZ1prWVhSaE16a0RKd1prWVhSaE5EQURLQVprWVhSaE5ERURLUVprWVhSaE5ESURLZ1prWVhSaE5ETURLd1prWVhSaE5EUURMQVprWVhSaE5EVURMUVprWVhSaE5EWURMZ1prWVhSaE5EY0RMd1prWVhSaE5EZ0RNQVprWVhSaE5Ea0RNUXZwaFlDQUFESUFRUUVMQVFBQVFRUUxFU1V5TTJjdGQyVmlMWFZzTFcxbGJuVUFBRUVXQ3lCTmFXTnliM052Wm5RbE1qQkpiblJsY201bGRDVXlNRVY0Y0d4dmNtVnlBQUJCT0FzRUpUTkNBQUJCUGdzQkFBQkJ3QUFMQ0UxVFNVVTNMakFBQUVIS0FBc0VKVE5DQUFCQjBBQUxBUUFBUWRJQUN3aE5VMGxGT0M0d0FBQkIzQUFMRFM1M0xYTjVjM1JsYlMxcGJnQUFRZW9BQ3dsamJHVmhjbVpwZUFBQVFmUUFDeEF1YVc1d2RYUXRjMlZoY21Ob0xYY0FBRUdHQVFzQkFBQkJpQUVMQkNVelF3QUFRWTRCQ3dRbE0wVUFBRUdVQVFza0pUTkRjM0JoYmlVeU1HTnNZWE56SlRORUpUSXlhMlY1WDNkdmNtUWxNaklsTTBVQUFFRzZBUXNPSlROREpUSkdjM0JoYmlVelJRQUFRY29CQ3dwMWJtUmxabWx1WldRQUFFSFdBUXNCQUFCQjJBRUxDaVV5Tm1GdGNDVXpRZ0FBUWVRQkN3a2xNalpzZENVelFnQUFRZTRCQ3drbE1qWm5kQ1V6UWdBQVFmZ0JDd2R1ZFcxaVpYSUFBRUdBQWdzTkpUSTJKVEl6TURNNUpUTkNBQUJCamdJTEN5VXlObkYxYjNRbE0wSUFBRUdhQWdzS2RXNWtaV1pwYm1Wa0FBQkJwZ0lMQkNVelF3QUFRYXdDQ3dRbE0wVUFBRUd5QWdzSGJuVnRZbVZ5QUFCQnVnSUxBaWNBQUVHJTJCQWdzRUpUSXlBQUJCeEFJTEJDVXlOZ0FBUWNvQ0N4QXVhVzV3ZFhRdGMyVmhjbU5vTFhjQUFFSGNBZ3NrSlRORGMzQmhiaVV5TUdOc1lYTnpKVE5FSlRJeWEyVjVYM2R2Y21RbE1qSWxNMFVBQUVHQ0F3c09KVE5ESlRKR2MzQmhiaVV6UlFBQVFaSURDd3AxYm1SbFptbHVaV1FBQUVHZUF3c0JBQUJCb0FNTENpVXlObUZ0Y0NVelFnQUFRYXdEQ3drbE1qWnNkQ1V6UWdBQVFiWURDd2tsTWpabmRDVXpRZ0FBUWNBREN3ZHVkVzFpWlhJQUFFSElBd3NOSlRJMkpUSXpNRE01SlROQ0FBQkIxZ01MQ3lVeU5uRjFiM1FsTTBJQUFFSGlBd3NLZFc1a1pXWnBibVZrQUFCQjdnTUxCQ1V6UXdBQVFmUURDd1FsTTBVQUFFSDZBd3NIYm5WdFltVnlBQUJCZ2dRTEFpY0FBRUdHQkFzRUpUSXlBQUJCakFRTEJDVXlOZ0ElM0QAAEG4FAsBAABBuhQLAQAAQbwUCwVhdG9iAA=='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = window[lS(0, 10, true)](b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance0.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, lS(0, 0)));
+    }
+};
+const __forWasmBuffer = lS(0, 1);
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 10, true)](__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance1.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, lS(0, 2)));
+    }
+})());
+const __ifWasmBuffer = lS(0, 3);
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 10, true)](__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance2.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, lS(0, 4)));
+    }
+})());
+const __callWasmBuffer = lS(0, 5);
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 10, true)](__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance3 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance3.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, lS(0, 6)));
+    }
+})());
+const __wasmStringModules = [lS(0, 7)].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = lS(0, 8);
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = lS(0, 9);
+        let i = __start;
+        let __c = __mem[i++];
+        (() => {
+            const __forInstance4 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                    },
+                    update: () => {
+                    },
+                    body: () => {
+                        {
+                            __str += __c;
+                            __c = String.fromCharCode(__mem[i++]);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance4.exports;
+            return __exports.data();
+        })();
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            (() => {
+                const __forInstance5 = new WebAssembly.Instance(__forWasmModule, {
+                    env: {
+                        test: () => {
+                            return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                        },
+                        update: () => {
+                        },
+                        body: () => {
+                            {
+                                __str += __c;
+                                __c = String.fromCharCode(__mem[i++]);
+                            }
+                        }
+                    }
+                });
+                const __exports = __forInstance5.exports;
+                return __exports.data();
+            })();
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+(() => {
+    const __callInstance50 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                (() => {
+                    const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                        env: {
+                            impFunc: () => {
+                                (() => {
+                                    const __callInstance49 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                $(function () {
+                                                    function gMenuStylePage() {
+                                                        if (!!this.doMenuStyle && this.doMenuStyle === 1) {
+                                                            return lS(0, 0);
+                                                        }
+                                                        this.doMenuStyle = 1;
+                                                        (() => {
+                                                            const __callInstance48 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                env: {
+                                                                                    impFunc: () => {
+                                                                                        (() => {
+                                                                                            const __callInstance47 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                env: {
+                                                                                                    impFunc: () => {
+                                                                                                        $(lS(0, 1)).menuStyle();
+                                                                                                    }
+                                                                                                }
+                                                                                            });
+                                                                                            const __exports = __callInstance47.exports;
+                                                                                            return __exports.data();
+                                                                                        })();
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __callInstance5.exports;
+                                                                            return __exports.data();
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance48.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                    }
+                                                    (() => {
+                                                        const __callInstance46 = new WebAssembly.Instance(__callWasmModule, {
+                                                            env: {
+                                                                impFunc: () => {
+                                                                    (() => {
+                                                                        const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                                                            env: {
+                                                                                impFunc: () => {
+                                                                                    (() => {
+                                                                                        const __callInstance45 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                            env: {
+                                                                                                impFunc: () => {
+                                                                                                    gMenuStylePage();
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                        const __exports = __callInstance45.exports;
+                                                                                        return __exports.data();
+                                                                                    })();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                        const __exports = __callInstance4.exports;
+                                                                        return __exports.data();
+                                                                    })();
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __callInstance46.exports;
+                                                        return __exports.data();
+                                                    })();
+                                                    var n = 0;
+                                                    (() => {
+                                                        const __callInstance44 = new WebAssembly.Instance(__callWasmModule, {
+                                                            env: {
+                                                                impFunc: () => {
+                                                                    (() => {
+                                                                        const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                                            env: {
+                                                                                impFunc: () => {
+                                                                                    (() => {
+                                                                                        const __callInstance43 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                            env: {
+                                                                                                impFunc: () => {
+                                                                                                    $(window).resize(function () {
+                                                                                                        this.doMenuStyle = 0;
+                                                                                                        (() => {
+                                                                                                            const __callInstance42 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                env: {
+                                                                                                                    impFunc: () => {
+                                                                                                                        (() => {
+                                                                                                                            const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                                                env: {
+                                                                                                                                    impFunc1: () => {
+                                                                                                                                        {
+                                                                                                                                            (() => {
+                                                                                                                                                const __callInstance41 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                                                    env: {
+                                                                                                                                                        impFunc: () => {
+                                                                                                                                                            (() => {
+                                                                                                                                                                const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                                                                                    env: {
+                                                                                                                                                                        impFunc1: () => {
+                                                                                                                                                                            {
+                                                                                                                                                                                this.doMenuStyle = 1;
+                                                                                                                                                                                (() => {
+                                                                                                                                                                                    const __callInstance40 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                                                                                        env: {
+                                                                                                                                                                                            impFunc: () => {
+                                                                                                                                                                                                (() => {
+                                                                                                                                                                                                    const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                                                                                                        env: {
+                                                                                                                                                                                                            impFunc: () => {
+                                                                                                                                                                                                                (() => {
+                                                                                                                                                                                                                    const __callInstance39 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                                                                                                                        env: {
+                                                                                                                                                                                                                            impFunc: () => {
+                                                                                                                                                                                                                                gMenuStylePage();
+                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                    });
+                                                                                                                                                                                                                    const __exports = __callInstance39.exports;
+                                                                                                                                                                                                                    return __exports.data();
+                                                                                                                                                                                                                })();
+                                                                                                                                                                                                            }
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                    });
+                                                                                                                                                                                                    const __exports = __callInstance2.exports;
+                                                                                                                                                                                                    return __exports.data();
+                                                                                                                                                                                                })();
+                                                                                                                                                                                            }
+                                                                                                                                                                                        }
+                                                                                                                                                                                    });
+                                                                                                                                                                                    const __exports = __callInstance40.exports;
+                                                                                                                                                                                    return __exports.data();
+                                                                                                                                                                                })();
+                                                                                                                                                                            }
+                                                                                                                                                                        },
+                                                                                                                                                                        impFunc2: () => {
+                                                                                                                                                                        }
+                                                                                                                                                                    }
+                                                                                                                                                                });
+                                                                                                                                                                const __exports = __ifInstance1.exports;
+                                                                                                                                                                return __exports.data(n % 2 == 0 ? 1 : 0);
+                                                                                                                                                            })();
+                                                                                                                                                        }
+                                                                                                                                                    }
+                                                                                                                                                });
+                                                                                                                                                const __exports = __callInstance41.exports;
+                                                                                                                                                return __exports.data();
+                                                                                                                                            })();
+                                                                                                                                            n++;
+                                                                                                                                        }
+                                                                                                                                    },
+                                                                                                                                    impFunc2: () => {
+                                                                                                                                        {
+                                                                                                                                            (() => {
+                                                                                                                                                const __callInstance38 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                                                    env: {
+                                                                                                                                                        impFunc: () => {
+                                                                                                                                                            (() => {
+                                                                                                                                                                const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                                                                    env: {
+                                                                                                                                                                        impFunc: () => {
+                                                                                                                                                                            (() => {
+                                                                                                                                                                                const __callInstance37 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                                                                                    env: {
+                                                                                                                                                                                        impFunc: () => {
+                                                                                                                                                                                            gMenuStylePage();
+                                                                                                                                                                                        }
+                                                                                                                                                                                    }
+                                                                                                                                                                                });
+                                                                                                                                                                                const __exports = __callInstance37.exports;
+                                                                                                                                                                                return __exports.data();
+                                                                                                                                                                            })();
+                                                                                                                                                                        }
+                                                                                                                                                                    }
+                                                                                                                                                                });
+                                                                                                                                                                const __exports = __callInstance1.exports;
+                                                                                                                                                                return __exports.data();
+                                                                                                                                                            })();
+                                                                                                                                                        }
+                                                                                                                                                    }
+                                                                                                                                                });
+                                                                                                                                                const __exports = __callInstance38.exports;
+                                                                                                                                                return __exports.data();
+                                                                                                                                            })();
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            });
+                                                                                                                            const __exports = __ifInstance0.exports;
+                                                                                                                            return __exports.data(navigator.appName == lS(0, 2) && (navigator.appVersion.split(lS(0, 3))[1].replace(/[ ]/g, lS(0, 4)) == lS(0, 5) || navigator.appVersion.split(lS(0, 6))[1].replace(/[ ]/g, lS(0, 7)) == lS(0, 8)) ? 1 : 0);
+                                                                                                                        })();
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            });
+                                                                                                            const __exports = __callInstance42.exports;
+                                                                                                            return __exports.data();
+                                                                                                        })();
+                                                                                                    });
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                        const __exports = __callInstance43.exports;
+                                                                                        return __exports.data();
+                                                                                    })();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                        const __exports = __callInstance3.exports;
+                                                                        return __exports.data();
+                                                                    })();
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __callInstance44.exports;
+                                                        return __exports.data();
+                                                    })();
+                                                    (() => {
+                                                        const __callInstance36 = new WebAssembly.Instance(__callWasmModule, {
+                                                            env: {
+                                                                impFunc: () => {
+                                                                    (() => {
+                                                                        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                                            env: {
+                                                                                impFunc: () => {
+                                                                                    (() => {
+                                                                                        const __callInstance35 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                            env: {
+                                                                                                impFunc: () => {
+                                                                                                    $(lS(0, 9)).addClass(lS(0, 10));
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                        const __exports = __callInstance35.exports;
+                                                                                        return __exports.data();
+                                                                                    })();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                        const __exports = __callInstance0.exports;
+                                                                        return __exports.data();
+                                                                    })();
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __callInstance36.exports;
+                                                        return __exports.data();
+                                                    })();
+                                                });
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance49.exports;
+                                    return __exports.data();
+                                })();
+                            }
+                        }
+                    });
+                    const __exports = __callInstance6.exports;
+                    return __exports.data();
+                })();
+            }
+        }
+    });
+    const __exports = __callInstance50.exports;
+    return __exports.data();
+})();
+function substrKeywordInfo(keyword) {
+    if (keyword.length < 1) {
+        return keyword;
+    }
+    var _keyword = $(lS(0, 11)).val();
+    var html = lS(0, 12);
+    var isSearch = true;
+    for (var i = 0; i < keyword.length; i++) {
+        if (keyword[i] == lS(0, 13)) {
+            isSearch = false;
+            html += keyword[i];
+            continue;
+        }
+        if (isSearch == false && keyword[i] == lS(0, 14)) {
+            isSearch = true;
+            html += keyword[i];
+            continue;
+        }
+        if (isSearch == false) {
+            html += keyword[i];
+        } else {
+            var str = keyword[i];
+            if (str == _keyword[0]) {
+                var k = i;
+                var isFull = false;
+                for (var j = 0; j < _keyword.length; j++, k++) {
+                    if (keyword[k] == _keyword[j]) {
+                        isFull = true;
+                    } else {
+                        isFull = false;
+                        break;
+                    }
+                }
+                (() => {
+                    const __callInstance34 = new WebAssembly.Instance(__callWasmModule, {
+                        env: {
+                            impFunc: () => {
+                                (() => {
+                                    const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                                        env: {
+                                            impFunc1: () => {
+                                                {
+                                                    i = k;
+                                                    str = lS(0, 15) + _keyword + lS(0, 16);
+                                                }
+                                            },
+                                            impFunc2: () => {
+                                            }
+                                        }
+                                    });
+                                    const __exports = __ifInstance2.exports;
+                                    return __exports.data(isFull == true ? 1 : 0);
+                                })();
+                            }
+                        }
+                    });
+                    const __exports = __callInstance34.exports;
+                    return __exports.data();
+                })();
+            }
+            html += str;
+        }
+    }
+    return html;
+}
+function substrKeyword(keyword) {
+    if (keyword.length < 1) {
+        return keyword;
+    }
+    function htmlspecialchars(string, quoteStyle, charset, doubleEncode) {
+        var optTemp = 0;
+        var i = 0;
+        var noquotes = false;
+        (() => {
+            const __callInstance33 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            quoteStyle = 2;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance3.exports;
+                            return __exports.data(typeof quoteStyle === lS(0, 17) || quoteStyle === null ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance33.exports;
+            return __exports.data();
+        })();
+        string = string || lS(0, 18);
+        string = string.toString();
+        (() => {
+            const __callInstance32 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance4 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            string = string.replace(/&/g, lS(0, 19));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance4.exports;
+                            return __exports.data(doubleEncode !== false ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance32.exports;
+            return __exports.data();
+        })();
+        string = string.replace(/</g, lS(0, 20)).replace(/>/g, lS(0, 21));
+        var OPTS = {
+            'ENT_NOQUOTES': 0,
+            'ENT_HTML_QUOTE_SINGLE': 1,
+            'ENT_HTML_QUOTE_DOUBLE': 2,
+            'ENT_COMPAT': 2,
+            'ENT_QUOTES': 3,
+            'ENT_IGNORE': 4
+        };
+        (() => {
+            const __callInstance31 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance5 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            noquotes = true;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance5.exports;
+                            return __exports.data(quoteStyle === 0 ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance31.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance30 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance6 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            quoteStyle = [].concat(quoteStyle);
+                                            (() => {
+                                                const __callInstance29 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            (() => {
+                                                                i = 0;
+                                                                const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                                                    env: {
+                                                                        test: () => {
+                                                                            return i < quoteStyle.length ? 1 : 0;
+                                                                        },
+                                                                        update: () => {
+                                                                            i++;
+                                                                        },
+                                                                        body: () => {
+                                                                            {
+                                                                                (() => {
+                                                                                    const __callInstance28 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                        env: {
+                                                                                            impFunc: () => {
+                                                                                                (() => {
+                                                                                                    const __ifInstance7 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                        env: {
+                                                                                                            impFunc1: () => {
+                                                                                                                {
+                                                                                                                    noquotes = true;
+                                                                                                                }
+                                                                                                            },
+                                                                                                            impFunc2: () => {
+                                                                                                                (() => {
+                                                                                                                    const __callInstance27 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                        env: {
+                                                                                                                            impFunc: () => {
+                                                                                                                                (() => {
+                                                                                                                                    const __ifInstance8 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                                                        env: {
+                                                                                                                                            impFunc1: () => {
+                                                                                                                                                {
+                                                                                                                                                    optTemp = optTemp | OPTS[quoteStyle[i]];
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            impFunc2: () => {
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    });
+                                                                                                                                    const __exports = __ifInstance8.exports;
+                                                                                                                                    return __exports.data(OPTS[quoteStyle[i]] ? 1 : 0);
+                                                                                                                                })();
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                    const __exports = __callInstance27.exports;
+                                                                                                                    return __exports.data();
+                                                                                                                })();
+                                                                                                            }
+                                                                                                        }
+                                                                                                    });
+                                                                                                    const __exports = __ifInstance7.exports;
+                                                                                                    return __exports.data(OPTS[quoteStyle[i]] === 0 ? 1 : 0);
+                                                                                                })();
+                                                                                            }
+                                                                                        }
+                                                                                    });
+                                                                                    const __exports = __callInstance28.exports;
+                                                                                    return __exports.data();
+                                                                                })();
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                });
+                                                                const __exports = __forInstance0.exports;
+                                                                return __exports.data();
+                                                            })();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance29.exports;
+                                                return __exports.data();
+                                            })();
+                                            quoteStyle = optTemp;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance6.exports;
+                            return __exports.data(typeof quoteStyle !== lS(0, 22) ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance30.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance26 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance9 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            string = string.replace(/'/g, lS(0, 23));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance9.exports;
+                            return __exports.data(quoteStyle & OPTS.ENT_HTML_QUOTE_SINGLE ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance26.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance25 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance10 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            string = string.replace(/"/g, lS(0, 24));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance10.exports;
+                            return __exports.data(!noquotes ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance25.exports;
+            return __exports.data();
+        })();
+        return string;
+    }
+    function htmlspecialchars_decode(string, quoteStyle) {
+        var optTemp = 0;
+        var i = 0;
+        var noquotes = false;
+        (() => {
+            const __callInstance24 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance11 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            quoteStyle = 2;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance11.exports;
+                            return __exports.data(typeof quoteStyle === lS(0, 25) ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance24.exports;
+            return __exports.data();
+        })();
+        string = string.toString().replace(/&lt;/g, lS(0, 26)).replace(/&gt;/g, lS(0, 27));
+        var OPTS = {
+            'ENT_NOQUOTES': 0,
+            'ENT_HTML_QUOTE_SINGLE': 1,
+            'ENT_HTML_QUOTE_DOUBLE': 2,
+            'ENT_COMPAT': 2,
+            'ENT_QUOTES': 3,
+            'ENT_IGNORE': 4
+        };
+        (() => {
+            const __callInstance23 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance12 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            noquotes = true;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance12.exports;
+                            return __exports.data(quoteStyle === 0 ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance23.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance22 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance13 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            quoteStyle = [].concat(quoteStyle);
+                                            (() => {
+                                                const __callInstance21 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            (() => {
+                                                                i = 0;
+                                                                const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                                                                    env: {
+                                                                        test: () => {
+                                                                            return i < quoteStyle.length ? 1 : 0;
+                                                                        },
+                                                                        update: () => {
+                                                                            i++;
+                                                                        },
+                                                                        body: () => {
+                                                                            {
+                                                                                (() => {
+                                                                                    const __callInstance20 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                        env: {
+                                                                                            impFunc: () => {
+                                                                                                (() => {
+                                                                                                    const __ifInstance14 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                        env: {
+                                                                                                            impFunc1: () => {
+                                                                                                                {
+                                                                                                                    noquotes = true;
+                                                                                                                }
+                                                                                                            },
+                                                                                                            impFunc2: () => {
+                                                                                                                (() => {
+                                                                                                                    const __callInstance19 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                        env: {
+                                                                                                                            impFunc: () => {
+                                                                                                                                (() => {
+                                                                                                                                    const __ifInstance15 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                                                        env: {
+                                                                                                                                            impFunc1: () => {
+                                                                                                                                                {
+                                                                                                                                                    optTemp = optTemp | OPTS[quoteStyle[i]];
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            impFunc2: () => {
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    });
+                                                                                                                                    const __exports = __ifInstance15.exports;
+                                                                                                                                    return __exports.data(OPTS[quoteStyle[i]] ? 1 : 0);
+                                                                                                                                })();
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                    const __exports = __callInstance19.exports;
+                                                                                                                    return __exports.data();
+                                                                                                                })();
+                                                                                                            }
+                                                                                                        }
+                                                                                                    });
+                                                                                                    const __exports = __ifInstance14.exports;
+                                                                                                    return __exports.data(OPTS[quoteStyle[i]] === 0 ? 1 : 0);
+                                                                                                })();
+                                                                                            }
+                                                                                        }
+                                                                                    });
+                                                                                    const __exports = __callInstance20.exports;
+                                                                                    return __exports.data();
+                                                                                })();
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                });
+                                                                const __exports = __forInstance1.exports;
+                                                                return __exports.data();
+                                                            })();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance21.exports;
+                                                return __exports.data();
+                                            })();
+                                            quoteStyle = optTemp;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance13.exports;
+                            return __exports.data(typeof quoteStyle !== lS(0, 28) ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance22.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance18 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance16 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            string = string.replace(/&#0*39;/g, lS(0, 29));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance16.exports;
+                            return __exports.data(quoteStyle & OPTS.ENT_HTML_QUOTE_SINGLE ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance18.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance17 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance17 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            string = string.replace(/&quot;/g, lS(0, 30));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance17.exports;
+                            return __exports.data(!noquotes ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance17.exports;
+            return __exports.data();
+        })();
+        string = string.replace(/&amp;/g, lS(0, 31));
+        return string;
+    }
+    var _keyword = htmlspecialchars(htmlspecialchars_decode($(lS(0, 32)).val()));
+    keyword = htmlspecialchars(htmlspecialchars_decode(keyword));
+    return keyword.replace(_keyword, lS(0, 33) + _keyword + lS(0, 34));
+}
+function inputKeyword(string) {
+    function htmlspecialchars(string, quoteStyle, charset, doubleEncode) {
+        var optTemp = 0;
+        var i = 0;
+        var noquotes = false;
+        (() => {
+            const __callInstance16 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance18 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            quoteStyle = 2;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance18.exports;
+                            return __exports.data(typeof quoteStyle === lS(0, 35) || quoteStyle === null ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance16.exports;
+            return __exports.data();
+        })();
+        string = string || lS(0, 36);
+        string = string.toString();
+        (() => {
+            const __callInstance15 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance19 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            string = string.replace(/&/g, lS(0, 37));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance19.exports;
+                            return __exports.data(doubleEncode !== false ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance15.exports;
+            return __exports.data();
+        })();
+        string = string.replace(/</g, lS(0, 38)).replace(/>/g, lS(0, 39));
+        var OPTS = {
+            'ENT_NOQUOTES': 0,
+            'ENT_HTML_QUOTE_SINGLE': 1,
+            'ENT_HTML_QUOTE_DOUBLE': 2,
+            'ENT_COMPAT': 2,
+            'ENT_QUOTES': 3,
+            'ENT_IGNORE': 4
+        };
+        (() => {
+            const __callInstance14 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance20 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            noquotes = true;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance20.exports;
+                            return __exports.data(quoteStyle === 0 ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance14.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance13 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance21 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            quoteStyle = [].concat(quoteStyle);
+                                            (() => {
+                                                const __callInstance12 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            (() => {
+                                                                i = 0;
+                                                                const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                                                                    env: {
+                                                                        test: () => {
+                                                                            return i < quoteStyle.length ? 1 : 0;
+                                                                        },
+                                                                        update: () => {
+                                                                            i++;
+                                                                        },
+                                                                        body: () => {
+                                                                            {
+                                                                                (() => {
+                                                                                    const __callInstance11 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                        env: {
+                                                                                            impFunc: () => {
+                                                                                                (() => {
+                                                                                                    const __ifInstance22 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                        env: {
+                                                                                                            impFunc1: () => {
+                                                                                                                {
+                                                                                                                    noquotes = true;
+                                                                                                                }
+                                                                                                            },
+                                                                                                            impFunc2: () => {
+                                                                                                                (() => {
+                                                                                                                    const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                        env: {
+                                                                                                                            impFunc: () => {
+                                                                                                                                (() => {
+                                                                                                                                    const __ifInstance23 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                                                        env: {
+                                                                                                                                            impFunc1: () => {
+                                                                                                                                                {
+                                                                                                                                                    optTemp = optTemp | OPTS[quoteStyle[i]];
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            impFunc2: () => {
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    });
+                                                                                                                                    const __exports = __ifInstance23.exports;
+                                                                                                                                    return __exports.data(OPTS[quoteStyle[i]] ? 1 : 0);
+                                                                                                                                })();
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                    const __exports = __callInstance10.exports;
+                                                                                                                    return __exports.data();
+                                                                                                                })();
+                                                                                                            }
+                                                                                                        }
+                                                                                                    });
+                                                                                                    const __exports = __ifInstance22.exports;
+                                                                                                    return __exports.data(OPTS[quoteStyle[i]] === 0 ? 1 : 0);
+                                                                                                })();
+                                                                                            }
+                                                                                        }
+                                                                                    });
+                                                                                    const __exports = __callInstance11.exports;
+                                                                                    return __exports.data();
+                                                                                })();
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                });
+                                                                const __exports = __forInstance2.exports;
+                                                                return __exports.data();
+                                                            })();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance12.exports;
+                                                return __exports.data();
+                                            })();
+                                            quoteStyle = optTemp;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance21.exports;
+                            return __exports.data(typeof quoteStyle !== lS(0, 40) ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance13.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance24 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            string = string.replace(/'/g, lS(0, 41));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance24.exports;
+                            return __exports.data(quoteStyle & OPTS.ENT_HTML_QUOTE_SINGLE ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance9.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance25 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            string = string.replace(/"/g, lS(0, 42));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance25.exports;
+                            return __exports.data(!noquotes ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance8.exports;
+            return __exports.data();
+        })();
+        return string;
+    }
+    function htmlspecialchars_decode(string, quoteStyle) {
+        var optTemp = 0;
+        var i = 0;
+        var noquotes = false;
+        (() => {
+            const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance26 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            quoteStyle = 2;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance26.exports;
+                            return __exports.data(typeof quoteStyle === lS(0, 43) ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance7.exports;
+            return __exports.data();
+        })();
+        string = string.toString().replace(/&lt;/g, lS(0, 44)).replace(/&gt;/g, lS(0, 45));
+        var OPTS = {
+            'ENT_NOQUOTES': 0,
+            'ENT_HTML_QUOTE_SINGLE': 1,
+            'ENT_HTML_QUOTE_DOUBLE': 2,
+            'ENT_COMPAT': 2,
+            'ENT_QUOTES': 3,
+            'ENT_IGNORE': 4
+        };
+        (() => {
+            const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance27 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            noquotes = true;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance27.exports;
+                            return __exports.data(quoteStyle === 0 ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance6.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance28 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            quoteStyle = [].concat(quoteStyle);
+                                            (() => {
+                                                const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            (() => {
+                                                                i = 0;
+                                                                const __forInstance3 = new WebAssembly.Instance(__forWasmModule, {
+                                                                    env: {
+                                                                        test: () => {
+                                                                            return i < quoteStyle.length ? 1 : 0;
+                                                                        },
+                                                                        update: () => {
+                                                                            i++;
+                                                                        },
+                                                                        body: () => {
+                                                                            {
+                                                                                (() => {
+                                                                                    const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                        env: {
+                                                                                            impFunc: () => {
+                                                                                                (() => {
+                                                                                                    const __ifInstance29 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                        env: {
+                                                                                                            impFunc1: () => {
+                                                                                                                {
+                                                                                                                    noquotes = true;
+                                                                                                                }
+                                                                                                            },
+                                                                                                            impFunc2: () => {
+                                                                                                                (() => {
+                                                                                                                    const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                        env: {
+                                                                                                                            impFunc: () => {
+                                                                                                                                (() => {
+                                                                                                                                    const __ifInstance30 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                                                        env: {
+                                                                                                                                            impFunc1: () => {
+                                                                                                                                                {
+                                                                                                                                                    optTemp = optTemp | OPTS[quoteStyle[i]];
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            impFunc2: () => {
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    });
+                                                                                                                                    const __exports = __ifInstance30.exports;
+                                                                                                                                    return __exports.data(OPTS[quoteStyle[i]] ? 1 : 0);
+                                                                                                                                })();
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                    const __exports = __callInstance2.exports;
+                                                                                                                    return __exports.data();
+                                                                                                                })();
+                                                                                                            }
+                                                                                                        }
+                                                                                                    });
+                                                                                                    const __exports = __ifInstance29.exports;
+                                                                                                    return __exports.data(OPTS[quoteStyle[i]] === 0 ? 1 : 0);
+                                                                                                })();
+                                                                                            }
+                                                                                        }
+                                                                                    });
+                                                                                    const __exports = __callInstance3.exports;
+                                                                                    return __exports.data();
+                                                                                })();
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                });
+                                                                const __exports = __forInstance3.exports;
+                                                                return __exports.data();
+                                                            })();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance4.exports;
+                                                return __exports.data();
+                                            })();
+                                            quoteStyle = optTemp;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance28.exports;
+                            return __exports.data(typeof quoteStyle !== lS(0, 46) ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance5.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance31 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            string = string.replace(/&#0*39;/g, lS(0, 47));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance31.exports;
+                            return __exports.data(quoteStyle & OPTS.ENT_HTML_QUOTE_SINGLE ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance1.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance32 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            string = string.replace(/&quot;/g, lS(0, 48));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance32.exports;
+                            return __exports.data(!noquotes ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance0.exports;
+            return __exports.data();
+        })();
+        string = string.replace(/&amp;/g, lS(0, 49));
+        return string;
+    }
+    return htmlspecialchars(htmlspecialchars_decode(string));
+}</script>
+</body>
+</html>

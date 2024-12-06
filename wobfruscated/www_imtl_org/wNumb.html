@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>wNumb.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGoIKAgAAxfwBBAQt/AEEQC38AQRoLfwBBJAt/AEEqC38AQTILfwBBPAt/AEHGAAt/AEHQAAt/AEHgAAt/AEHqAAt/AEHwAAt/AEH2AAt/AEH4AAt/AEH6AAt/AEGCAQt/AEGEAQt/AEGGAQt/AEGKAQt/AEGOAQt/AEGQAQt/AEGYAQt/AEGaAQt/AEGcAQt/AEGeAQt/AEGgAQt/AEGkAQt/AEGoAQt/AEGqAQt/AEGsAQt/AEG2AQt/AEG6AQt/AEHAAQt/AEHEAQt/AEHIAQt/AEHSAQt/AEHcAQt/AEHmAQt/AEHsAQt/AEHyAQt/AEH8AQt/AEGEAgt/AEGKAgt/AEGUAgt/AEGcAgt/AEGmAgt/AEGuAgt/AEG+Agt/AEHAAgsHuYOAgAAyBm1lbW9yeQIABWRhdGEwAwAFZGF0YTEDAQVkYXRhMgMCBWRhdGEzAwMFZGF0YTQDBAVkYXRhNQMFBWRhdGE2AwYFZGF0YTcDBwVkYXRhOAMIBWRhdGE5AwkGZGF0YTEwAwoGZGF0YTExAwsGZGF0YTEyAwwGZGF0YTEzAw0GZGF0YTE0Aw4GZGF0YTE1Aw8GZGF0YTE2AxAGZGF0YTE3AxEGZGF0YTE4AxIGZGF0YTE5AxMGZGF0YTIwAxQGZGF0YTIxAxUGZGF0YTIyAxYGZGF0YTIzAxcGZGF0YTI0AxgGZGF0YTI1AxkGZGF0YTI2AxoGZGF0YTI3AxsGZGF0YTI4AxwGZGF0YTI5Ax0GZGF0YTMwAx4GZGF0YTMxAx8GZGF0YTMyAyAGZGF0YTMzAyEGZGF0YTM0AyIGZGF0YTM1AyMGZGF0YTM2AyQGZGF0YTM3AyUGZGF0YTM4AyYGZGF0YTM5AycGZGF0YTQwAygGZGF0YTQxAykGZGF0YTQyAyoGZGF0YTQzAysGZGF0YTQ0AywGZGF0YTQ1Ay0GZGF0YTQ2Ay4GZGF0YTQ3Ay8GZGF0YTQ4AzALqYSAgAAxAEEBCw11c2UlMjBzdHJpY3QAAEEQCwlkZWNpbWFscwAAQRoLCXRob3VzYW5kAABBJAsFbWFyawAAQSoLB3ByZWZpeAAAQTILCHBvc3RmaXgAAEE8CwhlbmNvZGVyAABBxgALCGRlY29kZXIAAEHQAAsPbmVnYXRpdmVCZWZvcmUAAEHgAAsJbmVnYXRpdmUAAEHqAAsFZWRpdAAAQfAACwV1bmRvAABB9gALAQAAQfgACwEAAEH6AAsHbnVtYmVyAABBggELAQAAQYQBCwEAAEGGAQsCLgAAQYoBCwIuAABBjgELAQAAQZABCwdzdHJpbmcAAEGYAQsBAABBmgELAQAAQZwBCwEAAEGeAQsBAABBoAELAi4AAEGkAQsCLQAAQagBCwEAAEGqAQsBAABBrAELCW5lZ2F0aXZlAABBtgELAi0AAEG6AQsFbWFyawAAQcABCwIuAABBxAELAi4AAEHIAQsJZGVjaW1hbHMAAEHSAQsIZW5jb2RlcgAAQdwBCwhkZWNvZGVyAABB5gELBWVkaXQAAEHsAQsFdW5kbwAAQfIBCwlmdW5jdGlvbgAAQfwBCwdzdHJpbmcAAEGEAgsFbWFyawAAQYoCCwl0aG91c2FuZAAAQZQCCwdwcmVmaXgAAEGcAgsJbmVnYXRpdmUAAEGmAgsHcHJlZml4AABBrgILD25lZ2F0aXZlQmVmb3JlAABBvgILAQAAQcACCwdvYmplY3QA'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+(() => {
+    const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                (function () {
+                    lS(0, 0);
+                    var FormatOptions = [
+                        lS(0, 1),
+                        lS(0, 2),
+                        lS(0, 3),
+                        lS(0, 4),
+                        lS(0, 5),
+                        lS(0, 6),
+                        lS(0, 7),
+                        lS(0, 8),
+                        lS(0, 9),
+                        lS(0, 10),
+                        lS(0, 11)
+                    ];
+                    function strReverse(a) {
+                        return a.split(lS(0, 12)).reverse().join(lS(0, 13));
+                    }
+                    function strStartsWith(input, match) {
+                        return input.substring(0, match.length) === match;
+                    }
+                    function strEndsWith(input, match) {
+                        return input.slice(-1 * match.length) === match;
+                    }
+                    function throwEqualError(F, a, b) {
+                        if ((F[a] || F[b]) && F[a] === F[b]) {
+                            throw new Error(a);
+                        }
+                    }
+                    function isValidNumber(input) {
+                        return typeof input === lS(0, 14) && isFinite(input);
+                    }
+                    function toFixed(value, decimals) {
+                        var scale = Math.pow(10, decimals);
+                        return (Math.round(value * scale) / scale).toFixed(decimals);
+                    }
+                    function formatTo(decimals, thousand, mark, prefix, postfix, encoder, decoder, negativeBefore, negative, edit, undo, input) {
+                        var originalInput = input, inputIsNegative, inputPieces, inputBase, inputDecimals = lS(0, 15), output = lS(0, 16);
+                        (() => {
+                            const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            input = encoder(input);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance0.exports;
+                            return __exports.data(encoder ? 1 : 0);
+                        })();
+                        if (!isValidNumber(input)) {
+                            return false;
+                        }
+                        (() => {
+                            const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            input = 0;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance1.exports;
+                            return __exports.data(decimals !== false && parseFloat(input.toFixed(decimals)) === 0 ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            inputIsNegative = true;
+                                            input = Math.abs(input);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance2.exports;
+                            return __exports.data(input < 0 ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            input = toFixed(input, decimals);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance3.exports;
+                            return __exports.data(decimals !== false ? 1 : 0);
+                        })();
+                        input = input.toString();
+                        (() => {
+                            const __ifInstance4 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            inputPieces = input.split(lS(0, 18));
+                                            inputBase = inputPieces[0];
+                                            (() => {
+                                                const __ifInstance5 = new WebAssembly.Instance(__ifWasmModule, {
+                                                    env: {
+                                                        impFunc1: () => {
+                                                            {
+                                                                inputDecimals = mark + inputPieces[1];
+                                                            }
+                                                        },
+                                                        impFunc2: () => {
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __ifInstance5.exports;
+                                                return __exports.data(mark ? 1 : 0);
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                        {
+                                            inputBase = input;
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance4.exports;
+                            return __exports.data(input.indexOf(lS(0, 17)) !== -1 ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance6 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            inputBase = strReverse(inputBase).match(/.{1,3}/g);
+                                            inputBase = strReverse(inputBase.join(strReverse(thousand)));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance6.exports;
+                            return __exports.data(thousand ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance7 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            output += negativeBefore;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance7.exports;
+                            return __exports.data(inputIsNegative && negativeBefore ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance8 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            output += prefix;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance8.exports;
+                            return __exports.data(prefix ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance9 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            output += negative;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance9.exports;
+                            return __exports.data(inputIsNegative && negative ? 1 : 0);
+                        })();
+                        output += inputBase;
+                        output += inputDecimals;
+                        (() => {
+                            const __ifInstance10 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            output += postfix;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance10.exports;
+                            return __exports.data(postfix ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance11 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            output = edit(output, originalInput);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance11.exports;
+                            return __exports.data(edit ? 1 : 0);
+                        })();
+                        return output;
+                    }
+                    function formatFrom(decimals, thousand, mark, prefix, postfix, encoder, decoder, negativeBefore, negative, edit, undo, input) {
+                        var originalInput = input, inputIsNegative, output = lS(0, 19);
+                        (() => {
+                            const __ifInstance12 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            input = undo(input);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance12.exports;
+                            return __exports.data(undo ? 1 : 0);
+                        })();
+                        if (!input || typeof input !== lS(0, 20)) {
+                            return false;
+                        }
+                        (() => {
+                            const __ifInstance13 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            input = input.replace(negativeBefore, lS(0, 21));
+                                            inputIsNegative = true;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance13.exports;
+                            return __exports.data(negativeBefore && strStartsWith(input, negativeBefore) ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance14 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            input = input.replace(prefix, lS(0, 22));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance14.exports;
+                            return __exports.data(prefix && strStartsWith(input, prefix) ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance15 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            input = input.replace(negative, lS(0, 23));
+                                            inputIsNegative = true;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance15.exports;
+                            return __exports.data(negative && strStartsWith(input, negative) ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance16 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            input = input.slice(0, -1 * postfix.length);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance16.exports;
+                            return __exports.data(postfix && strEndsWith(input, postfix) ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance17 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            input = input.split(thousand).join(lS(0, 24));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance17.exports;
+                            return __exports.data(thousand ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance18 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            input = input.replace(mark, lS(0, 25));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance18.exports;
+                            return __exports.data(mark ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance19 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            output += lS(0, 26);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance19.exports;
+                            return __exports.data(inputIsNegative ? 1 : 0);
+                        })();
+                        output += input;
+                        output = output.replace(/[^0-9\.\-.]/g, lS(0, 27));
+                        if (output === lS(0, 28)) {
+                            return false;
+                        }
+                        output = Number(output);
+                        (() => {
+                            const __ifInstance20 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            output = decoder(output);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance20.exports;
+                            return __exports.data(decoder ? 1 : 0);
+                        })();
+                        if (!isValidNumber(output)) {
+                            return false;
+                        }
+                        return output;
+                    }
+                    function validate(inputOptions) {
+                        var i, optionName, optionValue, filteredOptions = {};
+                        for (i = 0; i < FormatOptions.length; i += 1) {
+                            optionName = FormatOptions[i];
+                            optionValue = inputOptions[optionName];
+                            if (optionValue === undefined) {
+                                (() => {
+                                    const __ifInstance21 = new WebAssembly.Instance(__ifWasmModule, {
+                                        env: {
+                                            impFunc1: () => {
+                                                {
+                                                    filteredOptions[optionName] = lS(0, 30);
+                                                }
+                                            },
+                                            impFunc2: () => {
+                                                (() => {
+                                                    const __ifInstance22 = new WebAssembly.Instance(__ifWasmModule, {
+                                                        env: {
+                                                            impFunc1: () => {
+                                                                {
+                                                                    filteredOptions[optionName] = lS(0, 33);
+                                                                }
+                                                            },
+                                                            impFunc2: () => {
+                                                                {
+                                                                    filteredOptions[optionName] = false;
+                                                                }
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __ifInstance22.exports;
+                                                    return __exports.data(optionName === lS(0, 31) && filteredOptions.thousand !== lS(0, 32) ? 1 : 0);
+                                                })();
+                                            }
+                                        }
+                                    });
+                                    const __exports = __ifInstance21.exports;
+                                    return __exports.data(optionName === lS(0, 29) && !filteredOptions.negativeBefore ? 1 : 0);
+                                })();
+                            } else if (optionName === lS(0, 34)) {
+                                if (optionValue >= 0 && optionValue < 8) {
+                                    filteredOptions[optionName] = optionValue;
+                                } else {
+                                    throw new Error(optionName);
+                                }
+                            } else if (optionName === lS(0, 35) || optionName === lS(0, 36) || optionName === lS(0, 37) || optionName === lS(0, 38)) {
+                                if (typeof optionValue === lS(0, 39)) {
+                                    filteredOptions[optionName] = optionValue;
+                                } else {
+                                    throw new Error(optionName);
+                                }
+                            } else {
+                                if (typeof optionValue === lS(0, 40)) {
+                                    filteredOptions[optionName] = optionValue;
+                                } else {
+                                    throw new Error(optionName);
+                                }
+                            }
+                        }
+                        (() => {
+                            const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        throwEqualError(filteredOptions, lS(0, 41), lS(0, 42));
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance4.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        throwEqualError(filteredOptions, lS(0, 43), lS(0, 44));
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance3.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        throwEqualError(filteredOptions, lS(0, 45), lS(0, 46));
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance2.exports;
+                            return __exports.data();
+                        })();
+                        return filteredOptions;
+                    }
+                    function passAll(options, method, input) {
+                        var i, args = [];
+                        (() => {
+                            i = 0;
+                            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < FormatOptions.length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i += 1;
+                                    },
+                                    body: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            args.push(options[FormatOptions[i]]);
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance1.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance0.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        args.push(input);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance0.exports;
+                            return __exports.data();
+                        })();
+                        return method.apply(lS(0, 47), args);
+                    }
+                    function wNumb(options) {
+                        if (!(this instanceof wNumb)) {
+                            return new wNumb(options);
+                        }
+                        if (typeof options !== lS(0, 48)) {
+                            return;
+                        }
+                        options = validate(options);
+                        this.to = function (input) {
+                            return passAll(options, formatTo, input);
+                        };
+                        this.from = function (input) {
+                            return passAll(options, formatFrom, input);
+                        };
+                    }
+                    window.wNumb = wNumb;
+                }());
+            }
+        }
+    });
+    const __exports = __callInstance5.exports;
+    return __exports.data();
+})();</script>
+</body>
+</html>

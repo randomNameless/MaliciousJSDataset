@@ -1,1 +1,0 @@
-self.__SSG_MANIFEST=new Set(["\u002F","\u002Fbed-and-breakfasts\u002F[...place]","\u002Flistings\u002Fsitemap\u002F[__metadata_id__]","\u002Fpress","\u002Fpress-releases","\u002Fvacation-rentals\u002F[...place]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()

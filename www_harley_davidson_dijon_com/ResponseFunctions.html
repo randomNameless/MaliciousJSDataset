@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResponseFunctions.html</title>
+</head>
+<body>
+
+<script>
+//Response should managed alert in queued callback functions
+
+
+var scrollPositionInList;
+
+function updateDataContent(result, type) {
+
+    $.each(result,
+
+        function (item) {
+
+            var $updatedContent = $("#" + item);
+
+            if ($updatedContent.length > 0) {
+
+                if (type == "html") {
+
+                    $updatedContent.hide();
+
+                    $updatedContent.html(result[item]);
+
+                    $updatedContent.fadeIn(600);
+
+
+                } else if (type == "prependHtml") {
+                    $updatedContent.append(result[item]);
+                } else if (type == "appendHtml") {
+                    $updatedContent.append(result[item]);
+
+                } else if (type == "val") {
+
+                    $updatedContent.val(result[item]);
+
+                } else if (type == "addIntInHtml") {
+
+                    var originalValue = parseInt($updatedContent.html());
+
+                    $updatedContent.html((parseInt(result[item]) + originalValue));
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+function showInfo(infoTypeData, caller, initialPosition) {
+
+    var context = infoTypeData["context"];
+
+    if (context == "context1") {
+
+        var type = infoTypeData["type"];
+
+        if (type == "info") {
+
+        } else {
+
+            alert("Type de requête inconnue :" + type + ". Veuillez contacter un administrateur du site.")
+
+        }
+
+    } else if (context == "admin") {
+
+        var type = infoTypeData["type"];
+
+        if (type == "client") {
+
+        } else {
+
+            alert("Type de requête inconnue :" + type + ". Veuillez contacter un administrateur du site.")
+
+        }
+
+    } else {
+
+        alert("Type d'information non géréé actuellement :" + context + ". Veuillez contacter un administrateur du site.")
+
+    }
+
+}
+
+function iframe(data) {
+    var containerId = data["container"];
+    var url = data["url"];
+    var type = data["type"];
+    if (containerId != "nothing") {
+        $("#popUpInformationWindows").remove();
+        $("body").append("" +
+            "<div class='iframeContainer'> " +
+            "<div class='pdfIframeClose cursorClick'><span class='glyphicons pdfIframeCloseIcon glyphicons-remove'></span></div>" +
+            "<iframe class='pdfIframePdfWindow' style='' type='pdf' src='" + url + "'>" +
+            "</iframe>" +
+            "</div>"
+        ).show();
+        $(".iframeContainer").height($(document).height());
+        $(".pdfIframeClose").click(function () {
+            $(".iframeContainer").remove();
+        })
+    } else {
+        $("body").append("<iframe class='' style='' type='" + type + "' src='" + url + "'></iframe>").show();
+
+    }
+}
+function doCallFunction(functionName) {
+
+    eval(functionName);
+
+}
+
+function hideAndShowNewContent(infoContent) {
+
+    scrollPositionInList = $(window).scrollTop();
+
+    $(window).scrollTop(200);
+
+    var $contentHided = $("#" + infoContent["idElementHided"]);
+
+    if ($contentHided.length > 0) $contentHided.hide();
+
+    createDisplayDivIfNotExist(infoContent["idElementNew"], infoContent["idElementParent"], false);
+
+    var $contentNew = $("#" + infoContent["idElementNew"]);
+
+    $contentNew.html(infoContent["newContent"]);
+
+    $contentNew.show();
+
+}
+
+function manageResponseJSON(response, caller, initialPosition) {
+
+    $.each(response,
+
+        function (num, itemData) {
+
+            $.each(itemData,
+
+                function (item) {
+
+                    if (item == "shownInfo") {
+
+                        showInfo(response[num][item], caller, initialPosition);
+
+                    } else if (item == "hideAndShowNewHtmlContent") {
+
+                        hideAndShowNewContent(response[num][item]);
+
+                    } else if (item == "updatedDataValContent") {
+
+                        updateDataContent(response[num][item], "val");
+
+                    } else if (item == "appendDataHtmlContent") {
+
+                        updateDataContent(response[num][item], "appendHtml");
+
+                    } else if (item == "prependDataHtmlContent") {
+
+                        updateDataContent(response[num][item], "prependHtml");
+
+                    } else if (item == "updatedDataHtmlContent") {
+
+                        updateDataContent(response[num][item], "html");
+
+                    } else if (item == "addedCountToHtmlContent") {
+
+                        updateDataContent(response[num][item], "addIntInHtml");
+
+                    } else if (item == "alert") {
+
+                        doAlert(response[num][item]);
+
+                    } else if (item == "callFunction") {
+
+                        doCallFunction(response[num][item]);
+
+                    } else if (item == "redirect") {
+
+                        doRedirection(response[num][item]);
+
+                    } else if (item == "iframe") {
+
+                        iframe(response[num][item]);
+
+                    } else if (item == "newTab") {
+                        doOpenInNewTab(response[num][item]);
+
+                    } else if (item == "logger") {
+
+                        console.log(response[num][item]);
+
+                    } else if (item == "silent") {
+
+                        //do nothing
+
+                    } else if (item == "responseType") {
+
+                        //do nothing
+
+                    } else if (item == "responseMessage") {
+
+                        doAlert(response[num][item]);
+
+                    } else {
+
+                        //unknown action
+
+                        doAlert("ACTION " + num + " INCONNUE " + item + " : Contacter l'administrateur du site!")
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+}
+
+function doOpenInNewTab(url) {
+    var win = window.open(url, '_blank');
+    win.focus();
+}
+
+</script>
+
+</body>
+</html>

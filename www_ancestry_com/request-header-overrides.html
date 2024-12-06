@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>request-header-overrides.html</title>
+</head>
+<body>
+
+<script>
+window.requestHeaderAppender=(()=>{var t=[];function n(r,n,s){0<t.length&&t.forEach(function(e){var t=e(n);t&&Object.keys(t).forEach(function(e){s.call(r,e,t[e])})})}var e=window.XMLHttpRequest.prototype.open,r=(window.XMLHttpRequest.prototype.open=function(){return this.ancestryHeaderOverridePath="",1<arguments.length&&arguments[1]&&(this.ancestryHeaderOverridePath=arguments[1]),e.apply(this,[].slice.call(arguments))},window.XMLHttpRequest.prototype.send),s=(window.XMLHttpRequest.prototype.send=function(){return this.ancestryHeaderOverridePath&&n(this,this.ancestryHeaderOverridePath,this.setRequestHeader),r.apply(this,[].slice.call(arguments))},window.fetch);return window.fetch=function(e,r){var t;return e&&(t=e instanceof Request?e.url:e.toString(),(r=r||{}).headers=r.headers||{},r.headers instanceof Headers?n(this,t,function(e,t){r.headers.has(e)||r.headers.has(e.toLowerCase())||r.headers.append(e,t)}):n(this,t,function(e,t){r.headers[e]||r.headers[e.toLowerCase()]||(r.headers[e]=t)})),s.call(this,e,r)},{registerHandler:function(e){e&&"function"==typeof e&&t.push(e)}}})();
+</script>
+
+</body>
+</html>

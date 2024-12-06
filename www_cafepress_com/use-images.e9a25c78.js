@@ -1,1 +1,0 @@
-function o(e,n,t){return`${e}/Thumbnails/PRSS/${n}.png?cid=${t}`}function g(e,n){return`${e}/merchandise/${n}_480x480_Front_Color-White.jpg`}function i(e){return new Promise((n,t)=>{if(e){const r=new Image;r.src=e,r.onload=()=>{n(r)},r.onerror=a=>{console.log(`Exception in getImageNaturalSize: ${e}`,a),n(null)}}else t(new Error("Lost image url"))})}export{o as a,g as b,i as g};

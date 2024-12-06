@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>shamanNotifier.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEG7YGAgAAofwBBAQt/AEEEC38AQRILfwBBLAt/AEHYAAt/AEHeAAt/AEHmAAt/AEH0AAt/AEGAAQt/AEGQAQt/AEGmAQt/AEGyAQt/AEG2AQt/AEHKAQt/AEHeAQt/AEGgAgt/AEG4Agt/AEH+Agt/AEGcAwt/AEGqAwt/AEG+Awt/AEHgAwt/AEH8Awt/AEGMBAt/AEGSCQt/AEGqCQt/AEG4CQt/AEG+CQt/AEHECQt/AEHICQt/AEHMCQt/AEHQCQt/AEHSCQt/AEHeCQt/AEHsCQt/AEHuCQt/AEH0CQt/AEH2CQt/AEH6CQt/AEGGCgsH6IKAgAApBm1lbW9yeQIABWRhdGEwAwAFZGF0YTEDAQVkYXRhMgMCBWRhdGEzAwMFZGF0YTQDBAVkYXRhNQMFBWRhdGE2AwYFZGF0YTcDBwVkYXRhOAMIBWRhdGE5AwkGZGF0YTEwAwoGZGF0YTExAwsGZGF0YTEyAwwGZGF0YTEzAw0GZGF0YTE0Aw4GZGF0YTE1Aw8GZGF0YTE2AxAGZGF0YTE3AxEGZGF0YTE4AxIGZGF0YTE5AxMGZGF0YTIwAxQGZGF0YTIxAxUGZGF0YTIyAxYGZGF0YTIzAxcGZGF0YTI0AxgGZGF0YTI1AxkGZGF0YTI2AxoGZGF0YTI3AxsGZGF0YTI4AxwGZGF0YTI5Ax0GZGF0YTMwAx4GZGF0YTMxAx8GZGF0YTMyAyAGZGF0YTMzAyEGZGF0YTM0AyIGZGF0YTM1AyMGZGF0YTM2AyQGZGF0YTM3AyUGZGF0YTM4AyYGZGF0YTM5AycLxYuAgAAoAEEBCwEAAEEECw11c2UlMjBzdHJpY3QAAEESCxlDb29raWVzJTIwbm90JTIwZW5hYmxlZC4AAEEsCytDcmF3bGVyJTIwZGV0ZWN0ZWQlMkMlMjBub3RpY2UlMjBkaXNhYmxlZC4AAEHYAAsFaGVhZAAAQd4ACwdzY3JpcHQAAEHmAAsNdXNlJTIwc3RyaWN0AABB9AALC19fZXNNb2R1bGUAAEGAAQsPU2hhbWFuTm90aWZpZXIAAEGQAQsUY3BzLXNoYW1hbi1ub3RpZmllcgAAQaYBCwtjYnNvcHRhbm9uAABBsgELA2VuAABBtgELE0FtZXJpY2ElMkZOZXdfWW9yawAAQcoBCxMlMkZzaGFtYW5CYW5uZXIuanMAAEHeAQtBJTJGJTJGcHJvZHVjdGlvbi1jbXAuaXNncHJpdmFjeS5jYnNpLmNvbSUyRmNwcyUyRnNoYW1hbkJhbm5lci5qcwAAQaACCxdDUFNCYW5uZXJBY3Rpb25DbGlja2VkAABBuAILRSUyRiUyRnByb2R1Y3Rpb24tY21wLmlzZ3ByaXZhY3kuY2JzaS5jb20lMkZ3aG9hbWklMkZwYXJhbW91bnRwcml2YWN5AABB/gILHWJleW9uZHRoZWJhY2twYWNrLm5pY2tqci5jb20AAEGcAwsNd3d3Lm5pY2suY29tAABBqgMLE3d3dy5uaWNrYXRuaXRlLmNvbQAAQb4DCyB3d3cubmlja2Vsb2Rlb25iaXJ0aGRheWNsdWIuY29tAABB4AMLG3d3dy5uaWNrZWxvZGVvbnBhcmVudHMuY29tAABB/AMLD3d3dy5uaWNranIuY29tAABBjAQLhAV3d3cubm9nZ2luLmNvbSglM0YhKCUyRnNpZ24tdXAlN0MlMkZhbWF6b24tc2lnbi11cCU3QyUyRmNoYW5uZWwtcHJvbW8tc2lnbi11cCU3QyUyRkVVLTc5OS03LTAxJTdDJTJGc3BlY2lhbC1ub2dnaW4tb2ZmZXIlN0MlMkZub2dnaW4tc3BlY2lhbC1vZmZlciU3QyUyRm5qci02MGQtZnQlN0MlMkZuanItNTAtb2ZmJTdDJTJGdGlua2VyZ2FydGVuJTdDJTJGQVZlMFBrN2clN0MlMkZldS1wYy01OTktMC0wMiU3QyUyRmV1LXBjLTM5OS03LTAxJTdDJTJGbHJpZnNxenklN0MlMkZhbnJwbXR1ZyU3QyUyRnNwZWNpYWwtb2ZmZXItMC05OS1tb250aCU3QyUyRjUwLW9mZi1hbm51YWxseSU3QyUyRjMtNDktbW8tZm9yLTMtbW9udGhzLWFmZiU3QyUyRjI1LW9mZi1hbm51YWxseS1hZmYlN0MlMkZleHBpcmVkLW9mZmVyJTdDJTJGMzAtb2ZmLWFubnVhbGx5JTdDJTJGNjAtZGF5cy1mcmVlLTIwMjIlN0MlMkYuKm1vbnRoLWZvciU3QyUyRnJlZmVycmFsLTYwLWRheXMtZnJlZS0yMDIyJTdDJTJGNjAtZGF5cy1mcmVlLXRyaWFsLTIwMjIlN0MlMkY5OS1vZmZlci0ybW8tMjAyMiU3QyUyRjI1LW9mZi1hbm51YWxseS1yb2t0JTdDJTJGaG9saWRheS1vZmZlci05OS0zLW1vbnRocyU3QyUyRmluZmx1ZW5jZXItc2lnbi11cC1hbm51YWwpKS4qJTI0AABBkgkLFnBvcnRhZG9zZnVuZG9zLmNvbS5icgAAQaoJCw11c2UlMjBzdHJpY3QAAEG4CQsFYm9keQAAQb4JCwRkaXYAAEHECQsDaWQAAEHICQsDZW4AAEHMCQsCLQAAQdAJCwEAAEHSCQsLX19lc01vZHVsZQAAQd4JCw11c2UlMjBzdHJpY3QAAEHsCQsBAABB7gkLBCUyRgAAQfQJCwEAAEH2CQsCaQAAQfoJCwtfX2VzTW9kdWxlAABBhgoLAioA'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+!function (e) {
+    function n(a) {
+        if (o[a])
+            return o[a].exports;
+        var t = o[a] = {
+            exports: {},
+            id: a,
+            loaded: !1
+        };
+        return e[a].call(t.exports, t, t.exports, n), t.loaded = !0, t.exports;
+    }
+    var o = {};
+    return n.m = e, n.c = o, n.p = lS(0, 0), n(0);
+}({
+    0: function (e, n, o) {
+        lS(0, 1);
+        function a(e) {
+            if (e && e.__esModule)
+                return e;
+            var n = {};
+            (() => {
+                const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                    env: {
+                        impFunc1: () => {
+                            for (var o in e)
+                                Object.prototype.hasOwnProperty.call(e, o) && (n[o] = e[o]);
+                        },
+                        impFunc2: () => {
+                        }
+                    }
+                });
+                const __exports = __ifInstance0.exports;
+                return __exports.data(null != e ? 1 : 0);
+            })();
+            return n.default = e, n;
+        }
+        var t = o(172), r = a(t), s = o(174), i = a(s), c = o(224), l = a(c);
+        !function () {
+            var e = r.BANNER_JS_PROD;
+            if (!i.globals.navigator.cookieEnabled)
+                return void i.globals[r.NOTIFIER_GLOBAL].logs.push(lS(0, 2));
+            if (/bot|googlebot|crawler|spider|robot|crawling/i.test(i.globals.navigator.userAgent))
+                return void i.globals[r.NOTIFIER_GLOBAL].logs.push(lS(0, 3));
+            (() => {
+                const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                    env: {
+                        impFunc1: () => {
+                            {
+                                var n = i.globals.document.getElementsByTagName(lS(0, 4))[0], o = i.globals.document.createElement(lS(0, 5));
+                                o.src = e, o.async = !0, n.appendChild(o);
+                            }
+                        },
+                        impFunc2: () => {
+                        }
+                    }
+                });
+                const __exports = __ifInstance1.exports;
+                return __exports.data(l.getNotice() ? 1 : 0);
+            })();
+        }();
+    },
+    172: function (e, n) {
+        lS(0, 6);
+        (() => {
+            const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        Object.defineProperty(n, lS(0, 7), { value: !0 });
+                    }
+                }
+            });
+            const __exports = __callInstance1.exports;
+            return __exports.data();
+        })();
+        n.NOTIFIER_GLOBAL = lS(0, 8), n.NOTIFIER_CONTAINER_ID = lS(0, 9), n.CBSOPTANON_GLOBAL = lS(0, 10), n.NOTICE_DEFAULT_LANGUAGE = lS(0, 11), n.RELATIVE_TIMEZONE = lS(0, 12), n.BANNER_JS_DEV = lS(0, 13), n.BANNER_JS_PROD = lS(0, 14), n.BANNER_CLICK_EVENT = lS(0, 15), n.GEO_LOOKUP_ENDPOINT = lS(0, 16);
+    },
+    173: function (e, n) {
+        e.exports = [
+            {
+                name: 'Terms of Use Change',
+                component: 'TermsOfUseChange',
+                start_date: '05/09/2023 09:00:00 AM GMT-0500',
+                end_date: '06/07/2023 12:00:00 AM GMT-0500',
+                reprompt_days: '31',
+                cookie_name: 'ppn_tou',
+                force_interaction: !1,
+                classes: '',
+                tou_url: 'https://www.nickjr.com/legal/ussoge/terms-of-use',
+                domains: [lS(0, 17)],
+                excluded_domains: []
+            },
+            {
+                name: 'Terms of Use Change',
+                component: 'TermsOfUseChange',
+                start_date: '05/09/2023 09:00:00 AM GMT-0500',
+                end_date: '06/07/2023 12:00:00 AM GMT-0500',
+                reprompt_days: '31',
+                cookie_name: 'ppn_tou',
+                force_interaction: !1,
+                classes: '',
+                tou_url: 'https://www.nick.com/legal/ussoge/terms-of-use',
+                domains: [lS(0, 18)],
+                excluded_domains: []
+            },
+            {
+                name: 'Terms of Use Change',
+                component: 'TermsOfUseChange',
+                start_date: '05/09/2023 09:00:00 AM GMT-0500',
+                end_date: '06/07/2023 12:00:00 AM GMT-0500',
+                reprompt_days: '31',
+                cookie_name: 'ppn_tou',
+                force_interaction: !1,
+                classes: '',
+                tou_url: 'https://www.nickatnite.com/legal/o3ccr8/terms-of-use',
+                domains: [lS(0, 19)],
+                excluded_domains: []
+            },
+            {
+                name: 'Terms of Use Change',
+                component: 'TermsOfUseChange',
+                start_date: '05/09/2023 09:00:00 AM GMT-0500',
+                end_date: '06/07/2023 12:00:00 AM GMT-0500',
+                reprompt_days: '31',
+                cookie_name: 'ppn_tou',
+                force_interaction: !1,
+                classes: '',
+                tou_url: 'https://www.nick.com/kids-choice-awards/legal/ussoge/terms-of-use',
+                domains: [lS(0, 20)],
+                excluded_domains: []
+            },
+            {
+                name: 'Terms of Use Change',
+                component: 'TermsOfUseChange',
+                start_date: '05/09/2023 09:00:00 AM GMT-0500',
+                end_date: '06/07/2023 12:00:00 AM GMT-0500',
+                reprompt_days: '31',
+                cookie_name: 'ppn_tou',
+                force_interaction: !1,
+                classes: '',
+                tou_url: 'https://www.nick.com/kids-choice-awards/legal/ussoge/terms-of-use',
+                domains: [lS(0, 21)],
+                excluded_domains: []
+            },
+            {
+                name: 'Terms of Use Change',
+                component: 'TermsOfUseChange',
+                start_date: '05/09/2023 09:00:00 AM GMT-0500',
+                end_date: '06/07/2023 12:00:00 AM GMT-0500',
+                reprompt_days: '31',
+                cookie_name: 'ppn_tou',
+                force_interaction: !1,
+                classes: '',
+                tou_url: 'https://www.nickjr.com/legal/ussoge/terms-of-use',
+                domains: [lS(0, 22)],
+                excluded_domains: []
+            },
+            {
+                name: 'Terms of Use Change',
+                component: 'TermsOfUseChange',
+                start_date: '05/09/2023 09:00:00 AM GMT-0500',
+                end_date: '06/07/2023 12:00:00 AM GMT-0500',
+                reprompt_days: '31',
+                cookie_name: 'ppn_tou',
+                force_interaction: !1,
+                classes: '',
+                tou_url: 'https://www.noggin.com/terms/',
+                domains: [lS(0, 23)],
+                excluded_domains: []
+            },
+            {
+                name: 'PPC',
+                component: 'PrivacyPolicyChange',
+                start_date: '05/04/2023 10:00:00 AM GMT-0500',
+                end_date: '06/05/2023 12:00:00 AM GMT-0500',
+                reprompt_days: '31',
+                cookie_name: 'ppn',
+                force_interaction: !1,
+                classes: '',
+                policy_url: 'https://privacy.paramount.com/policy',
+                domains: [lS(0, 24)],
+                excluded_domains: []
+            }
+        ];
+    },
+    174: function (e, n, o) {
+        (() => {
+            const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (function (e) {
+                            lS(0, 25);
+                            function a(e) {
+                                if (e && e.__esModule)
+                                    return e;
+                                var n = {};
+                                (() => {
+                                    const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                                        env: {
+                                            impFunc1: () => {
+                                                for (var o in e)
+                                                    Object.prototype.hasOwnProperty.call(e, o) && (n[o] = e[o]);
+                                            },
+                                            impFunc2: () => {
+                                            }
+                                        }
+                                    });
+                                    const __exports = __ifInstance2.exports;
+                                    return __exports.data(null != e ? 1 : 0);
+                                })();
+                                return n.default = e, n;
+                            }
+                            function t() {
+                                var e = n.globals.document.getElementsByTagName(lS(0, 26))[0];
+                                if (!e)
+                                    return null;
+                                var o = n.globals.document.createElement(lS(0, 27));
+                                return o.setAttribute(lS(0, 28), i.NOTIFIER_CONTAINER_ID), e.appendChild(o), o;
+                            }
+                            function r() {
+                                var e = n.globals.navigator.userLanguage || n.globals.navigator.language || lS(0, 29);
+                                return e = e.split(lS(0, 30)), {
+                                    language: e[0].toLowerCase(),
+                                    country: (e[1] || lS(0, 31)).toLowerCase()
+                                };
+                            }
+                            Object.defineProperty(n, lS(0, 32), { value: !0 }), n.globals = void 0, n.createNotifierContainer = t, n.getBrowserLanguage = r;
+                            var s = o(172), i = a(s);
+                            n.globals = e;
+                        }.call(n, function () {
+                            return this;
+                        }()));
+                    }
+                }
+            });
+            const __exports = __callInstance0.exports;
+            return __exports.data();
+        })();
+    },
+    224: function (e, n, o) {
+        lS(0, 33);
+        function a(e) {
+            return e && e.__esModule ? e : { default: e };
+        }
+        function t(e) {
+            if (e && e.__esModule)
+                return e;
+            var n = {};
+            (() => {
+                const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+                    env: {
+                        impFunc1: () => {
+                            for (var o in e)
+                                Object.prototype.hasOwnProperty.call(e, o) && (n[o] = e[o]);
+                        },
+                        impFunc2: () => {
+                        }
+                    }
+                });
+                const __exports = __ifInstance3.exports;
+                return __exports.data(null != e ? 1 : 0);
+            })();
+            return n.default = e, n;
+        }
+        function r() {
+            for (var e = null, o = 0; o < m.default.length; o++) {
+                var a = m.default[o];
+                if (n.validNoticeDateRange(a) && !n.domainExcluded(a)) {
+                    e = a;
+                    break;
+                }
+            }
+            return e;
+        }
+        function s(e) {
+            var n = new Date(), o = new Date(e.start_date), a = new Date(e.end_date);
+            return n >= o && n <= a;
+        }
+        function i(e) {
+            var n = (lS(0, 34) + l.globals.location.hostname + (l.globals.location.pathname || lS(0, 35))).replace(/\/$/, lS(0, 36));
+            if (e.domains === f) {
+                var o = !1;
+                if (e.excluded_domains)
+                    for (var a = 0; a < e.excluded_domains.length; a++) {
+                        var t = new RegExp(e.excluded_domains[a], lS(0, 37)).test(n);
+                        if (t) {
+                            o = !0;
+                            break;
+                        }
+                    }
+                return o;
+            }
+            if (e.domains instanceof Array) {
+                for (var r = !0, s = 0; s < e.domains.length; s++) {
+                    var i = new RegExp(e.domains[s]).test(n);
+                    if (i) {
+                        r = !1;
+                        break;
+                    }
+                }
+                return r;
+            }
+            return !0;
+        }
+        Object.defineProperty(n, lS(0, 38), { value: !0 }), n.ALL_HOSTS = void 0, n.getNotice = r, n.validNoticeDateRange = s, n.domainExcluded = i;
+        var c = o(174), l = t(c), d = o(172), u = (t(d), o(173)), m = a(u), f = n.ALL_HOSTS = lS(0, 39);
+    }
+});</script>
+</body>
+</html>

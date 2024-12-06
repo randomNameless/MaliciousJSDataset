@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>scripts.html</title>
+</head>
+<body>
+
+<script>
+
+var $EXITEDCONTROL;
+$(document).ready(function () {
+    if (event.keyCode == 27)
+        $(".search-results").fadeOut(200);
+
+    $("#login-submit").click(function () {
+        var username = $("#login-username").val();
+        var password = $("#login-password").val();
+        url = "/user/LoginValidate?username=" + username + "&password=" + password;
+        $.ajax({
+            url: url, cache: false,
+            success: function (data) {
+                if (data != "") {
+                    data = "* " + data;
+                    $("#login-message").html(data);
+                }
+                else {
+                    if ('referrer' in document)
+                        window.location = document.referrer;
+                    else
+                        window.history.back();
+                }
+            }
+        });
+    });
+
+    $(document).mouseup(function (e) {
+        //hide search results
+        var container = $(".search-container");
+
+        // if the target of the click isn't the container nor a descendant of the container
+        if (!container.is(e.target) && container.has(e.target).length === 0) {
+            $(".search-results").hide();
+            $(".search-box").val("");
+        }
+    });
+
+    $("#login-password, #login-username").keyup(function (event) {
+        if (event.keyCode == 13) {
+            $("#login-submit").click();
+        }
+    });
+
+    $(".sigunup-button").click(function () {
+        var fd = $('#ca').serialize();
+        //When the file has finished uploading, replace the loading pane with the image cropper pane
+        $.ajax({
+            url: "/user/SignupValidate/", type: 'get', data: fd, async: false, processData: false, contentType: false,
+            success: function (data) {
+                if (data != "") {
+                    if (data == "signup done")
+                        location.href="/user/settings?na=1"
+                    else if (GetScreenType() == 1)
+                        alert(data);
+                    else
+                        $(".signup-message2").html(data);
+                }
+                else {
+                    $(".signup-message2").html("Saved.");
+                }
+            }
+        });
+    });
+
+    $(".go-link").click(function () {
+        GoLink(this);
+    });
+
+    //$(".nb-link").mouseenter(function () {
+    //    if ($EXITEDCONTROL) {
+    //        var obj = $(this).find("a");
+    //        var linkId = obj.attr("href");
+    //        ShowHoverMenu(linkId.replace('-link', ''));
+    //    }
+    //});
+
+    $(".top-bar").mouseenter(function () {
+        $EXITEDCONTROL = true;
+        $(".hover-menu").hide();
+    });
+
+    //$(".nb-link").mouseleave(function () {
+    //    $EXITEDCONTROL = true;
+    //});
+
+    $(".hover-menu").mouseleave(function () {
+        $EXITEDCONTROL = true;
+        $(".hover-menu").hide();
+    });
+    $(".topic-content, .main-content-section").mousemove(function () {
+        $EXITEDCONTROL = true;
+    });
+});
+</script>
+
+</body>
+</html>

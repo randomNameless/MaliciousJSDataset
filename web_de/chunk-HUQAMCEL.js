@@ -1,2 +1,0 @@
-var e=class{constructor(){console.log("darkmode "+(this.isEnabled()?"enabled":"disabled")),console.log("darkmode "+(this.isActivated()?"activated":"not activated"))}isActivated(){return this.isEnabled()&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches}isEnabled(){return document.documentElement.getAttribute("data-theme")==="user-preferred"}},d=new e;export{d as a};
-//# sourceMappingURL=chunk-HUQAMCEL.js.map

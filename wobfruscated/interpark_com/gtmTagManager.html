@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>gtmTagManager.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['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'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+!function () {
+    lS(0, 0);
+    !function () {
+        const i = t();
+        let a = {
+            user_id: void 0,
+            user_grade: n(),
+            category_1: '공통',
+            category_2: '공통',
+            category_3: '공통',
+            version: '190001',
+            type: 'others',
+            device_type: i
+        };
+        const r = {
+                action_type: void 0,
+                section: void 0,
+                section_id: void 0,
+                entity_name: void 0,
+                entity_type: void 0,
+                entity_url: void 0,
+                custom_dimension: void 0,
+                feature_id: void 0,
+                feature_name: void 0,
+                feature_category: void 0,
+                feature_price: void 0
+            }, o = {
+                title: void 0,
+                url: void 0
+            };
+        let d = {};
+        const s = {
+            dataLayerScript: e => {
+                const t = document.createElement(lS(0, 1));
+                return t.innerHTML = e, t;
+            },
+            gtmData: t => {
+                let {
+                    id: n,
+                    events: i,
+                    dataLayer: a
+                } = t;
+                const r = e.scriptLayerInject({
+                    id: n,
+                    events: i,
+                    dataLayer: a
+                });
+                return {
+                    noScript: () => {
+                        const e = document.createElement(lS(0, 2));
+                        return e.innerHTML = r.iframe, e;
+                    },
+                    script: () => {
+                        const e = document.createElement(lS(0, 3));
+                        return e.innerHTML = r.script, e;
+                    },
+                    dataScript: s.dataLayerScript(r.dataLayerVar)
+                };
+            },
+            initialize: e => {
+                var t, n;
+                let {
+                    gtmId: i,
+                    events: r = {},
+                    dataLayer: c
+                } = e;
+                for (let e in c)
+                    lS(0, 4) === c[e] && (c[e] = void 0);
+                const l = {
+                        ...a,
+                        ...c
+                    }, u = s.gtmData({
+                        id: i,
+                        events: r,
+                        dataLayer: l || void 0
+                    });
+                l && document.head.appendChild(u.dataScript), a = l, d = {
+                    id: i,
+                    events: r,
+                    dataLayer: l || void 0
+                }, o.title = null === (t = window) || void 0 === t || null === (t = t.document) || void 0 === t ? void 0 : t.title, o.url = null === (n = window) || void 0 === n || null === (n = n.document) || void 0 === n || null === (n = n.location) || void 0 === n ? void 0 : n.href, s.setScreenView(o.title, o.url);
+            },
+            scriptInject: () => {
+                const e = s.gtmData({
+                    id: d.id,
+                    events: d.events,
+                    dataLayer: d.dataLayer
+                });
+                document.head.insertBefore(e.script(), document.head.childNodes[0]), document.body.insertBefore(e.noScript(), document.body.childNodes[0]);
+            },
+            setDataLayerEvent: (e, n) => {
+                if (!e || !n)
+                    return;
+                const i = t(), o = {
+                        ...a,
+                        user_id: void 0,
+                        user_grade: void 0,
+                        ...r,
+                        ...n
+                    };
+                if (lS(0, 5) === i)
+                    (() => {
+                        const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    window.AnalyticsWebInterface.logEvent(e, JSON.stringify(o));
+                                }
+                            }
+                        });
+                        const __exports = __callInstance4.exports;
+                        return __exports.data();
+                    })();
+                else if (lS(0, 6) === i) {
+                    var d = {
+                        command: 'logEvent',
+                        name: e,
+                        parameters: o
+                    };
+                    (() => {
+                        const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    window.webkit.messageHandlers.firebase.postMessage(d);
+                                }
+                            }
+                        });
+                        const __exports = __callInstance3.exports;
+                        return __exports.data();
+                    })();
+                } else if (window.dataLayer)
+                    return o.hasOwnProperty(lS(0, 7)) || (o.event = e), window.dataLayer.push(o);
+            },
+            setDataLayerProperty: (e, t) => {
+                if (![
+                        lS(0, 8),
+                        lS(0, 9)
+                    ].includes(i))
+                    return;
+                if (!e || !t)
+                    return;
+                const n = {};
+                if (lS(0, 10) !== e || function (e, t) {
+                        if (e.length !== t.length)
+                            return !1;
+                        const n = new Set([
+                            ...e,
+                            ...t
+                        ]);
+                        for (const i of n) {
+                            if (e.filter(e => e === i).length !== t.filter(e => e === i).length)
+                                return !1;
+                        }
+                        return !0;
+                    }([
+                        lS(0, 11),
+                        lS(0, 12)
+                    ], Object.keys(t)) && lS(0, 13) !== t.id && lS(0, 14) !== t.name)
+                    return n[e] = t, window.dataLayer ? window.dataLayer.push(n) : void 0;
+                (() => {
+                    const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                        env: {
+                            impFunc: () => {
+                                console.error(lS(0, 15));
+                            }
+                        }
+                    });
+                    const __exports = __callInstance2.exports;
+                    return __exports.data();
+                })();
+            },
+            setScreenView: (e, t) => {
+                const n = {
+                    ...a,
+                    user_id: void 0,
+                    user_grade: void 0,
+                    screen_name: e,
+                    screen_class: t,
+                    page_title: e,
+                    page_location: t
+                };
+                (() => {
+                    const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                        env: {
+                            impFunc1: () => {
+                                (() => {
+                                    const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                window.AnalyticsWebInterface.logEvent(lS(0, 17), JSON.stringify(n));
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance1.exports;
+                                    return __exports.data();
+                                })();
+                            },
+                            impFunc2: () => {
+                                (() => {
+                                    const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                        env: {
+                                            impFunc1: () => {
+                                                {
+                                                    const e = {
+                                                        command: 'logEvent',
+                                                        name: 'screen_view',
+                                                        parameters: n
+                                                    };
+                                                    (() => {
+                                                        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                            env: {
+                                                                impFunc: () => {
+                                                                    window.webkit.messageHandlers.firebase.postMessage(e);
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __callInstance0.exports;
+                                                        return __exports.data();
+                                                    })();
+                                                }
+                                            },
+                                            impFunc2: () => {
+                                            }
+                                        }
+                                    });
+                                    const __exports = __ifInstance1.exports;
+                                    return __exports.data(lS(0, 18) === i ? 1 : 0);
+                                })();
+                            }
+                        }
+                    });
+                    const __exports = __ifInstance0.exports;
+                    return __exports.data(lS(0, 16) === i ? 1 : 0);
+                })();
+            },
+            setUserProperty: (e, t) => {
+                (() => {
+                    const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                        env: {
+                            impFunc1: () => {
+                                {
+                                    var n = {
+                                        command: 'setUserProperty',
+                                        name: e,
+                                        value: t
+                                    };
+                                    lS(0, 19) == i ? window.AnalyticsWebInterface.setUserProperty(e, t) : lS(0, 20) == i ? window.webkit.messageHandlers.firebase.postMessage(n) : s.setDataLayerProperty(e, t);
+                                }
+                            },
+                            impFunc2: () => {
+                            }
+                        }
+                    });
+                    const __exports = __ifInstance2.exports;
+                    return __exports.data(e && t ? 1 : 0);
+                })();
+            }
+        };
+        window.InpkCommonTagManager = s;
+    }();
+    const e = {
+        windowDataLayerInject: e => lS(0, 21).concat(JSON.stringify(e), lS(0, 22)),
+        scriptLayerInject: t => {
+            let {
+                id: n,
+                events: i,
+                dataLayer: a
+            } = t;
+            n || warn(lS(0, 23));
+            return {
+                iframe: lS(0, 24).concat(n, lS(0, 25)),
+                script: lS(0, 26).concat(JSON.stringify(i).slice(1, -1), lS(0, 27)).concat(n, lS(0, 28)),
+                dataLayerVar: e.windowDataLayerInject(a)
+            };
+        }
+    };
+    function t() {
+        var e, t, n, i;
+        let a = lS(0, 29);
+        const r = navigator.userAgent;
+        return null !== (e = window) && void 0 !== e && e.AnalyticsWebInterface ? a = lS(0, 30) : null !== (t = window) && void 0 !== t && t.webkit && null !== (n = window) && void 0 !== n && null !== (n = n.webkit) && void 0 !== n && n.messageHandlers && null !== (i = window) && void 0 !== i && null !== (i = i.webkit) && void 0 !== i && null !== (i = i.messageHandlers) && void 0 !== i && i.firebase ? a = lS(0, 31) : (r.toLowerCase().includes(lS(0, 32)) || r.toLowerCase().includes(lS(0, 33))) && (a = lS(0, 34)), a;
+    }
+    function n() {
+        let e;
+        const t = decodeURIComponent((n = lS(0, 35), i = document.cookie, (a = i.match(lS(0, 36) + n + lS(0, 37))) ? a[2] : null));
+        var n, i, a;
+        if (t && t.length >= 8) {
+            e = function (e) {
+                switch (e) {
+                case lS(0, 38):
+                    return lS(0, 39);
+                case lS(0, 40):
+                    return lS(0, 41);
+                case lS(0, 42):
+                    return lS(0, 43);
+                case lS(0, 44):
+                    return lS(0, 45);
+                default:
+                    return lS(0, 46);
+                }
+            }(t.split(lS(0, 47))[0]);
+        }
+        return e;
+    }
+}();</script>
+</body>
+</html>

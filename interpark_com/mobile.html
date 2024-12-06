@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mobile.html</title>
+</head>
+<body>
+
+<script>
+var userAgent = navigator.userAgent.toLowerCase();
+var mobile = (/iphone|ipad|ipod|android/i.test(userAgent.toLowerCase()));
+var isAndroid = (/android/i.test(userAgent.toLowerCase()));
+var isIOS = (/iphone|ipad|ipod/i.test(userAgent.toLowerCase()));
+var isApp = userAgent.indexOf("interparkbrowser") != -1?true:false;
+var isShopAppPop = userAgent.indexOf("interparkshopbrowserpop") != -1?true:false;
+var isShopInTotalApp = userAgent.indexOf("interparkwebviewpop-shop") != -1?true:false;
+var isTicketAppPop = userAgent.indexOf("interparkticket") != -1?true:false;
+var isTourAppPop = userAgent.indexOf("interparktourmain") != -1?true:false;
+var isAirAppPop = userAgent.indexOf("interparktourair") != -1?true:false;
+var isOpenIdWebview = userAgent.indexOf("interparkbrowser") != -1?true:false;
+var pApp = "";
+var _device = "";
+var _appVer = "";
+var _device_id = "";
+var timeoutObj;
+document.domain="interpark.com";
+
+if(mobile){
+	var appFlag = '';
+	var t = document.cookie.split("; ");
+	for (var n = 0, r; r = t[n] && t[n].split("="); n++) {
+		if (r.shift() === 'appFlag') {
+			appFlag = decodeURIComponent(r.join("="));
+		}
+	}
+	if(appFlag == '2')isApp = true;
+	
+	if(isApp){
+		var appInfoAll = "";
+		for (var n = 0, r; r = t[n] && t[n].split("="); n++) {
+			if (r.shift() === 'appInfo') {
+				appInfoAll = decodeURIComponent(r.join("="));
+			}
+		}
+		var _appInfo = (appInfoAll !== '' && typeof appInfoAll != "undefined")?appInfoAll.split(/@@|\|/):'';
+		var _appid = (_appInfo !== '' && typeof _appInfo != "undefined"&&_appInfo.length>0)?_appInfo[0]:'';
+		_appVer = (_appInfo !== '' && typeof _appInfo != "undefined"&&_appInfo.length>2)?_appInfo[1]:'';
+		_device = (_appInfo !== '' && typeof _appInfo != "undefined"&&_appInfo.length>2)?_appInfo[2]:'';
+		_device_id = (_appInfo !== '' && typeof _appInfo != "undefined"&&_appInfo.length>3)?_appInfo[3]:'';
+		if( _appid!=""){
+			pApp = _appid.toLowerCase();
+		}
+		if( _device!=""){
+			_device = _device.toLowerCase();
+		}
+	}
+}
+
+// Dom load �� �� ����
+$(document).ready(function(){
+	if(isApp){
+		// ���ϰ�� footer �ΰ� ��ũ �����Ѵ�.
+		// 2017-07-20 �̱⿵����� ��û(����)
+		//$('.footerlogo').removeAttr('href');
+		
+		// ����� ���ܾ� �ϴ� ȭ���̶��... ����ID ������ ����� ������ ��Ģ�� ������ �ֱ� ������ ���� ó�� �Ѵ�.
+		if($('.headerWrap').filter(function(){return $(this).find('.btnPrev, .headerTitle, .btnNext').length>=3;}).length > 0){
+			if(checkHeaderTitleHide()){
+				$('.headerWrap').hide();
+			}
+		}
+	}
+	
+	// �ڷΰ��� ���� (���¾��̵�, ȸ������ ���� �ű� ȭ���� ��� ������ ��� ������ ������ ������ ���� ó���Ѵ�.)
+	$('.headerWrap .btnPrev a').filter(function(){return ($(this).attr('href') == '' || $(this).attr('href') == '#');})
+	.removeAttr('href')
+	.click(function(){
+		if( existsFnc("compulsCloseForMobileJS") ){
+			compulsCloseForMobileJS();
+			
+			return ;
+		}else{
+			historyback();
+		}
+	});
+	
+	// �ݱ��ư ���� (���¾��̵�, ȸ������ ���� �ű� ȭ���� ��� ������ ��� ������ ������ ������ ���� ó���Ѵ�.)
+	$('.headerWrap .btnNext a').filter(function(){return ($(this).attr('href') == '' || $(this).attr('href') == '#');})
+	.removeAttr('href')
+	.click(function(){
+		procClosePopup();
+	});
+	//alert('ready mobile=' + mobile + ", isApp=" + isApp + ", appNm=" + getAppName() + ", isOpenIdWebview=" + isOpenIdWebview + ", isOnlyXbtn()=" + isOnlyXbtn());
+});
+
+// Page load �� �� ����
+$(window).load(function(){
+	setHeaderTitle(document.title);
+});
+
+//IE �� �ƴϸ�...
+if (userAgent.indexOf("msie") == -1) {
+	// �� ������ ���� Ŀ���� ��Ű�� ȣ��
+	window.open = function (open) {
+		return function (url, popupName, features) {
+			var fullUrl = getFullUrl(url);
+			var title = document.title;
+			var appNm = getAppName();
+			if(isOpenIdWebview)appNm = '';
+			switch(appNm){
+			case 'shop':
+				location.href="interparkapp://popup?title="+title+"&url="+encodeURIComponent(fullUrl)+"&headeryn=Y&closeyn=Y";
+				break;
+			case 'pet':
+				location.href="interparkapp://popup?title="+title+"&url="+encodeURIComponent(fullUrl)+"&headeryn=Y&closeyn=Y";
+				break;
+			case 'nbook':
+				location.href = "interparknbook://popup?url=" + encodeURIComponent(fullUrl) + "&headeryn=Y&closeyn=Y&title="+title;
+				break;
+			case "air":
+			case "housing":
+			case "tour":
+			case "aboradhotel":
+				location.href = 'interparkapp://window.open?url=' +  encodeURIComponent(fullUrl);
+				break;
+			default:
+				return open.call(window, fullUrl, popupName, features);
+			}
+			return false;
+		};
+	}(window.open);
+}
+
+// ����� url �� ��� full url �� ġȯ�Ѵ�. (ex. /member/...... >> https://incorp.interpark.com/member... )
+function getFullUrl(url){
+	var fullUrl = url;
+	if(!(url.indexOf('http://') >= 0 || url.indexOf('https://') >= 0)){
+		fullUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + url;
+	}
+	return fullUrl;
+}
+
+// IE �� �ƴϸ�...
+if (userAgent.indexOf("msie") == -1 && !isOpenIdWebview) {
+	// close ó�� ���� ó��
+	// �ۺ� close �̺�Ʈ�� ���� ó���� �б��ϱ� ���ؼ� window.close �� override �ؼ� ó���Ѵ�.
+	window.close = function (close) {
+		return function () {
+			if(mobile){
+				if(isApp){
+					var appNm = getAppName();
+					if(isOpenIdWebview)appNm = 'openidwebview';
+					switch(appNm){
+					case "nbook": 		location.href="interparknbook://closepopup"; break;
+//				    case "ticket": 		; break;
+					case "air":
+					case "housing":
+					case "tour":
+					case "aboradhotel":
+						if(_device == 'android'){
+							location.href="interparkapp://window.close";
+						}else{
+							location.href="interparkapp://closepopup";
+						}
+						break;
+					case 'shop':
+						if(!isShopAppPop){	// �۳� �˾� �������� ������ �ƴҰ��
+							historyback();
+							break;
+						}
+					case "pet":			location.href="interparkapp://closepopup"; break;
+					case "openidwebview":
+						if(isOnlyXbtn()){
+							historyback();
+						}else{
+							location.href="interparkopenid://close";
+						}
+						break;
+					default: 
+						return close.call(window);
+					}
+				}else{
+					try{
+						if(isPopup() && !isOnlyXbtn()){}else historyback();
+						return close.call(window);
+					}catch(e){
+						if(e.message.indexOf('cross-origin') >= 0)close.call(window);
+						else historyback();
+					}
+				}
+			}else{
+				try{
+					if(isPopup() && !isOnlyXbtn()){}else historyback();
+					return close.call(window);
+				}catch(e){
+					if(e.message.indexOf('cross-origin') >= 0)close.call(window);
+					else historyback();
+				}
+			}
+			return false;
+		};
+	}(window.close);
+}
+
+// ����� , App close ��ư ���ý� �׼�
+function procClosePopup(){
+	if(mobile){
+		if(isApp){
+			var appNm = getAppName();
+			if(isOpenIdWebview)appNm = 'openidwebview';
+			switch(appNm){
+			    case "nbook": 		location.href="interparknbook://closepopup"; break;
+//			    case "ticket": 		; break;
+			    case "air":
+			    case "housing":
+			    case "tour":
+			    case "aboradhotel": 	 
+				    if(_device == 'android'){
+					    location.href="interparkapp://window.close";
+				    }else{
+					    location.href="interparkapp://closepopup";
+				    }
+			    break;
+			    case 'shop':
+				    if(!isShopAppPop){	// �۳� �˾� �������� ������ �ƴҰ��
+					    historyback();
+					    break;
+				    }
+			    case "pet":			location.href="interparkapp://closepopup"; break;
+			    case "openidwebview":
+				    if(isOnlyXbtn()){
+					    historyback();
+				    }else{
+					    location.href="interparkopenid://close";
+				    }
+				    break;
+			    default: 
+				    closeOrHistoryBack();
+			}
+		}else{
+			closeOrHistoryBack();
+		}
+	}else{
+		closeOrHistoryBack();
+	}
+}
+
+//
+function historyback(){
+	if(timeoutObj) clearTimeout(timeoutObj);
+	window.history.back();
+	timeoutObj = setTimeout(function(){clearTimeout(timeoutObj);closePopup();}, 500);
+}
+
+function closeOrHistoryBack(){
+	try{
+		if (isMemberInfoMain()) {
+			location.href = "https://www.interpark.com";
+		} else if (isPopup() && !isOnlyXbtn()){
+			closePopup();
+		} else {
+			historyback();
+		}
+	}catch(e){
+		if(e.message.indexOf('cross-origin') >= 0){
+			closePopup();
+		}else historyback();
+	}	
+}
+function isMemberInfoMain() {
+	return location.href == "https://incorp.interpark.com/member/memberjoin.do";
+}
+
+function closePopup(){
+	if(timeoutObj) clearTimeout(timeoutObj);
+	if(isOpenIdWebview){
+		location.href="interparkopenid://close";
+	}else{
+		try{self.close();}catch(e){};
+	}
+}
+
+// �˾� �α��� ó�� ( PC, �����, APP ���п� ���� ó��
+function procPopupLogin(isDev){
+	if(mobile){
+		if(isApp){
+			var appNm = getAppName();
+			if(isOpenIdWebview)appNm = 'openidwebview';
+			switch(appNm){
+			    case "nbook": 		location.href="interparknbook://login"; break;
+//			    case "ticket": 		; break;
+			    case "air":
+			    case "housing":
+			    case "tour":
+			    case "aboradhotel":
+				    document.location.href="https://m.interpark.com/auth/login.html?fromSVC="+(pApp == 'aboardhotel'?'hotel':pApp)+"&retUrl="+encodeURIComponent(document.location.href);
+				    break;
+			    case 'shop':
+			    case "pet":			location.href="interparkapp://login?re=Y"; break;
+			    default:
+				    if(isDev === 'Y')
+					    document.location.href="https://tm.interpark.com/auth/login.html?nwm1=footer&nwm2=logout&retUrl="+encodeURIComponent(document.location.href);
+				    else
+					    document.location.href="https://m.interpark.com/auth/login.html?nwm1=footer&nwm2=logout&retUrl="+encodeURIComponent(document.location.href);
+			}
+		}else{
+			if(isDev === 'Y')
+				document.location.href="https://tm.interpark.com/auth/login.html?nwm1=footer&nwm2=logout&retUrl="+encodeURIComponent(document.location.href);
+			else
+				document.location.href="https://m.interpark.com/auth/login.html?nwm1=footer&nwm2=logout&retUrl="+encodeURIComponent(document.location.href);
+		}
+	}else{
+		document.domain="interpark.com";
+		var url = "http://incorp.interpark.com/member/login.do?_method=popup&reqSite=INCORP&imfsUserPath=http://incorp.interpark.com/member/login.do?_method=popupClose&imfsUserQuery=";
+		window.open(url,"popupLogin","width=500,height=400");
+	}
+}
+// �� �ι��� �� ������� �������� Ȯ�� ���...(������ �� ȭ�鿡�� ó�� �Ѵ�...(selector�� �ٸ��� �����Ƿ�..))
+function checkHeaderTitleHide(){
+	var res = false;
+	if(mobile){
+		if(isApp){
+			var appNm = getAppName();
+			if(isOpenIdWebview)appNm = 'openidwebview';
+			switch(appNm){
+//			    case 'shop': 		; break;
+//			    case "nbook": 		; break;
+			case "ticket":
+			case "air":
+			case "   ":
+			case "housing":
+			case "tour":
+			case "pet":
+				res = true; 
+				break;
+			case 'shop':
+				if(isOpenIdWebview){	// �۳� �˾� �������� ������ �ƴҰ��
+					break;
+				}else{
+					res = true; 
+					break;
+				}
+			case 'openidwebview':
+				// openid ���信���� ����� �׻� �츰��.
+				break;
+			}
+		}
+	}
+	return res;
+}
+// ���� ȯ�� (��: ���̸�, ���� : mobile, PC�� : pc)
+function getAppName(){
+	var appName = '';
+	if(mobile){
+		if(isApp){
+			//'shop': "nbook": "ticket": "air": "aboradhotel": "housing": "tour": "pet":
+			appName = pApp;
+		}else{
+			appName = 'mobile';
+		}
+	}else{
+		appName = 'pc';
+	}
+	return appName;
+}
+
+function isAppVerGreaterOrEqual(requiredVersion) {
+	var currAppVer = _appVer
+	var current = currAppVer.split('.').map(Number);
+	var min = requiredVersion.split('.').map(Number);
+
+	var length = Math.max(current.length, min.length);
+	while (current.length < length) current.push(0);
+	while (min.length < length) min.push(0);
+
+	for (let i = 0; i < length; i++) {
+		if (current[i] > min[i]) return true;
+		if (current[i] < min[i]) return false;
+	}
+
+	return true;
+}
+
+function isApp(){
+	return (pApp ? true : false);
+}
+
+// ����� �� ���� Ŀ���� ������ �˾�. (�� �� �˾� webview)
+function customWindowPopup(url, title, popupName){
+	var fullUrl = getFullUrl(url);
+	if(title == 'undefined' || title == null || title == '') title = document.title;
+	var appNm = getAppName();
+	if(isOpenIdWebview)appNm = 'openidwebview';
+	switch(appNm){
+	    case 'shop':
+		    location.href="interparkapp://popup?title="+title+"&url="+encodeURIComponent(fullUrl)+"&headeryn=Y&closeyn=Y"; break;
+	    case "pet":
+		    location.href="interparkapp://popup?title="+title+"&url="+encodeURIComponent(fullUrl)+"&headeryn=Y&closeyn=Y"; break;
+	    case "nbook":
+		    location.href="interparknbook://popup?url=" + encodeURIComponent(fullUrl) + "&headeryn=Y&closeyn=Y&title="+title; break;
+//	    case "ticket": break;
+	    case "air":
+	    case "aboradhotel":
+	    case "housing":
+	    case "tour":
+		    location.href = 'interparkapp://window.open?url=' +  encodeURIComponent(fullUrl);
+		break;
+	    default:
+		    if(popupName == 'undefined' || popupName == null || popupName == '') {popupName = document.title;}
+		    window.open(fullUrl, popupName,"scrollbars=auto,resizable=yes,width=510,height=472");
+	}
+}
+
+//����� �� ���� Ŀ���� ��â ���� (�� �� �˾� webview)
+function customNewTab(url, title, popupName){
+	var fullUrl = getFullUrl(url);
+	if(title == 'undefined' || title == null || title == '') title = document.title;
+	var appNm = getAppName();
+	if(isOpenIdWebview)appNm = 'openidwebview';
+	switch(appNm){
+	    case 'shop':
+		    location.href="interparkapp://popup?title="+title+"&url="+encodeURIComponent(fullUrl)+"&headeryn=Y&closeyn=Y"; break;
+	    case "pet":
+		    location.href="interparkapp://popup?title="+title+"&url="+encodeURIComponent(fullUrl)+"&headeryn=Y&closeyn=Y"; break;
+	    case "nbook":
+		    location.href = "interparknbook://popup?url=" + encodeURIComponent(fullUrl) + "&headeryn=Y&closeyn=Y&title="+title; break;
+//	    case "ticket": break;
+	    case "air":
+	    case "aboradhotel":
+	    case "housing":
+	    case "tour":
+		    location.href = 'interparkapp://window.open?url=' +  encodeURIComponent(fullUrl);
+		break;
+	    default:
+		    if(popupName == 'undefined' || popupName == null || popupName == '') {popupName = document.title;}
+		    window.open(fullUrl);
+	}
+}
+// �� �ϰ�� �� webview �� �ƴ� �ܺ� ������ ȣ���� �̿��� �������� ����.
+function customExternalPopup(url){
+	var fullUrl = getFullUrl(url);
+	
+	if(isOpenIdWebview){
+	//OpenID�� lib�� ���� ���Ե� ��δ� �۽�Ű���� �������� �ʰ�, ��� window open���� ����
+		location.href = fullUrl;
+		return ;
+	}
+	
+	switch(getAppName()){
+	    case 'shop':
+	    case "pet":
+		    location.href='interparkapp://external?url=' + encodeURIComponent(fullUrl); break;
+	    case "nbook":
+		    location.href='interparknbook://external?url=' + encodeURIComponent(fullUrl); break;
+//	    case "ticket": break;
+	    case "air":
+	    case "aboradhotel":
+	    case "housing":
+	    case "tour":
+		    if(_device == 'android'){
+			    window.open(fullUrl);
+		    }else{
+			    location.href='interparkapp://external?url=' + encodeURIComponent(fullUrl); 
+		    }
+		break;
+	    default:
+		if(isOpenIdWebview){
+		//OpenID�� lib�� ���� ���Ե� ��δ� �۽�Ű���� �������� �ʰ�, ��� window open���� ����
+			location.href = fullUrl;
+		}else{
+			window.open(fullUrl);
+		}
+		break;
+	}
+}
+
+function customExternalBrowser(url){
+	var fullUrl = getFullUrl(url);
+	switch(getAppName()){
+	    case 'shop':
+	    case "pet":
+		    location.href='interparkapp://external?url=' + encodeURIComponent(fullUrl); break;
+	    case "nbook":
+		    location.href='interparknbook://external?url=' + encodeURIComponent(fullUrl); break;
+//	    case "ticket": break;
+	    case "air":
+	    case "aboradhotel":
+	    case "housing":
+	    case "tour":
+		    if(_device == 'android'){
+			    window.open(fullUrl);
+		    }else{
+			    location.href='interparkapp://external?url=' + encodeURIComponent(fullUrl); 
+		    }
+		break;
+	    default:
+		    window.open(fullUrl);
+	}
+}
+
+function customExternalBrowserForInstallApp(url){
+	var installUrl = encodeURIComponent("http://m.shop.interpark.com/gate/?ty=link&ln="+encodeURIComponent(getFullUrl(url)));
+	switch(getAppName()){
+		case 'shop':
+			location.href=getFullUrl(url);
+			break;
+		case "nbook":
+			location.href='interparknbook://external?url=' + installUrl;
+			break;
+		case "pet":
+		case "ticket":
+		case "air":
+		case "aboradhotel":
+		case "housing":
+		case "tour":
+			location.href='interparkapp://external?url=' + installUrl;
+			break;
+		default:
+			window.open(getFullUrl(url));
+	}
+}
+
+// �ۿ��� ����Ƽ�� ����� ���� �� �� �ش� Ÿ��Ʋ�� ��Ű���� ���� �ϴµ��� �ִ�.
+function setHeaderTitle(title){
+	switch(getAppName()){
+	    case "pet": break;
+	    case 'shop':
+	    case "nbook": break;
+//	    case "ticket": break;
+	    case "air": break;
+	    case "aboradhotel": break;
+	    case "housing":break;
+	    case "tour":break;
+	}
+}
+// �� ���ϰ�� Ÿ��Ʋ �����Ҷ� �ش� ����� ȣ���ؼ� ��������.
+function getDocTitle(){
+	return document.title;
+}
+
+//SNS ����
+function customSNS(type){
+	var metas = document.getElementsByTagName("meta");
+	var data = {};
+	for( var i=0 ; i<metas.length ; i++ ) {
+		var meta = metas[i];
+		if( meta.getAttribute("property") ) {
+			data[ meta.getAttribute("property") ] = meta.getAttribute("content");
+		}
+	}
+	var url = data['og:url'];
+	var title = data['og:title'];
+	var description = data['og:description'];
+	var image = data['og:image'];
+	switch (type) {
+		case 'facebook':
+			var shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+			customExternalPopup(shareUrl);
+			break;
+		case 'twitter':
+			var twitterURL = "https://twitter.com/intent/tweet";
+			var twitterShareURL = twitterURL + "?text=" + encodeURIComponent(description) + "&url=" + encodeURIComponent(url) + "";
+			customExternalPopup(twitterShareURL);
+			break;
+		case 'kakaotalk':
+			Kakao.Link.sendTalkLink({
+			        label: title + description,
+			        webLink:{
+				        text: location.href,
+				        url:location.href
+			        },
+			        image: {
+			            src: image,
+			            width: '300',
+			            height: '200'
+			        },
+			        webButton: {
+			            text: '������ ��������',
+			            url: location.href
+			        }
+			    });
+			break;
+		case 'kakaostory':
+			shareUrl = 'https://story.kakao.com/share?url='+ encodeURIComponent(url);
+			customExternalPopup(shareUrl);
+			break;
+		case 'copy':
+			break;
+		
+	}
+}
+
+function isPopup(){
+	var isPopup = true;
+	try{if(opener.closed){}}catch(e){isPopup = false;}
+	if(isOpenIdWebview)isPopup = true;
+	return isPopup;
+}
+
+// ����� ��ư �ϳ��� ���� �� ��� �ٷ� �ݱ� ���� �ʰ� �ڷΰ��� ���� �ݱ� ���ؼ� ...
+function isOnlyXbtn(){
+	var isOnlyXbtn = false;
+	if( $('.headerWrap').length > 0 && $('.headerWrap').length == $('.headerWrap').find('a').length ){
+		isOnlyXbtn = true;
+	}
+	return isOnlyXbtn;
+}
+
+// �˾� 
+function linkPage(title, url){
+	var hUrl = url.indexOf('http')>=0?url:location.protocol+url;
+	var fullUrl = "http://incorp.interpark.com/member/memberInfo.do?_method=popupGw&title=" + encodeURIComponent(title) + "&link=" + encodeURIComponent(hUrl);
+	location.href = fullUrl; 
+}
+
+//	popupPage('������ũ �̿���', '//incorp.interpark.com/member/2016/family_agreement.html');
+function popupPage(title, url){
+	var hUrl = url.indexOf('http')>=0?url:location.protocol+url;
+	var fullUrl = "http://incorp.interpark.com/member/memberInfo.do?_method=popupGw&title=" + encodeURIComponent(title) + "&link=" + encodeURIComponent(hUrl);
+	window.open(fullUrl ,'','width=750,height=800,scrollbars=yes,resizable=no');
+}
+
+function locationPage(title, url, option){
+	var hUrl = url.indexOf('http')>=0?url:location.protocol+url;
+	var fullUrl = "http://incorp.interpark.com/member/memberInfo.do?_method=popupGw&title=" + encodeURIComponent(title) + "&link=" + encodeURIComponent(hUrl);
+
+	if( !!option.parent ){
+		parent.location.href = fullUrl;
+	}else{
+		location.href = fullUrl;
+	}
+}
+
+function existsFnc(fncNm){
+	return typeof window[fncNm] === "function";
+}
+
+</script>
+
+</body>
+</html>

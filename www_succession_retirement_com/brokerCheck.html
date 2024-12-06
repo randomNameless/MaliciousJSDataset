@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>brokerCheck.html</title>
+</head>
+<body>
+
+<script>
+function brokerCheck () {
+	_this = this;
+	this.$toggle = undefined;
+	this.$BCcontainer = undefined;
+	this.$bottomBContainer = undefined;
+	this.cookie = true;
+
+	function init () {
+		if (typeof parent.bcl == 'undefined') {
+			parent.bcl = 'true';
+			_this.$toggle = document.querySelectorAll('.icon-broker-check-close')[0] || undefined;
+			_this.$BCcontainer = document.querySelectorAll('.broker-check-container.top')[0] || undefined;
+			_this.$bottomBContainer = document.querySelectorAll('.broker-check-container.bottom')[0] || undefined;
+			_this.cookie = _this.checkCookie();
+
+			if (_this.$BCcontainer != undefined) {
+				if(_this.cookie != false) {
+					_this.moveBar();
+					_this.assignListener();
+				}
+			}
+		}
+	}
+	init();
+}
+
+brokerCheck.prototype.checkCookie = function () {
+	function getCookie(cname) {
+		var name = cname + "=";
+		var ca = document.cookie.split(';');
+		for(var i=0; i<ca.length; i++) {
+			var c = ca[i];
+			while (c.charAt(0)==' ') c = c.substring(1);
+			if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+		}
+		return "";
+	}
+
+	var BCcookie = getCookie('BROKERCHECKDISPLAY') || true;
+
+	if (BCcookie != undefined && BCcookie == 'false') {
+		this.$BCcontainer.style.display = 'none';
+		this.$BCcontainer.setAttribute('aria-hidden','true')
+	}
+
+	return BCcookie;
+}
+
+brokerCheck.prototype.assignListener = function () {
+	var _this = this,
+			ToggleC = this.toggleContainer,
+			MoveC = this.checkScrollResize,
+			$BCcontainer = this.$BCcontainer,
+			$toggle = this.$toggle;
+
+	if ($toggle != undefined) {
+		$toggle.addEventListener('click', function () { ToggleC($BCcontainer) }, false);
+		$toggle.addEventListener('keypress', function (e) {
+			let key = e.keyCode || e.which
+
+			e.preventDefault()
+
+			if (key == 32 || key == 13)
+				ToggleC($BCcontainer)
+		},false);
+	}
+
+	window.addEventListener('scroll', function () { _this.checkScrollResize(_this) }, false);
+	window.addEventListener('resize', function () { _this.checkScrollResize(_this) }, false);
+}
+
+brokerCheck.prototype.checkScrollResize = function (obj) {
+	var _this = obj;
+	var $firstItem = document.body.getElementsByTagName("div")[0];
+	var bcCheck;
+
+	if ($firstItem.className.indexOf('broker-check-container') <= -1) {
+		_this.moveBar();
+	}
+
+	return false;
+}
+
+brokerCheck.prototype.toggleContainer = function (element) {
+	var $BCcontainer = element;
+	var height = $BCcontainer.offsetHeight;
+
+	$BCcontainer.style.marginTop = -height+'px';
+	setTimeout(function () {
+		$BCcontainer.className = $BCcontainer.className.replace('visible','hidden');
+	},150);
+
+	setTimeout(function () {
+		$BCcontainer.style.display = 'none';
+	},300);
+
+	$BCcontainer.setAttribute('aria-hidden','true')
+
+	document.cookie="BROKERCHECKDISPLAY=false;path=/";
+}
+
+brokerCheck.prototype.moveBar = function () {
+	var $BCcontainer = this.$BCcontainer;
+	var height = $BCcontainer.offsetHeight;
+	var $bottomBContainer = this.$bottomBContainer;
+	var topOfBody = document.body.firstChild;
+
+	if (document.body.className.indexOf('TJ') >=0 && document.querySelectorAll('#footerContainer').length >= 1) {
+		document.querySelectorAll('#footerContainer')[0].appendChild($bottomBContainer);
+	}
+	else {
+		document.body.appendChild($bottomBContainer);
+	}
+
+	document.body.insertBefore($BCcontainer,topOfBody);
+	
+	$bottomBContainer.style.display = 'block';
+
+	var btmclose = $bottomBContainer.querySelector('.icon-broker-check-close')
+
+	if (btmclose){
+		btmclose.remove()
+	}
+
+	$BCcontainer.style.marginTop = -height+'px';
+	$BCcontainer.classList.add('visible');
+
+	setTimeout(function () {
+		$BCcontainer.style.marginTop = 0;		
+	},0);
+}
+
+
+window.onload = setTimeout(function () {
+	if (typeof bcReq === 'undefined') {
+		var bcReq = new brokerCheck();
+	}
+},1000);
+</script>
+
+</body>
+</html>

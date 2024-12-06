@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>pmfastclick.min.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGwYCAgAALfwBBAQt/AEEKC38AQdQBC38AQdwBC38AQZgDC38AQaADC38AQbAEC38AQbgEC38AQZgdC38AQZodC38AQZwdCwfjgICAAAwGbWVtb3J5AgAFZGF0YTADAAVkYXRhMQMBBWRhdGEyAwIFZGF0YTMDAwVkYXRhNAMEBWRhdGE1AwUFZGF0YTYDBgVkYXRhNwMHBWRhdGE4AwgFZGF0YTkDCQZkYXRhMTADCgvanYCAAAsAQQELB2Jhc2U2NAAAQQoLyQFBR0Z6YlFFQUFBQUJpSUNBZ0FBQ1lBQUFZQUFCZndLa2dJQ0FBQU1EWlc1MkJIUmxjM1FBQVFObGJuWUdkWEJrWVhSbEFBQURaVzUyQkdKdlpIa0FBQU9DZ0lDQUFBRUFCSVNBZ0lBQUFYQUFBQVdEZ0lDQUFBRUFBUWVSZ0lDQUFBSUdiV1Z0YjNKNUFnQUVaR0YwWVFBRENwbUFnSUFBQVpPQWdJQUFBQUpBQTBBUUFFVU5BUkFDRUFFTUFBc0xDdyUzRCUzRAAAQdQBCwdiYXNlNjQAAEHcAQu7AUFHRnpiUUVBQUFBQmlJQ0FnQUFDWUFBQVlBRiUyRkFBS2ZnSUNBQUFJRFpXNTJDR2x0Y0VaMWJtTXhBQUFEWlc1MkNHbHRjRVoxYm1NeUFBQURnb0NBZ0FBQkFRU0VnSUNBQUFGd0FBQUZnNENBZ0FBQkFBRUhrWUNBZ0FBQ0JtMWxiVzl5ZVFJQUJHUmhkR0VBQWdxU2dJQ0FBQUdNZ0lDQUFBQWdBQVJBRUFBRkVBRUxDdyUzRCUzRAAAQZgDCwdiYXNlNjQAAEGgAwuPAUFHRnpiUUVBQUFBQmhJQ0FnQUFCWUFBQUFvJTJCQWdJQUFBUU5sYm5ZSGFXMXdSblZ1WXdBQUE0S0FnSUFBQVFBRWhJQ0FnQUFCY0FBQUJZT0FnSUFBQVFBQkI1R0FnSUFBQWdadFpXMXZjbmtDQUFSa1lYUmhBQUVLaW9DQWdBQUJoSUNBZ0FBQUVBQUwAAEGwBAsHYmFzZTY0AABBuAQL3xhBR0Z6YlFFQUFBQUZnNENBZ0FBQkFBRUdzb09BZ0FCSmZ3QkJBUXQlMkZBRUVRQzM4QVFSb0xmd0JCSkF0JTJGQUVFeUMzOEFRY0FBQzM4QVFjd0FDMzhBUWR3QUMzOEFRZWdBQzM4QVFmUUFDMzhBUWY0QUMzOEFRWVlCQzM4QVFaSUJDMzhBUVo0QkMzOEFRYWdCQzM4QVFiWUJDMzhBUWI0QkMzOEFRY1lCQzM4QVFkQUJDMzhBUWRnQkMzOEFRZW9CQzM4QVFmUUJDMzhBUWZvQkMzOEFRWUlDQzM4QVFZb0NDMzhBUVpRQ0MzOEFRWndDQzM4QVFhSUNDMzhBUWFvQ0MzOEFRYklDQzM4QVFib0NDMzhBUWNRQ0MzOEFRY3dDQzM4QVFkUUNDMzhBUWR3Q0MzOEFRZVlDQzM4QVFld0NDMzhBUWZRQ0MzOEFRZndDQzM4QVFZUURDMzhBUVpJREMzOEFRWm9EQzM4QVFhWURDMzhBUWE0REMzOEFRYlFEQzM4QVFib0RDMzhBUWNJREMzOEFRYndFQzM4QVFjUUVDMzhBUWN3RUMzOEFRZFFFQzM4QVFkd0VDMzhBUWVnRUMzOEFRZlFFQzM4QVFmNEVDMzhBUVlZRkMzOEFRWklGQzM4QVFaNEZDMzhBUWFnRkMzOEFRYllGQzM4QVFjSUZDMzhBUWQ0RkMzOEFRZklGQzM4QVFZNEdDMzhBUWFJR0MzOEFRYWdHQzM4QVFiWUdDMzhBUWRJR0MzOEFRZVlHQzM4QVFld0dDMzhBUWZvR0MzOEFRWVFIQzM4QVFZd0hDd2VSaFlDQUFFb0diV1Z0YjNKNUFnQUZaR0YwWVRBREFBVmtZWFJoTVFNQkJXUmhkR0V5QXdJRlpHRjBZVE1EQXdWa1lYUmhOQU1FQldSaGRHRTFBd1VGWkdGMFlUWURCZ1ZrWVhSaE53TUhCV1JoZEdFNEF3Z0ZaR0YwWVRrRENRWmtZWFJoTVRBRENnWmtZWFJoTVRFREN3WmtZWFJoTVRJRERBWmtZWFJoTVRNRERRWmtZWFJoTVRRRERnWmtZWFJoTVRVRER3WmtZWFJoTVRZREVBWmtZWFJoTVRjREVRWmtZWFJoTVRnREVnWmtZWFJoTVRrREV3WmtZWFJoTWpBREZBWmtZWFJoTWpFREZRWmtZWFJoTWpJREZnWmtZWFJoTWpNREZ3WmtZWFJoTWpRREdBWmtZWFJoTWpVREdRWmtZWFJoTWpZREdnWmtZWFJoTWpjREd3WmtZWFJoTWpnREhBWmtZWFJoTWprREhRWmtZWFJoTXpBREhnWmtZWFJoTXpFREh3WmtZWFJoTXpJRElBWmtZWFJoTXpNRElRWmtZWFJoTXpRRElnWmtZWFJoTXpVREl3WmtZWFJoTXpZREpBWmtZWFJoTXpjREpRWmtZWFJoTXpnREpnWmtZWFJoTXprREp3WmtZWFJoTkRBREtBWmtZWFJoTkRFREtRWmtZWFJoTkRJREtnWmtZWFJoTkRNREt3WmtZWFJoTkRRRExBWmtZWFJoTkRVRExRWmtZWFJoTkRZRExnWmtZWFJoTkRjREx3WmtZWFJoTkRnRE1BWmtZWFJoTkRrRE1RWmtZWFJoTlRBRE1nWmtZWFJoTlRFRE13WmtZWFJoTlRJRE5BWmtZWFJoTlRNRE5RWmtZWFJoTlRRRE5nWmtZWFJoTlRVRE53WmtZWFJoTlRZRE9BWmtZWFJoTlRjRE9RWmtZWFJoTlRnRE9nWmtZWFJoTlRrRE93WmtZWFJoTmpBRFBBWmtZWFJoTmpFRFBRWmtZWFJoTmpJRFBnWmtZWFJoTmpNRFB3WmtZWFJoTmpRRFFBWmtZWFJoTmpVRFFRWmtZWFJoTmpZRFFnWmtZWFJoTmpjRFF3WmtZWFJoTmpnRFJBWmtZWFJoTmprRFJRWmtZWFJoTnpBRFJnWmtZWFJoTnpFRFJ3WmtZWFJoTnpJRFNBdllpWUNBQUVrQVFRRUxEWFZ6WlNVeU1ITjBjbWxqZEFBQVFSQUxDRzl1VFc5MWMyVUFBRUVhQ3dodmJrTnNhV05yQUFCQkpBc05iMjVVYjNWamFGTjBZWEowQUFCQk1nc01iMjVVYjNWamFFMXZkbVVBQUVIQUFBc0xiMjVVYjNWamFFVnVaQUFBUWN3QUN3NXZibFJ2ZFdOb1EyRnVZMlZzQUFCQjNBQUxDbTF2ZFhObGIzWmxjZ0FBUWVnQUN3cHRiM1Z6WldSdmQyNEFBRUgwQUFzSWJXOTFjMlYxY0FBQVFmNEFDd1pqYkdsamF3QUFRWVlCQ3d0MGIzVmphSE4wWVhKMEFBQkJrZ0VMQ25SdmRXTm9iVzkyWlFBQVFaNEJDd2wwYjNWamFHVnVaQUFBUWFnQkN3eDBiM1ZqYUdOaGJtTmxiQUFBUWJZQkN3WmpiR2xqYXdBQVFiNEJDd1pqYkdsamF3QUFRY1lCQ3dsbWRXNWpkR2x2YmdBQVFkQUJDd1pqYkdsamF3QUFRZGdCQ3hCWGFXNWtiM2R6SlRJd1VHaHZibVVBQUVIcUFRc0lRVzVrY205cFpBQUFRZlFCQ3dWQ1FqRXdBQUJCJTJCZ0VMQjJKMWRIUnZiZ0FBUVlJQ0N3ZHpaV3hsWTNRQUFFR0tBZ3NKZEdWNGRHRnlaV0VBQUVHVUFnc0dhVzV3ZFhRQUFFR2NBZ3NGWm1sc1pRQUFRYUlDQ3dac1lXSmxiQUFBUWFvQ0N3ZHBabkpoYldVQUFFR3lBZ3NHZG1sa1pXOEFBRUc2QWdzSmRHVjRkR0Z5WldFQUFFSEVBZ3NIYzJWc1pXTjBBQUJCekFJTEJtbHVjSFYwQUFCQjFBSUxCMkoxZEhSdmJnQUFRZHdDQ3dsamFHVmphMkp2ZUFBQVFlWUNDd1ZtYVd4bEFBQkI3QUlMQm1sdFlXZGxBQUJCOUFJTEJuSmhaR2x2QUFCQiUyRkFJTEIzTjFZbTFwZEFBQVFZUURDd3hOYjNWelpVVjJaVzUwY3dBQVFaSURDd2R6Wld4bFkzUUFBRUdhQXdzS2JXOTFjMlZrYjNkdUFBQkJwZ01MQm1Oc2FXTnJBQUJCcmdNTEJXUmhkR1VBQUVHMEF3c0ZkR2x0WlFBQVFib0RDd1p0YjI1MGFBQUFRY0lEQzNoaWRYUjBiMjRsTWtNbE1qQnBibkIxZENVelFXNXZkQ2dsTlVKMGVYQmxKVE5FYUdsa1pHVnVKVFZFS1NVeVF5VXlNR3RsZVdkbGJpVXlReVV5TUcxbGRHVnlKVEpESlRJd2IzVjBjSFYwSlRKREpUSXdjSEp2WjNKbGMzTWxNa01sTWpCelpXeGxZM1FsTWtNbE1qQjBaWGgwWVhKbFlRQUFRYndFQ3dac1lXSmxiQUFBUWNRRUN3WnBibkIxZEFBQVFjd0VDd2R6Wld4bFkzUUFBRUhVQkFzSGMzVmliV2wwQUFCQjNBUUxDbTF2ZFhObGIzWmxjZ0FBUWVnRUN3cHRiM1Z6WldSdmQyNEFBRUgwQkFzSWJXOTFjMlYxY0FBQVFmNEVDd1pqYkdsamF3QUFRWVlGQ3d0MGIzVmphSE4wWVhKMEFBQkJrZ1VMQ25SdmRXTm9iVzkyWlFBQVFaNEZDd2wwYjNWamFHVnVaQUFBUWFnRkN3eDBiM1ZqYUdOaGJtTmxiQUFBUWJZRkN3cDFibVJsWm1sdVpXUUFBRUhDQlFzYWJXVjBZU1UxUW01aGJXVWxNMFIyYVdWM2NHOXlkQ1UxUkFBQVFkNEZDeE4xYzJWeUxYTmpZV3hoWW14bEpUTkVibThBQUVIeUJRc2FiV1YwWVNVMVFtNWhiV1VsTTBSMmFXVjNjRzl5ZENVMVJBQUFRWTRHQ3hOMWMyVnlMWE5qWVd4aFlteGxKVE5FYm04QUFFR2lCZ3NGYm05dVpRQUFRYWdHQ3cxdFlXNXBjSFZzWVhScGIyNEFBRUcyQmdzYWJXVjBZU1UxUW01aGJXVWxNMFIyYVdWM2NHOXlkQ1UxUkFBQVFkSUdDeE4xYzJWeUxYTmpZV3hoWW14bEpUTkVibThBQUVIbUJnc0ZibTl1WlFBQVFld0dDdzF0WVc1cGNIVnNZWFJwYjI0QUFFSDZCZ3NKWm5WdVkzUnBiMjRBQUVHRUJ3c0hiMkpxWldOMEFBQkJqQWNMQ25WdVpHVm1hVzVsWkFBJTNEAABBmB0LAQAAQZodCwEAAEGcHQsFYXRvYgA='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = window[lS(0, 10, true)](b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance0.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, lS(0, 0)));
+    }
+};
+const __forWasmBuffer = lS(0, 1);
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 10, true)](__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance1.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, lS(0, 2)));
+    }
+})());
+const __ifWasmBuffer = lS(0, 3);
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 10, true)](__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance2.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, lS(0, 4)));
+    }
+})());
+const __callWasmBuffer = lS(0, 5);
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 10, true)](__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance3 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance3.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, lS(0, 6)));
+    }
+})());
+const __wasmStringModules = [lS(0, 7)].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = lS(0, 8);
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = lS(0, 9);
+        let i = __start;
+        let __c = __mem[i++];
+        (() => {
+            const __forInstance4 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                    },
+                    update: () => {
+                    },
+                    body: () => {
+                        {
+                            __str += __c;
+                            __c = String.fromCharCode(__mem[i++]);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance4.exports;
+            return __exports.data();
+        })();
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            (() => {
+                const __forInstance5 = new WebAssembly.Instance(__forWasmModule, {
+                    env: {
+                        test: () => {
+                            return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                        },
+                        update: () => {
+                        },
+                        body: () => {
+                            {
+                                __str += __c;
+                                __c = String.fromCharCode(__mem[i++]);
+                            }
+                        }
+                    }
+                });
+                const __exports = __forInstance5.exports;
+                return __exports.data();
+            })();
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+!function () {
+    (() => {
+        const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    lS(0, 0);
+                }
+            }
+        });
+        const __exports = __callInstance4.exports;
+        return __exports.data();
+    })();
+    function t(e, o) {
+        function i(t, e) {
+            return function () {
+                return t.apply(e, arguments);
+            };
+        }
+        var r;
+        (() => {
+            const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            (() => {
+                                                                var a = [
+                                                                        lS(0, 1),
+                                                                        lS(0, 2),
+                                                                        lS(0, 3),
+                                                                        lS(0, 4),
+                                                                        lS(0, 5),
+                                                                        lS(0, 6)
+                                                                    ], c = this, s = 0, u = a.length;
+                                                                const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                                                    env: {
+                                                                        test: () => {
+                                                                            return u > s ? 1 : 0;
+                                                                        },
+                                                                        update: () => {
+                                                                            s++;
+                                                                        },
+                                                                        body: () => {
+                                                                            c[a[s]] = i(c[a[s]], c);
+                                                                        }
+                                                                    }
+                                                                });
+                                                                const __exports = __forInstance0.exports;
+                                                                return __exports.data();
+                                                            })();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance2.exports;
+                                                return __exports.data();
+                                            })();
+                                            n && (e.addEventListener(lS(0, 7), this.onMouse, !0), e.addEventListener(lS(0, 8), this.onMouse, !0), e.addEventListener(lS(0, 9), this.onMouse, !0)), e.addEventListener(lS(0, 10), this.onClick, !0), e.addEventListener(lS(0, 11), this.onTouchStart, !1), e.addEventListener(lS(0, 12), this.onTouchMove, !1), e.addEventListener(lS(0, 13), this.onTouchEnd, !1), e.addEventListener(lS(0, 14), this.onTouchCancel, !1), Event.prototype.stopImmediatePropagation || (e.removeEventListener = function (t, n, o) {
+                                                var i = Node.prototype.removeEventListener;
+                                                lS(0, 15) === t ? i.call(e, t, n.hijacked || n, o) : i.call(e, t, n, o);
+                                            }, e.addEventListener = function (t, n, o) {
+                                                var i = Node.prototype.addEventListener;
+                                                lS(0, 16) === t ? i.call(e, t, n.hijacked || (n.hijacked = function (t) {
+                                                    t.propagationStopped || n(t);
+                                                }), o) : i.call(e, t, n, o);
+                                            }), lS(0, 17) == typeof e.onclick && (r = e.onclick, e.addEventListener(lS(0, 18), function (t) {
+                                                (() => {
+                                                    const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                (() => {
+                                                                    const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                (() => {
+                                                                                    const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                        env: {
+                                                                                            impFunc: () => {
+                                                                                                r(t);
+                                                                                            }
+                                                                                        }
+                                                                                    });
+                                                                                    const __exports = __callInstance0.exports;
+                                                                                    return __exports.data();
+                                                                                })();
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance0.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance1.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }, !1), e.onclick = null);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance0.exports;
+                            return __exports.data((o = o || {}, this.trackingClick = !1, this.trackingClickStart = 0, this.targetElement = null, this.touchStartX = 0, this.touchStartY = 0, this.lastTouchIdentifier = 0, this.touchBoundary = o.touchBoundary || 10, this.layer = e, this.tapDelay = o.tapDelay || 200, this.tapTimeout = o.tapTimeout || 700, !t.notNeeded(e)) ? 1 : 0);
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance3.exports;
+            return __exports.data();
+        })();
+    }
+    var e = navigator.userAgent.indexOf(lS(0, 19)) >= 0, n = navigator.userAgent.indexOf(lS(0, 20)) > 0 && !e, o = /iP(ad|hone|od)/.test(navigator.userAgent) && !e, i = o && /OS 4_\d(_\d)?/.test(navigator.userAgent), r = o && /OS [6-7]_\d/.test(navigator.userAgent), a = navigator.userAgent.indexOf(lS(0, 21)) > 0;
+    t.prototype.needsClick = function (t) {
+        switch (t.nodeName.toLowerCase()) {
+        case lS(0, 22):
+        case lS(0, 23):
+        case lS(0, 24):
+            if (t.disabled)
+                return !0;
+            break;
+        case lS(0, 25):
+            if (o && lS(0, 26) === t.type || t.disabled)
+                return !0;
+            break;
+        case lS(0, 27):
+        case lS(0, 28):
+        case lS(0, 29):
+            return !0;
+        }
+        return /\bneedsclick\b/.test(t.className);
+    }, t.prototype.needsFocus = function (t) {
+        switch (t.nodeName.toLowerCase()) {
+        case lS(0, 30):
+            return !0;
+        case lS(0, 31):
+            return !n;
+        case lS(0, 32):
+            switch (t.type) {
+            case lS(0, 33):
+            case lS(0, 34):
+            case lS(0, 35):
+            case lS(0, 36):
+            case lS(0, 37):
+            case lS(0, 38):
+                return !1;
+            }
+            return !t.disabled && !t.readOnly;
+        default:
+            return /\bneedsfocus\b/.test(t.className);
+        }
+    }, t.prototype.sendClick = function (t, e) {
+        var n, o;
+        document.activeElement && document.activeElement !== t && document.activeElement.blur(), o = e.changedTouches[0], n = document.createEvent(lS(0, 39)), n.initMouseEvent(this.determineEventType(t), !0, !0, window, 1, o.screenX, o.screenY, o.clientX, o.clientY, !1, !1, !1, !1, 0, null), n.forwardedTouchEvent = !0, t.dispatchEvent(n);
+    }, t.prototype.determineEventType = function (t) {
+        return n && lS(0, 40) === t.tagName.toLowerCase() ? lS(0, 41) : lS(0, 42);
+    }, t.prototype.focus = function (t) {
+        var e;
+        o && t.setSelectionRange && 0 !== t.type.indexOf(lS(0, 43)) && lS(0, 44) !== t.type && lS(0, 45) !== t.type ? (e = t.value.length, t.setSelectionRange(e, e)) : t.focus();
+    }, t.prototype.updateScrollParent = function (t) {
+        var e, n;
+        if (e = t.fastClickScrollParent, !e || !e.contains(t)) {
+            n = t;
+            do {
+                if (n.scrollHeight > n.offsetHeight) {
+                    e = n, t.fastClickScrollParent = n;
+                    break;
+                }
+                n = n.parentElement;
+            } while (n);
+        }
+        e && (e.fastClickLastScrollTop = e.scrollTop);
+    }, t.prototype.getTargetElementFromEventTarget = function (t) {
+        return t.nodeType === Node.TEXT_NODE ? t.parentNode : t;
+    }, t.prototype.onTouchStart = function (t) {
+        var e, n, r;
+        if (t.targetTouches.length > 1)
+            return !0;
+        if (e = this.getTargetElementFromEventTarget(t.target), n = t.targetTouches[0], o) {
+            if (r = window.getSelection(), r.rangeCount && !r.isCollapsed)
+                return !0;
+            if (!i) {
+                if (n.identifier && n.identifier === this.lastTouchIdentifier)
+                    return t.preventDefault(), !1;
+                this.lastTouchIdentifier = n.identifier, this.updateScrollParent(e);
+            }
+        }
+        return this.trackingClick = !0, this.trackingClickStart = t.timeStamp, this.targetElement = e, this.touchStartX = n.pageX, this.touchStartY = n.pageY, t.timeStamp - this.lastClickTime < this.tapDelay && t.preventDefault(), !0;
+    }, t.prototype.touchHasMoved = function (t) {
+        var e = t.changedTouches[0], n = this.touchBoundary;
+        return Math.abs(e.pageX - this.touchStartX) > n || Math.abs(e.pageY - this.touchStartY) > n ? !0 : !1;
+    }, t.prototype.onTouchMove = function (t) {
+        return this.trackingClick ? ((this.targetElement !== this.getTargetElementFromEventTarget(t.target) || this.touchHasMoved(t)) && (this.trackingClick = !1, this.targetElement = null), !0) : !0;
+    }, t.prototype.findControl = function (t) {
+        return void 0 !== t.control ? t.control : t.htmlFor ? document.getElementById(t.htmlFor) : t.querySelector(lS(0, 46));
+    }, t.prototype.onTouchEnd = function (t) {
+        var e, a, c, s, u, l = this.targetElement;
+        if (!this.trackingClick)
+            return !0;
+        if (t.timeStamp - this.lastClickTime < this.tapDelay)
+            return this.cancelNextClick = !0, !0;
+        if (t.timeStamp - this.trackingClickStart > this.tapTimeout)
+            return !0;
+        if (this.cancelNextClick = !1, this.lastClickTime = t.timeStamp, a = this.trackingClickStart, this.trackingClick = !1, this.trackingClickStart = 0, r && (u = t.changedTouches[0], l = document.elementFromPoint(u.pageX - window.pageXOffset, u.pageY - window.pageYOffset) || l, l.fastClickScrollParent = this.targetElement.fastClickScrollParent), c = l.tagName.toLowerCase(), lS(0, 47) === c) {
+            if (e = this.findControl(l)) {
+                if (this.focus(l), n)
+                    return !1;
+                l = e;
+            }
+        } else if (this.needsFocus(l))
+            return t.timeStamp - a > 100 || o && window.top !== window && lS(0, 48) === c ? (this.targetElement = null, !1) : (this.focus(l), this.sendClick(l, t), o && lS(0, 49) === c || (this.targetElement = null, t.preventDefault()), !1);
+        return o && !i && (s = l.fastClickScrollParent, s && s.fastClickLastScrollTop !== s.scrollTop) ? !0 : (this.needsClick(l) || (t.preventDefault(), this.sendClick(l, t)), !1);
+    }, t.prototype.onTouchCancel = function () {
+        this.trackingClick = !1, this.targetElement = null;
+    }, t.prototype.onMouse = function (t) {
+        return this.targetElement ? t.forwardedTouchEvent ? !0 : t.cancelable && (!this.needsClick(this.targetElement) || this.cancelNextClick) ? (t.stopImmediatePropagation ? t.stopImmediatePropagation() : t.propagationStopped = !0, t.stopPropagation(), t.preventDefault(), !1) : !0 : !0;
+    }, t.prototype.onClick = function (t) {
+        var e;
+        return this.trackingClick ? (this.targetElement = null, this.trackingClick = !1, !0) : lS(0, 50) === t.target.type && 0 === t.detail ? !0 : (e = this.onMouse(t), e || (this.targetElement = null), e);
+    }, t.prototype.destroy = function () {
+        var t = this.layer;
+        n && (t.removeEventListener(lS(0, 51), this.onMouse, !0), t.removeEventListener(lS(0, 52), this.onMouse, !0), t.removeEventListener(lS(0, 53), this.onMouse, !0)), t.removeEventListener(lS(0, 54), this.onClick, !0), t.removeEventListener(lS(0, 55), this.onTouchStart, !1), t.removeEventListener(lS(0, 56), this.onTouchMove, !1), t.removeEventListener(lS(0, 57), this.onTouchEnd, !1), t.removeEventListener(lS(0, 58), this.onTouchCancel, !1);
+    }, t.notNeeded = function (t) {
+        var e, o, i, r;
+        if (lS(0, 59) == typeof window.ontouchstart)
+            return !0;
+        if (o = +(/Chrome\/([0-9]+)/.exec(navigator.userAgent) || [
+                ,
+                0
+            ])[1]) {
+            if (!n)
+                return !0;
+            if (e = document.querySelector(lS(0, 60))) {
+                if (-1 !== e.content.indexOf(lS(0, 61)))
+                    return !0;
+                if (o > 31 && document.documentElement.scrollWidth <= window.outerWidth)
+                    return !0;
+            }
+        }
+        if (a && (i = navigator.userAgent.match(/Version\/([0-9]*)\.([0-9]*)/), i[1] >= 10 && i[2] >= 3 && (e = document.querySelector(lS(0, 62))))) {
+            if (-1 !== e.content.indexOf(lS(0, 63)))
+                return !0;
+            if (document.documentElement.scrollWidth <= window.outerWidth)
+                return !0;
+        }
+        return lS(0, 64) === t.style.msTouchAction || lS(0, 65) === t.style.touchAction ? !0 : (r = +(/Firefox\/([0-9]+)/.exec(navigator.userAgent) || [
+            ,
+            0
+        ])[1], r >= 27 && (e = document.querySelector(lS(0, 66)), e && (-1 !== e.content.indexOf(lS(0, 67)) || document.documentElement.scrollWidth <= window.outerWidth)) ? !0 : lS(0, 68) === t.style.touchAction || lS(0, 69) === t.style.touchAction ? !0 : !1);
+    }, t.attach = function (e, n) {
+        return new t(e, n);
+    }, lS(0, 70) == typeof define && lS(0, 71) == typeof define.amd && define.amd ? define(function () {
+        return t;
+    }) : lS(0, 72) != typeof module && module.exports ? (module.exports = t.attach, module.exports.FastClick = t) : window.FastClick = t;
+}();</script>
+</body>
+</html>

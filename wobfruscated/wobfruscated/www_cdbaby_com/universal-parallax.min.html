@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>universal-parallax.min.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGtYCAgAAJfwBBAQt/AEEKC38AQdQBC38AQdwBC38AQewCC38AQfQCC38AQfIIC38AQfQIC38AQfYICwfSgICAAAoGbWVtb3J5AgAFZGF0YTADAAVkYXRhMQMBBWRhdGEyAwIFZGF0YTMDAwVkYXRhNAMEBWRhdGE1AwUFZGF0YTYDBgVkYXRhNwMHBWRhdGE4AwgLqYmAgAAJAEEBCwdiYXNlNjQAAEEKC8kBQUdGemJRRUFBQUFCaUlDQWdBQUNZQUFBWUFBQmZ3S2tnSUNBQUFNRFpXNTJCSFJsYzNRQUFRTmxibllHZFhCa1lYUmxBQUFEWlc1MkJHSnZaSGtBQUFPQ2dJQ0FBQUVBQklTQWdJQUFBWEFBQUFXRGdJQ0FBQUVBQVFlUmdJQ0FBQUlHYldWdGIzSjVBZ0FFWkdGMFlRQURDcG1BZ0lBQUFaT0FnSUFBQUFKQUEwQVFBRVVOQVJBQ0VBRU1BQXNMQ3clM0QlM0QAAEHUAQsHYmFzZTY0AABB3AELjwFBR0Z6YlFFQUFBQUJoSUNBZ0FBQllBQUFBbyUyQkFnSUFBQVFObGJuWUhhVzF3Um5WdVl3QUFBNEtBZ0lBQUFRQUVoSUNBZ0FBQmNBQUFCWU9BZ0lBQUFRQUJCNUdBZ0lBQUFnWnRaVzF2Y25rQ0FBUmtZWFJoQUFFS2lvQ0FnQUFCaElDQWdBQUFFQUFMAABB7AILB2Jhc2U2NAAAQfQCC/0FQUdGemJRRUFBQUFGZzRDQWdBQUJBQUVHNW9DQWdBQVNmd0JCQVF0JTJGQUVFUUMzOEFRUlFMZndCQkdBdCUyRkFFRWlDMzhBUVNnTGZ3QkJQZ3QlMkZBRUhJQUF0JTJGQUVIU0FBdCUyRkFFSGNBQXQlMkZBRUhpQUF0JTJGQUVIbUFBdCUyRkFFSHdBQXQlMkZBRUg4QUF0JTJGQUVHRUFRdCUyRkFFR1dBUXQlMkZBRUdnQVF0JTJGQUVHb0FRc0hvb0dBZ0FBVEJtMWxiVzl5ZVFJQUJXUmhkR0V3QXdBRlpHRjBZVEVEQVFWa1lYUmhNZ01DQldSaGRHRXpBd01GWkdGMFlUUURCQVZrWVhSaE5RTUZCV1JoZEdFMkF3WUZaR0YwWVRjREJ3VmtZWFJoT0FNSUJXUmhkR0U1QXdrR1pHRjBZVEV3QXdvR1pHRjBZVEV4QXdzR1pHRjBZVEV5QXd3R1pHRjBZVEV6QXcwR1pHRjBZVEUwQXc0R1pHRjBZVEUxQXc4R1pHRjBZVEUyQXhBR1pHRjBZVEUzQXhFTCUyRllHQWdBQVNBRUVCQ3cxMWMyVWxNakJ6ZEhKcFkzUUFBRUVRQ3dOd2VBQUFRUlFMQTNCNEFBQkJHQXNKY0dGeVlXeHNZWGdBQUVFaUN3UmthWFlBQUVFb0N4UndZWEpoYkd4aGVGOWZZMjl1ZEdGcGJtVnlBQUJCUGdzSmNtVnNZWFJwZG1VQUFFSElBQXNKY0c5emFYUnBiMjRBQUVIU0FBc0pjbVZzWVhScGRtVUFBRUhjQUFzRmRYSnNLQUFBUWVJQUN3SXBBQUJCNWdBTENYQmhjbUZzYkdGNEFBQkI4QUFMQ201dkxYSmxjR1ZoZEFBQVFmd0FDd1pqYjNabGNnQUFRWVFCQ3hGeVpXRmtlWE4wWVhSbFkyaGhibWRsQUFCQmxnRUxDV052YlhCc1pYUmxBQUJCb0FFTEIzSmxjMmw2WlFBQVFhZ0JDd2R6WTNKdmJHd0EAAEHyCAsBAABB9AgLAQAAQfYICwVhdG9iAA=='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = window[lS(0, 8, true)](b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance0.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, lS(0, 0)));
+    }
+};
+const __forWasmBuffer = lS(0, 1);
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 8, true)](__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance1.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, lS(0, 2)));
+    }
+})());
+const __callWasmBuffer = lS(0, 3);
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 8, true)](__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance2.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, lS(0, 4)));
+    }
+})());
+const __wasmStringModules = [lS(0, 5)].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = lS(0, 6);
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = lS(0, 7);
+        let i = __start;
+        let __c = __mem[i++];
+        (() => {
+            const __forInstance3 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                    },
+                    update: () => {
+                    },
+                    body: () => {
+                        {
+                            __str += __c;
+                            __c = String.fromCharCode(__mem[i++]);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance3.exports;
+            return __exports.data();
+        })();
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            (() => {
+                const __forInstance4 = new WebAssembly.Instance(__forWasmModule, {
+                    env: {
+                        test: () => {
+                            return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                        },
+                        update: () => {
+                        },
+                        body: () => {
+                            {
+                                __str += __c;
+                                __c = String.fromCharCode(__mem[i++]);
+                            }
+                        }
+                    }
+                });
+                const __exports = __forInstance4.exports;
+                return __exports.data();
+            })();
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+(() => {
+    const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                lS(0, 0);
+            }
+        }
+    });
+    const __exports = __callInstance7.exports;
+    return __exports.data();
+})();
+var windowHeight = window.innerHeight, windowHeightExtra = 0, safari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent), mobile = /Mobi/.test(navigator.userAgent);
+safari && !mobile && (windowHeightExtra = window.outerHeight - window.innerHeight), mobile && (windowHeight = window.screen.availHeight, windowHeightExtra = (window.screen.availHeight - window.innerHeight) / 2);
+var positionParallax = function (e, t, a, i) {
+        var n = e.top / t - windowHeightExtra;
+        a[i].style.top = n + lS(0, 1);
+    }, animateParallax = function (e, t) {
+        (() => {
+            const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            var a = 0;
+                            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return e.length > a ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        a++;
+                                    },
+                                    body: () => {
+                                        {
+                                            var i = e[a].parentElement.parentElement.getBoundingClientRect();
+                                            0 <= i.top + i.height && i.top <= windowHeight && positionParallax(i, t, e, a);
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance0.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance6.exports;
+            return __exports.data();
+        })();
+    }, calculateHeight = function (e, t) {
+        (() => {
+            const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            var a = 0;
+                            const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return e.length > a ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        a++;
+                                    },
+                                    body: () => {
+                                        {
+                                            var i = e[a].parentElement.parentElement.getBoundingClientRect(), n = e[a].parentElement.parentElement.offsetTop, o = (windowHeight - i.height) / 2, r = windowHeight > i.height + n ? i.height + n - n / t : i.height + 2 * (o - o / t);
+                                            e[a].style.height = r + 2 * windowHeightExtra + lS(0, 2), positionParallax(i, t, e, a);
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance1.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance5.exports;
+            return __exports.data();
+        })();
+    }, universalParallax = function () {
+        this.init = function (i) {
+            void 0 === i && (i = {}), i = {
+                speed: void 0 !== i.speed ? i.speed : 1.5,
+                className: void 0 !== i.className ? i.className : lS(0, 3)
+            };
+            (() => {
+                const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                    env: {
+                        impFunc: () => {
+                            (() => {
+                                var n = document.getElementsByClassName(i.className), e = 0;
+                                const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                                    env: {
+                                        test: () => {
+                                            return n.length > e ? 1 : 0;
+                                        },
+                                        update: () => {
+                                            e++;
+                                        },
+                                        body: () => {
+                                            {
+                                                var t = document.createElement(lS(0, 4));
+                                                n[e].parentNode.insertBefore(t, n[e]), t.appendChild(n[e]);
+                                                var a = n[e].parentElement;
+                                                a.className += lS(0, 5), lS(0, 6) !== window.getComputedStyle(a.parentElement, null).getPropertyValue(lS(0, 7)) && (a.parentElement.style.position = lS(0, 8));
+                                                var o = n[e].dataset.parallaxImage;
+                                                void 0 !== o && (n[e].style.backgroundImage = lS(0, 9) + o + lS(0, 10), 1 === n[e].classList.length && lS(0, 11) === n[e].classList[0] && (n[e].style.backgroundRepeat = lS(0, 12), n[e].style.backgroundSize = lS(0, 13)));
+                                            }
+                                        }
+                                    }
+                                });
+                                const __exports = __forInstance2.exports;
+                                return __exports.data();
+                            })();
+                        }
+                    }
+                });
+                const __exports = __callInstance4.exports;
+                return __exports.data();
+            })();
+            (() => {
+                const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                    env: {
+                        impFunc: () => {
+                            (() => {
+                                const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            (() => {
+                                                const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            document.addEventListener(lS(0, 14), function (e) {
+                                                                var t, a;
+                                                                lS(0, 15) === e.target.readyState && (t = n, (a = i.speed) < 1 && (a = 1), calculateHeight(t, a), mobile || window.addEventListener(lS(0, 16), function () {
+                                                                    windowHeight = window.innerHeight, calculateHeight(t, a);
+                                                                }), window.addEventListener(lS(0, 17), function () {
+                                                                    (() => {
+                                                                        const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                                            env: {
+                                                                                impFunc: () => {
+                                                                                    (() => {
+                                                                                        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                            env: {
+                                                                                                impFunc: () => {
+                                                                                                    (() => {
+                                                                                                        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                            env: {
+                                                                                                                impFunc: () => {
+                                                                                                                    animateParallax(t, a);
+                                                                                                                }
+                                                                                                            }
+                                                                                                        });
+                                                                                                        const __exports = __callInstance0.exports;
+                                                                                                        return __exports.data();
+                                                                                                    })();
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                        const __exports = __callInstance0.exports;
+                                                                                        return __exports.data();
+                                                                                    })();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                        const __exports = __callInstance1.exports;
+                                                                        return __exports.data();
+                                                                    })();
+                                                                }));
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance2.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance1.exports;
+                                return __exports.data();
+                            })();
+                        }
+                    }
+                });
+                const __exports = __callInstance3.exports;
+                return __exports.data();
+            })();
+        };
+    };</script>
+</body>
+</html>

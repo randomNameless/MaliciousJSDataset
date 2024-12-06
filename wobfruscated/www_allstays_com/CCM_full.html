@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CCM_full.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEG3oGAgAAmfwBBAQt/AEEGC38AQQwLfwBBEgt/AEEUC38AQSQLfwBBKgt/AEHAAAt/AEHGAAt/AEHMAAt/AEHYAAt/AEGAAgt/AEGWAgt/AEGcAgt/AEGuAgt/AEHAAgt/AEHSAgt/AEHkAgt/AEH2Agt/AEGyAwt/AEHAAwt/AEH6Awt/AEGIBAt/AEGYBAt/AEHABAt/AEHOBAt/AEHWBAt/AEHcBAt/AEGkBQt/AEGoBQt/AEGwBQt/AEG+BQt/AEHKBQt/AEHUBQt/AEHWBQt/AEGQBgt/AEGYBgt/AEGkBgsH1oKAgAAnBm1lbW9yeQIABWRhdGEwAwAFZGF0YTEDAQVkYXRhMgMCBWRhdGEzAwMFZGF0YTQDBAVkYXRhNQMFBWRhdGE2AwYFZGF0YTcDBwVkYXRhOAMIBWRhdGE5AwkGZGF0YTEwAwoGZGF0YTExAwsGZGF0YTEyAwwGZGF0YTEzAw0GZGF0YTE0Aw4GZGF0YTE1Aw8GZGF0YTE2AxAGZGF0YTE3AxEGZGF0YTE4AxIGZGF0YTE5AxMGZGF0YTIwAxQGZGF0YTIxAxUGZGF0YTIyAxYGZGF0YTIzAxcGZGF0YTI0AxgGZGF0YTI1AxkGZGF0YTI2AxoGZGF0YTI3AxsGZGF0YTI4AxwGZGF0YTI5Ax0GZGF0YTMwAx4GZGF0YTMxAx8GZGF0YTMyAyAGZGF0YTMzAyEGZGF0YTM0AyIGZGF0YTM1AyMGZGF0YTM2AyQGZGF0YTM3AyUL1IeAgAAmAEEBCwQlM0QAAEEGCwQlM0IAAEEMCwQlMjAAAEESCwEAAEEUCw9jY21fYWNjZXB0ZWRfdgAAQSQLBHllcwAAQSoLFGNjbV9wZXJzb25hbGl6ZWRBZHMAAEHAAAsEeWVzAABBxgALBGRpdgAAQcwACwpDQ01fcG9wdXAAAEHYAAumAXBvc2l0aW9uJTNBZml4ZWQlM0J3aWR0aCUzQTkwJTI1JTNCYm90dG9tJTNBNSUyNSUzQmxlZnQlM0E1JTI1JTNCcGFkZGluZyUzQTEwcHglM0JiYWNrZ3JvdW5kLWNvbG9yJTNBJTIzZjhmOGY4JTNCYm9yZGVyJTNBM3B4JTIwc29saWQlMjAlMjMxYWJjOWMlM0J6LWluZGV4JTNBOTk5OSUzQgAAQYACCxRjY21fcGVyc29uYWxpemVkQWRzAABBlgILBHllcwAAQZwCCxBwZXJzb25hbGl6ZWRBZHMAAEGuAgsQcGVyc29uYWxpemVkQWRzAABBwAILEHBlcnNvbmFsaXplZEFkcwAAQdICCxBwZXJzb25hbGl6ZWRBZHMAAEHkAgsQcGVyc29uYWxpemVkQWRzAABB9gILOmNjbV9wZXJzb25hbGl6ZWRBZHMlM0R5ZXMlM0IlMjBwYXRoJTNEJTJGJTNCJTIwZXhwaXJlcyUzRAAAQbIDCw0lM0IlMjBTZWN1cmUAAEHAAws5Y2NtX3BlcnNvbmFsaXplZEFkcyUzRG5vJTNCJTIwcGF0aCUzRCUyRiUzQiUyMGV4cGlyZXMlM0QAAEH6AwsNJTNCJTIwU2VjdXJlAABBiAQLD2NjbV9hY2NlcHRlZF92AABBmAQLJyUzRHllcyUzQiUyMHBhdGglM0QlMkYlM0IlMjBleHBpcmVzJTNEAABBwAQLDSUzQiUyMFNlY3VyZQAAQc4ECwdzY3JpcHQAAEHWBAsEc3JjAABB3AQLR2h0dHBzJTNBJTJGJTJGd3d3Lmdvb2dsZXRhZ21hbmFnZXIuY29tJTJGZ3RhZyUyRmpzJTNGaWQlM0RHLTNGWVRSNU1FWUoAAEGkBQsDanMAAEGoBQsHY29uZmlnAABBsAULDUctM0ZZVFI1TUVZSgAAQb4FCwpkYXRhTGF5ZXIAAEHKBQsIJTI2bCUzRAAAQdQFCwEAAEHWBQs4aHR0cHMlM0ElMkYlMkZ3d3cuZ29vZ2xldGFnbWFuYWdlci5jb20lMkZndG0uanMlM0ZpZCUzRAAAQZAGCwdzY3JpcHQAAEGYBgsKZGF0YUxheWVyAABBpAYLDEdUTS1NMlBDNTVOAA=='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+var CCM_showPersonalizedAds = false;
+var CCM_versionNumber = 0;
+var CCM_popup;
+function CCM_getCookie(name) {
+    var name = name + lS(0, 0);
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var cookies = decodedCookie.split(lS(0, 1));
+    for (var i = 0; i < cookies.length; ++i) {
+        var c = cookies[i];
+        (() => {
+            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return c.charAt(0) == lS(0, 2) ? 1 : 0;
+                    },
+                    update: () => {
+                    },
+                    body: () => {
+                        {
+                            c = c.substring(1);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance0.exports;
+            return __exports.data();
+        })();
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return lS(0, 3);
+}
+function CCM_getCookieConsent(forceShow) {
+    var consent = CCM_getCookie(lS(0, 4) + CCM_versionNumber);
+    (() => {
+        const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        (() => {
+                            const __callInstance15 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        CCM_showPopup();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance15.exports;
+                            return __exports.data();
+                        })();
+                    }
+                },
+                impFunc2: () => {
+                    {
+                        var personalizedAds = CCM_getCookie(lS(0, 6));
+                        (() => {
+                            const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        CCM_showPersonalizedAds = true;
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance1.exports;
+                            return __exports.data(personalizedAds == lS(0, 7) ? 1 : 0);
+                        })();
+                        (() => {
+                            const __callInstance14 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        CCM_setCookies(CCM_showPersonalizedAds);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance14.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            }
+        });
+        const __exports = __ifInstance0.exports;
+        return __exports.data(consent != lS(0, 5) || forceShow ? 1 : 0);
+    })();
+}
+function CCM_showPopup() {
+    CCM_popup = document.createElement(lS(0, 8));
+    CCM_popup.id = lS(0, 9);
+    CCM_popup.style.cssText = lS(0, 10);
+    CCM_popup.innerHTML = `
+	<h4 style="font-family:sans-serif;text-align:center;">AllStays Cookie Policy</h4>
+	To be consistent with data protection laws, we need your permission to store cookies.
+Per our <a target=_blank href="https:/Services/privacypolicy.htm">Privacy Policy</a>, AllStays does not collect personal data from website or apps like most sites but we do count visitor statistics.<br>
+	<label><input type="checkbox" id="requiredCookies" checked disabled><span>&nbsp;Required (for this setting, Pro login and internal stats)</span></label><br>
+	<label><input type="checkbox" id="personalizedAds" checked><span>&nbsp;Personalized Ads (like Google Ads) </span></label><br>
+	<button class="button" onclick="CCM_RejectAll()" style="width:100px;height:20px;padding:0px;font-size:10pt;">Reject All</button>&emsp;<button onclick="CCM_AcceptAll()" class="button" style="width:100px;height:20px;padding:0px;font-size:10pt;">Accept All</button><br><br>
+	By hitting the <i>Accept Settings</i> button, you consent to the use of these methods. You can change your preferences anytime by visiting our Cookie Settings (in footer). This annoying box may reappear if you clear site cookies or we make any changes.<br><br>
+	<span style="display:inline-block;width:100%;text-align:center;"><button onclick="CCM_confirmSelection()" class="button">Accept Settings</button></span>
+	`;
+    (() => {
+        const __callInstance13 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    document.body.appendChild(CCM_popup);
+                }
+            }
+        });
+        const __exports = __callInstance13.exports;
+        return __exports.data();
+    })();
+    var personalizedAds = CCM_getCookie(lS(0, 11));
+    (() => {
+        const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    document.getElementById(lS(0, 13)).checked = true;
+                },
+                impFunc2: () => {
+                    document.getElementById(lS(0, 14)).checked = false;
+                }
+            }
+        });
+        const __exports = __ifInstance2.exports;
+        return __exports.data(personalizedAds == lS(0, 12) ? 1 : 0);
+    })();
+}
+function CCM_RejectAll() {
+    document.getElementById(lS(0, 15)).checked = false;
+}
+function CCM_AcceptAll() {
+    document.getElementById(lS(0, 16)).checked = true;
+}
+function CCM_confirmSelection() {
+    var personalizedAds = document.getElementById(lS(0, 17)).checked;
+    (() => {
+        const __callInstance12 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    CCM_setCookies(personalizedAds);
+                }
+            }
+        });
+        const __exports = __callInstance12.exports;
+        return __exports.data();
+    })();
+    (() => {
+        const __callInstance11 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    CCM_popup.parentElement.removeChild(CCM_popup);
+                }
+            }
+        });
+        const __exports = __callInstance11.exports;
+        return __exports.data();
+    })();
+}
+function CCM_setCookies(personalizedAds) {
+    (() => {
+        const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        var expires = new Date();
+                        (() => {
+                            const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        expires.setMonth(expires.getMonth() + 1);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance10.exports;
+                            return __exports.data();
+                        })();
+                        document.cookie = lS(0, 18) + expires.toGMTString() + lS(0, 19);
+                        CCM_showPersonalizedAds = true;
+                    }
+                },
+                impFunc2: () => {
+                    {
+                        var expires = new Date();
+                        (() => {
+                            const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        expires.setMonth(expires.getMonth() + 1);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance9.exports;
+                            return __exports.data();
+                        })();
+                        document.cookie = lS(0, 20) + expires.toGMTString() + lS(0, 21);
+                        CCM_showPersonalizedAds = false;
+                    }
+                }
+            }
+        });
+        const __exports = __ifInstance3.exports;
+        return __exports.data(personalizedAds ? 1 : 0);
+    })();
+    var expires = new Date();
+    (() => {
+        const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    expires.setMonth(expires.getMonth() + 1);
+                }
+            }
+        });
+        const __exports = __callInstance8.exports;
+        return __exports.data();
+    })();
+    document.cookie = lS(0, 22) + CCM_versionNumber + lS(0, 23) + expires.toGMTString() + lS(0, 24);
+}
+var googleTag = document.createElement(lS(0, 25));
+(() => {
+    const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                googleTag.setAttribute(lS(0, 26), lS(0, 27));
+            }
+        }
+    });
+    const __exports = __callInstance7.exports;
+    return __exports.data();
+})();
+(() => {
+    const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                document.head.appendChild(googleTag);
+            }
+        }
+    });
+    const __exports = __callInstance6.exports;
+    return __exports.data();
+})();
+window.dataLayer = window.dataLayer || [];
+function gtag() {
+    (() => {
+        const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    dataLayer.push(arguments);
+                }
+            }
+        });
+        const __exports = __callInstance5.exports;
+        return __exports.data();
+    })();
+}
+(() => {
+    const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                gtag(lS(0, 28), new Date());
+            }
+        }
+    });
+    const __exports = __callInstance4.exports;
+    return __exports.data();
+})();
+(() => {
+    const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                gtag(lS(0, 29), lS(0, 30));
+            }
+        }
+    });
+    const __exports = __callInstance3.exports;
+    return __exports.data();
+})();
+(() => {
+    const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                (function (w, d, s, l, i) {
+                    w[l] = w[l] || [];
+                    (() => {
+                        const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    w[l].push({
+                                        'gtm.start': new Date().getTime(),
+                                        event: 'gtm.js'
+                                    });
+                                }
+                            }
+                        });
+                        const __exports = __callInstance1.exports;
+                        return __exports.data();
+                    })();
+                    var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != lS(0, 31) ? lS(0, 32) + l : lS(0, 33);
+                    j.async = true;
+                    j.src = lS(0, 34) + i + dl;
+                    (() => {
+                        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    f.parentNode.insertBefore(j, f);
+                                }
+                            }
+                        });
+                        const __exports = __callInstance0.exports;
+                        return __exports.data();
+                    })();
+                }(window, document, lS(0, 35), lS(0, 36), lS(0, 37)));
+            }
+        }
+    });
+    const __exports = __callInstance2.exports;
+    return __exports.data();
+})();</script>
+</body>
+</html>

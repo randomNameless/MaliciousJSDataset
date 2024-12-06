@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>parallax.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGtYCAgAAJfwBBAQt/AEEKC38AQdQBC38AQdwBC38AQewCC38AQfQCC38AQcAaC38AQcIaC38AQcQaCwfSgICAAAoGbWVtb3J5AgAFZGF0YTADAAVkYXRhMQMBBWRhdGEyAwIFZGF0YTMDAwVkYXRhNAMEBWRhdGE1AwUFZGF0YTYDBgVkYXRhNwMHBWRhdGE4AwgL95qAgAAJAEEBCwdiYXNlNjQAAEEKC8kBQUdGemJRRUFBQUFCaUlDQWdBQUNZQUFBWUFBQmZ3S2tnSUNBQUFNRFpXNTJCSFJsYzNRQUFRTmxibllHZFhCa1lYUmxBQUFEWlc1MkJHSnZaSGtBQUFPQ2dJQ0FBQUVBQklTQWdJQUFBWEFBQUFXRGdJQ0FBQUVBQVFlUmdJQ0FBQUlHYldWdGIzSjVBZ0FFWkdGMFlRQURDcG1BZ0lBQUFaT0FnSUFBQUFKQUEwQVFBRVVOQVJBQ0VBRU1BQXNMQ3clM0QlM0QAAEHUAQsHYmFzZTY0AABB3AELjwFBR0Z6YlFFQUFBQUJoSUNBZ0FBQllBQUFBbyUyQkFnSUFBQVFObGJuWUhhVzF3Um5WdVl3QUFBNEtBZ0lBQUFRQUVoSUNBZ0FBQmNBQUFCWU9BZ0lBQUFRQUJCNUdBZ0lBQUFnWnRaVzF2Y25rQ0FBUmtZWFJoQUFFS2lvQ0FnQUFCaElDQWdBQUFFQUFMAABB7AILB2Jhc2U2NAAAQfQCC8sXQUdGemJRRUFBQUFGZzRDQWdBQUJBQUVHMFlLQWdBQTVmd0JCQVF0JTJGQUVFUUMzOEFRUndMZndCQklndCUyRkFFRXdDMzhBUVRZTGZ3QkJ4QUFMZndCQnpnQUxmd0JCMkFBTGZ3QkI0QUFMZndCQjdnQUxmd0JCaUFFTGZ3QkJsQUVMZndCQm9BRUxmd0JCcmdFTGZ3QkJ3QUVMZndCQnpnRUxmd0JCMmdFTGZ3QkI3QUVMZndCQjlnRUxmd0JCJTJGQUVMZndCQmdnSUxmd0JCa0FJTGZ3QkJvQUlMZndCQnBnSUxmd0JCckFJTGZ3QkJ1QUlMZndCQnhBSUxmd0JCekFJTGZ3QkI0QUlMZndCQnBnUUxmd0JCJTJCZ1VMZndCQjFnWUxmd0JCNGdZTGZ3QkI5Z1lMZndCQiUyRkFZTGZ3QkJnQWNMZndCQmhBY0xmd0JCbUFjTGZ3QkJuZ2NMZndCQm9nY0xmd0JCcGdjTGZ3QkJ1Z2NMZndCQndBY0xmd0JCeEFjTGZ3QkJ5QWNMZndCQjNBY0xmd0JCNGdjTGZ3QkI1Z2NMZndCQjZnY0xmd0JCJTJGZ2NMZndCQmdnZ0xmd0JCbGdnTGZ3QkJtZ2dMZndCQnJnZ0xmd0JCd2dnTGZ3QkIxZ2dMQjRHRWdJQUFPZ1p0WlcxdmNua0NBQVZrWVhSaE1BTUFCV1JoZEdFeEF3RUZaR0YwWVRJREFnVmtZWFJoTXdNREJXUmhkR0UwQXdRRlpHRjBZVFVEQlFWa1lYUmhOZ01HQldSaGRHRTNBd2NGWkdGMFlUZ0RDQVZrWVhSaE9RTUpCbVJoZEdFeE1BTUtCbVJoZEdFeE1RTUxCbVJoZEdFeE1nTU1CbVJoZEdFeE13TU5CbVJoZEdFeE5BTU9CbVJoZEdFeE5RTVBCbVJoZEdFeE5nTVFCbVJoZEdFeE53TVJCbVJoZEdFeE9BTVNCbVJoZEdFeE9RTVRCbVJoZEdFeU1BTVVCbVJoZEdFeU1RTVZCbVJoZEdFeU1nTVdCbVJoZEdFeU13TVhCbVJoZEdFeU5BTVlCbVJoZEdFeU5RTVpCbVJoZEdFeU5nTWFCbVJoZEdFeU53TWJCbVJoZEdFeU9BTWNCbVJoZEdFeU9RTWRCbVJoZEdFek1BTWVCbVJoZEdFek1RTWZCbVJoZEdFek1nTWdCbVJoZEdFek13TWhCbVJoZEdFek5BTWlCbVJoZEdFek5RTWpCbVJoZEdFek5nTWtCbVJoZEdFek53TWxCbVJoZEdFek9BTW1CbVJoZEdFek9RTW5CbVJoZEdFME1BTW9CbVJoZEdFME1RTXBCbVJoZEdFME1nTXFCbVJoZEdFME13TXJCbVJoZEdFME5BTXNCbVJoZEdFME5RTXRCbVJoZEdFME5nTXVCbVJoZEdFME53TXZCbVJoZEdFME9BTXdCbVJoZEdFME9RTXhCbVJoZEdFMU1BTXlCbVJoZEdFMU1RTXpCbVJoZEdFMU1nTTBCbVJoZEdFMU13TTFCbVJoZEdFMU5BTTJCbVJoZEdFMU5RTTNCbVJoZEdFMU5nTTRDOVdLZ0lBQU9RQkJBUXNOZFhObEpUSXdjM1J5YVdOMEFBQkJFQXNLZFc1a1pXWnBibVZrQUFCQkhBc0ZMblpwZFFBQVFTSUxERzVoZGlVelFXWnBjbk4wQUFCQk1Bc0ZMblpwZFFBQVFUWUxERzVoZGlVelFXWnBjbk4wQUFCQnhBQUxDWEJ2YzJsMGFXOXVBQUJCemdBTENXRmljMjlzZFhSbEFBQkIyQUFMQm1acGVHVmtBQUJCNEFBTERHNWhkaVV6UVdacGNuTjBBQUJCN2dBTEdDVTFRbTlpYW1WamRDVXlNRVoxYm1OMGFXOXVKVFZFQUFCQmlBRUxDblZ1WkdWbWFXNWxaQUFBUVpRQkN3cDBjbUZ1YzJadmNtMEFBRUdnQVFzTWJYTlVjbUZ1YzJadmNtMEFBRUd1QVFzUWQyVmlhMmwwVkhKaGJuTm1iM0p0QUFCQndBRUxEVzF2ZWxSeVlXNXpabTl5YlFBQVFjNEJDd3R2VkhKaGJuTm1iM0p0QUFCQjJnRUxFWFJ5WVc1emJHRjBaVE5rS0RBbE1rTUFBRUhzQVFzSWNIZ2xNa013S1FBQVFmWUJDd1ZzYjJGa0FBQkIlMkZBRUxCV0p2WkhrQUFFR0NBZ3NNY0dGeVlXeHNZWGd0TW1RQUFFR1FBZ3NQZEhKaGJuTnNZWFJsS0RBbE1rTUFBRUdnQWdzRWNIZ3BBQUJCcGdJTEJTNTJhWFVBQUVHc0Fnc0tkVzVrWldacGJtVmtBQUJCdUFJTENuVnVaR1ZtYVc1bFpBQUFRY1FDQ3dkeVpYTnBlbVVBQUVITUFnc1NiM0pwWlc1MFlYUnBiMjVqYUdGdVoyVUFBRUhnQWd2RkFTNXdZWEpoYkd4aGVDVXlNQ1V6UlNVeU1DNWlZV05yWjNKdmRXNWtMV2x0WVdkbExXaHZiR1JsY2lVeVF5VXlNQzV3WVhKaGJHeGhlQ1V5TUhWc0xuTnNhV1JsY3lVeU1DVXpSU1V5TUd4cEpUSXdKVE5GSlRJd0xtSmhZMnRuY205MWJtUXRhVzFoWjJVdGFHOXNaR1Z5SlRKREpUSXdMbkJoY21Gc2JHRjRKVEl3ZFd3dWMyeHBaR1Z6SlRJd0xtOTNiQzFwZEdWdEpUSXdKVE5GSlRJd2JHa2xNakFsTTBVbE1qQXVZbUZqYTJkeWIzVnVaQzFwYldGblpTMW9iMnhrWlhJQUFFR21CQXZUQVM1MmFYVWxNakF1Y0dGeVlXeHNZWGdsTWpBbE0wVWxNakF1WW1GamEyZHliM1Z1WkMxcGJXRm5aUzFvYjJ4a1pYSWxNa01sTWpBdWRtbDFKVEl3TG5CaGNtRnNiR0Y0SlRJd2RXd3VjMnhwWkdWekpUSXdKVE5GSlRJd2JHa2xNakFsTTBVbE1qQXVZbUZqYTJkeWIzVnVaQzFwYldGblpTMW9iMnhrWlhJbE1rTWxNakF1Y0dGeVlXeHNZWGdsTWpCMWJDNXpiR2xrWlhNbE1qQXViM2RzTFdsMFpXMGxNakFsTTBVbE1qQnNhU1V5TUNVelJTVXlNQzVpWVdOclozSnZkVzVrTFdsdFlXZGxMV2h2YkdSbGNnQUFRZm9GQzFvdWNHRnlZV3hzWVhndFpHbHpZV0pzWlMxdGIySnBiR1VsTWpBdVltRmphMmR5YjNWdVpDMXBiV0ZuWlMxb2IyeGtaWElsTWtNbE1qQmliMlI1TG5CaGNtRnNiR0Y0TFdScGMyRmliR1V0Ylc5aWFXeGxKVEl3S2dBQVFkWUdDd291Y0dGeVlXeHNZWGdBQUVIaUJnc1NKVE5CYm5Sb0xXOW1MWFI1Y0dVb01Ta0FBRUgyQmdzRWRHOXdBQUJCJTJGQVlMQWkwQUFFR0FCd3NEY0hnQUFFR0VCd3NTSlROQmJuUm9MVzltTFhSNWNHVW9NU2tBQUVHWUJ3c0VkRzl3QUFCQm5nY0xBaTBBQUVHaUJ3c0RjSGdBQUVHbUJ3c1NKVE5CYm5Sb0xXOW1MWFI1Y0dVb01Ta0FBRUc2QndzRWRHOXdBQUJCd0FjTEFpMEFBRUhFQndzRGNIZ0FBRUhJQndzU0pUTkJiblJvTFc5bUxYUjVjR1VvTVNrQUFFSGNCd3NFZEc5d0FBQkI0Z2NMQWkwQUFFSG1Cd3NEY0hnQUFFSHFCd3NTSlROQmJuUm9MVzltTFhSNWNHVW9NU2tBQUVIJTJCQndzQ0xRQUFRWUlJQ3hJbE0wRnVkR2d0YjJZdGRIbHdaU2d4S1FBQVFaWUlDd053ZUFBQVFab0lDeElsTTBGdWRHZ3RiMll0ZEhsd1pTZ3hLUUFBUWE0SUN4SWxNMEZ1ZEdndGIyWXRkSGx3WlNneEtRQUFRY0lJQ3hJbE0wRnVkR2d0YjJZdGRIbHdaU2d4S1FBQVFkWUlDd3AxYm1SbFptbHVaV1FBAABBwBoLAQAAQcIaCwEAAEHEGgsFYXRvYgA='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = window[lS(0, 8, true)](b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance0.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, lS(0, 0)));
+    }
+};
+const __forWasmBuffer = lS(0, 1);
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 8, true)](__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance1.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, lS(0, 2)));
+    }
+})());
+const __callWasmBuffer = lS(0, 3);
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 8, true)](__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance2.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, lS(0, 4)));
+    }
+})());
+const __wasmStringModules = [lS(0, 5)].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = lS(0, 6);
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = lS(0, 7);
+        let i = __start;
+        let __c = __mem[i++];
+        (() => {
+            const __forInstance3 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                    },
+                    update: () => {
+                    },
+                    body: () => {
+                        {
+                            __str += __c;
+                            __c = String.fromCharCode(__mem[i++]);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance3.exports;
+            return __exports.data();
+        })();
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            (() => {
+                const __forInstance4 = new WebAssembly.Instance(__forWasmModule, {
+                    env: {
+                        test: () => {
+                            return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                        },
+                        update: () => {
+                        },
+                        body: () => {
+                            {
+                                __str += __c;
+                                __c = String.fromCharCode(__mem[i++]);
+                            }
+                        }
+                    }
+                });
+                const __exports = __forInstance4.exports;
+                return __exports.data();
+            })();
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+function mr_parallax() {
+    (() => {
+        const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    lS(0, 0);
+                }
+            }
+        });
+        const __exports = __callInstance5.exports;
+        return __exports.data();
+    })();
+    function a(a) {
+        for (var b = 0; b < a.length; b++)
+            if (lS(0, 1) != typeof document.body.style[a[b]])
+                return a[b];
+        return null;
+    }
+    function b() {
+        var a, b = 0;
+        return f() ? (b = jQuery(lS(0, 2)).find(lS(0, 3)).outerHeight(!0), a = jQuery(lS(0, 4)).find(lS(0, 5)).css(lS(0, 6)), (lS(0, 7) === a || lS(0, 8) === a) && (b = 0)) : b = jQuery(document).find(lS(0, 9)).outerHeight(!0), Math.floor(b);
+    }
+    function c() {
+        return /Android/i.test(navigator.userAgent || navigator.vendor || window.opera) ? screen.height * window.devicePixelRatio : /iPad|iPhone|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) ? 0 === window.orientation && screen.height > screen.width ? screen.height : screen.width : Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    }
+    function d() {
+        p === !1 && (p = !0, h(q.mr_parallaxBackground));
+    }
+    function e(a) {
+        var b = {};
+        return a && lS(0, 10) === b.toString.call(a);
+    }
+    function f() {
+        return lS(0, 11) == typeof window.mr_variant ? !1 : !0;
+    }
+    var g, h = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame, i = [
+            lS(0, 12),
+            lS(0, 13),
+            lS(0, 14),
+            lS(0, 15),
+            lS(0, 16)
+        ], j = a(i), k = lS(0, 17), l = lS(0, 18), m = c(), n = 0, o = window, p = (f(), !1), q = this;
+    jQuery(document).ready(function () {
+        (() => {
+            const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        (() => {
+                                            const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        q.documentReady();
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance3.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance1.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance4.exports;
+            return __exports.data();
+        })();
+    }), jQuery(window).on(lS(0, 19), function () {
+        (() => {
+            const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        (() => {
+                                            const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        q.windowLoad();
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance1.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance0.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance2.exports;
+            return __exports.data();
+        })();
+    }), this.documentReady = function (a) {
+        return m = c(), jQuery(lS(0, 20)).hasClass(lS(0, 21)) && (k = lS(0, 22), l = lS(0, 23)), h && (q.profileParallaxElements(), q.setupParallax()), e(a) ? void a() : void 0;
+    }, this.windowLoad = function () {
+        m = c(), n = b(), window.mr_parallax.profileParallaxElements();
+    }, this.setupParallax = function () {
+        f() && (o = jQuery(lS(0, 24)).get(0)), lS(0, 25) != typeof o && ((lS(0, 26) == typeof window.mr || f()) && (o.onscroll = d), window.addEventListener(lS(0, 27), function () {
+            m = c(), n = b(), q.profileParallaxElements(), q.mr_parallaxBackground();
+        }, !1), window.addEventListener(lS(0, 28), function () {
+        }, !1), q.mr_parallaxBackground());
+    }, this.profileParallaxElements = function () {
+        var a;
+        g = [], m = c(), n = b();
+        var d = lS(0, 29);
+        f() && (d = lS(0, 30)), a = jQuery(d), /Android|iPad|iPhone|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && (a = a.not(lS(0, 31))), jQuery(a).each(function (a) {
+            var b = jQuery(this).closest(lS(0, 32)), c = f() ? b.position().top : b.offset().top, d = screen.height, e = screen.width;
+            g.push({
+                section: b.get(0),
+                outerHeight: b.outerHeight(),
+                elemTop: c,
+                elemBottom: c + b.outerHeight(),
+                isFirstSection: b.is(lS(0, 33)) ? !0 : !1,
+                imageHolder: jQuery(this).get(0)
+            }), /iPad|iPhone|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && screen.width < 1024 && (0 === window.orientation && d > e ? (jQuery(this).css(lS(0, 34), lS(0, 35) + d / 2 + lS(0, 36)), jQuery(this).css({ 'min-height': b.is(lS(0, 37)) ? 1.5 * d : 1.2 * d })) : (jQuery(this).css(lS(0, 38), lS(0, 39) + e / 2 + lS(0, 40)), jQuery(this).css({ 'min-height': b.is(lS(0, 41)) ? 1.5 * e : 1.2 * e }))), /iPad|iPhone|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && screen.width >= 1024 && (0 === window.orientation && d > e ? (jQuery(this).css(lS(0, 42), lS(0, 43) + d / 2 + lS(0, 44)), jQuery(this).css({ 'min-height': b.is(lS(0, 45)) ? 1.5 * d : 1.2 * d })) : (jQuery(this).css(lS(0, 46), lS(0, 47) + e / 2 + lS(0, 48)), jQuery(this).css({ 'min-height': b.is(lS(0, 49)) ? 1.5 * e : 1.2 * e }))), /Android/i.test(navigator.userAgent || navigator.vendor || window.opera) && (jQuery(this).css({ top: lS(0, 50) + d * window.devicePixelRatio / (b.is(lS(0, 51)) ? 8 : 2) + lS(0, 52) }), jQuery(this).css({ 'min-height': b.is(lS(0, 53)) ? 1.5 * d : 1.2 * d })), f() ? f() && (b.is(lS(0, 54)) ? q.mr_setTranslate3DTransform(jQuery(this).get(0), 0 === q.mr_getScrollPosition() ? 0 : q.mr_getScrollPosition() / 2) : q.mr_setTranslate3DTransform(jQuery(this).get(0), (q.mr_getScrollPosition() - c - n) / 2)) : b.is(lS(0, 55)) ? q.mr_setTranslate3DTransform(jQuery(this).get(0), 0 === q.mr_getScrollPosition() ? 0 : q.mr_getScrollPosition() / 2) : q.mr_setTranslate3DTransform(jQuery(this).get(0), (q.mr_getScrollPosition() + m - c) / 2);
+        });
+    }, this.mr_parallaxBackground = function () {
+        (() => {
+            const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        (() => {
+                            var a, b = g.length, c = lS(0, 56) == typeof mr || f() ? q.mr_getScrollPosition() : mr.scroll.y;
+                            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return b-- ? 1 : 0;
+                                    },
+                                    update: () => {
+                                    },
+                                    body: () => {
+                                        a = g[b], f() ? c + m - n > a.elemTop && c - n < a.elemBottom && (a.isFirstSection ? a.imageHolder.style[j] = k + c / 2 + l : a.imageHolder.style[j] = k + (c - a.elemTop - n) / 2 + l) : c + m >= a.elemTop && c <= a.elemBottom && (a.isFirstSection ? a.imageHolder.style[j] = k + c / 2 + l : a.imageHolder.style[j] = k + (c + m - a.elemTop) / 2 + l);
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance0.exports;
+                            return __exports.data();
+                        })();
+                    }
+                }
+            });
+            const __exports = __callInstance0.exports;
+            return __exports.data();
+        })();
+        p = !1;
+    }, this.mr_setTranslate3DTransform = function (a, b) {
+        a.style[j] = k + b + l;
+    }, this.mr_getScrollPosition = function () {
+        return o !== window ? o.scrollTop : 0 === document.documentElement.scrollTop ? document.body.scrollTop : document.documentElement.scrollTop;
+    };
+}
+window.mr_parallax = new mr_parallax();</script>
+</body>
+</html>

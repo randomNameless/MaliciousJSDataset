@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ajaxradwindowmanager.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGwICAgAAMfwBBAQt/AEEGC38AQRYLfwBBJgt/AEEqC38AQTILfwBBNgt/AEE4C38AQToLfwBBwgALfwBBxAALfwBBzAALB+yAgIAADQZtZW1vcnkCAAVkYXRhMAMABWRhdGExAwEFZGF0YTIDAgVkYXRhMwMDBWRhdGE0AwQFZGF0YTUDBQVkYXRhNgMGBWRhdGE3AwcFZGF0YTgDCAVkYXRhOQMJBmRhdGExMAMKBmRhdGExMQMLC/+AgIAADABBAQsEJTNGAABBBgsOJTI2cHJ3bmFtZSUzRAAAQRYLDiUzRnByd25hbWUlM0QAAEEmCwNubwAAQSoLB2hpZGRlbgAAQTILA25vAABBNgsBAABBOAsBAABBOgsHbnVtYmVyAABBwgALAQAAQcQACwdudW1iZXIAAEHMAAsBAA=='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+function GetBrowserWindow() {
+    var oWindow = GetRadWindow();
+    (() => {
+        const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    oWindow = window;
+                },
+                impFunc2: () => {
+                    oWindow = oWindow.BrowserWindow;
+                }
+            }
+        });
+        const __exports = __ifInstance0.exports;
+        return __exports.data(oWindow == null ? 1 : 0);
+    })();
+    return oWindow;
+}
+function GetRadWindowByName(windowName) {
+    var oWnd = null;
+    var oWindow = GetRadWindow();
+    (() => {
+        const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        var oManager = oWindow.get_windowManager();
+                        (() => {
+                            const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        oWnd = oManager.GetWindowByName(windowName);
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance2.exports;
+                            return __exports.data(oManager != null ? 1 : 0);
+                        })();
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance1.exports;
+        return __exports.data(oWindow != null ? 1 : 0);
+    })();
+    return oWnd;
+}
+function GetRadWindow() {
+    var oWindow = null;
+    (() => {
+        const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    oWindow = window.radWindow;
+                },
+                impFunc2: () => {
+                    (() => {
+                        const __ifInstance4 = new WebAssembly.Instance(__ifWasmModule, {
+                            env: {
+                                impFunc1: () => {
+                                    oWindow = window.frameElement.radWindow;
+                                },
+                                impFunc2: () => {
+                                }
+                            }
+                        });
+                        const __exports = __ifInstance4.exports;
+                        return __exports.data(window.frameElement != null && window.frameElement.radWindow ? 1 : 0);
+                    })();
+                }
+            }
+        });
+        const __exports = __ifInstance3.exports;
+        return __exports.data(window.radWindow ? 1 : 0);
+    })();
+    return oWindow;
+}
+function SizeToFit() {
+    var oWindow = GetRadWindow();
+    (() => {
+        const __ifInstance5 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        (() => {
+                            const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        oWindow.autoSize();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance10.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        oWindow.center();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance9.exports;
+                            return __exports.data();
+                        })();
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance5.exports;
+        return __exports.data(oWindow != null ? 1 : 0);
+    })();
+}
+function CloseWindowAndRefreshByWindowName(windowNameToRefresh, refreshArgs, refreshCmd) {
+    var oWindow = GetRadWindow();
+    (() => {
+        const __ifInstance6 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        (() => {
+                            const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        oWindow.close();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance8.exports;
+                            return __exports.data();
+                        })();
+                        var oWinToRefresh = GetRadWindowByName(windowNameToRefresh);
+                        (() => {
+                            const __ifInstance7 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            var contentFrame = oWinToRefresh.GetContentFrame();
+                                            (() => {
+                                                const __ifInstance8 = new WebAssembly.Instance(__ifWasmModule, {
+                                                    env: {
+                                                        impFunc1: () => {
+                                                            {
+                                                                (() => {
+                                                                    const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                contentFrame.contentWindow.RefreshData(refreshArgs, refreshCmd);
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance7.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                            }
+                                                        },
+                                                        impFunc2: () => {
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __ifInstance8.exports;
+                                                return __exports.data(contentFrame != null ? 1 : 0);
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            oWindow.BrowserWindow.RefreshData(refreshArgs, refreshCmd);
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance6.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance7.exports;
+                            return __exports.data(oWinToRefresh != null ? 1 : 0);
+                        })();
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance6.exports;
+        return __exports.data(oWindow != null ? 1 : 0);
+    })();
+}
+function OpenWindow(pageToOpen, windowName, width, height) {
+    var oWindow = GetBrowserWindow();
+    var oRadWin = GetRadWindow();
+    (() => {
+        const __ifInstance9 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        (() => {
+                            const __ifInstance10 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __ifInstance11 = new WebAssembly.Instance(__ifWasmModule, {
+                                                    env: {
+                                                        impFunc1: () => {
+                                                            pageToOpen = new String(pageToOpen + lS(0, 1) + oRadWin.Name);
+                                                        },
+                                                        impFunc2: () => {
+                                                            pageToOpen = new String(pageToOpen + lS(0, 2) + oRadWin.Name);
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __ifInstance11.exports;
+                                                return __exports.data(pageToOpen.indexOf(lS(0, 0)) > 0 ? 1 : 0);
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance10.exports;
+                            return __exports.data(oRadWin != null ? 1 : 0);
+                        })();
+                        var oWnd = oWindow.radopen(pageToOpen, null);
+                        (() => {
+                            const __ifInstance12 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            oWnd.Name = windowName;
+                                            (() => {
+                                                const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            oWnd.setSize(width, height);
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance5.exports;
+                                                return __exports.data();
+                                            })();
+                                            (() => {
+                                                const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            oWnd.center();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance4.exports;
+                                                return __exports.data();
+                                            })();
+                                            (() => {
+                                                const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            DisableBrowserScrolling();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance3.exports;
+                                                return __exports.data();
+                                            })();
+                                            (() => {
+                                                const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            oWnd.add_close(OnClientClose);
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance2.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance12.exports;
+                            return __exports.data(oWnd != null ? 1 : 0);
+                        })();
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance9.exports;
+        return __exports.data(oWindow != null ? 1 : 0);
+    })();
+    return oWnd;
+}
+function RefreshBrowser() {
+    window.location.href = window.location.href;
+}
+function CloseWindow() {
+    var oWindow = GetRadWindow();
+    (() => {
+        const __ifInstance13 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        (() => {
+                            const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        oWindow.close();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance1.exports;
+                            return __exports.data();
+                        })();
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance13.exports;
+        return __exports.data(oWindow != null ? 1 : 0);
+    })();
+}
+var nWindowCnt = 0;
+function DisableBrowserScrolling() {
+    var oWin = GetBrowserWindow();
+    (() => {
+        const __ifInstance14 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        (() => {
+                            const __ifInstance15 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            oWin.document.body.scroll = lS(0, 3);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                        {
+                                            var oTop = oWin.document.body.scrollTop;
+                                            oWin.document.body.style.overflow = lS(0, 4);
+                                            oWin.document.body.scrollTop = oTop;
+                                            oWin.document.body.scroll = lS(0, 5);
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance15.exports;
+                            return __exports.data(oWin.document.all ? 1 : 0);
+                        })();
+                        nWindowCnt = nWindowCnt + 1;
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance14.exports;
+        return __exports.data(oWin != null ? 1 : 0);
+    })();
+}
+function EnableBrowserScrolling() {
+    var oWin = GetBrowserWindow();
+    (() => {
+        const __ifInstance16 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        nWindowCnt = nWindowCnt - 1;
+                        (() => {
+                            const __ifInstance17 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        nWindowCnt = 0;
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance17.exports;
+                            return __exports.data(nWindowCnt < 0 ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance18 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            document.body.scroll = lS(0, 6);
+                                            document.body.style.overflow = lS(0, 7);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance18.exports;
+                            return __exports.data(nWindowCnt == 0 ? 1 : 0);
+                        })();
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance16.exports;
+        return __exports.data(oWin != null ? 1 : 0);
+    })();
+}
+function OnClientClose(radWindow) {
+    (() => {
+        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    EnableBrowserScrolling();
+                }
+            }
+        });
+        const __exports = __callInstance0.exports;
+        return __exports.data();
+    })();
+}
+function DetermineWindowHeight(maxHeight) {
+    var myWidth = 0, myHeight = 0;
+    (() => {
+        const __ifInstance19 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        myWidth = window.innerWidth;
+                        myHeight = window.innerHeight;
+                    }
+                },
+                impFunc2: () => {
+                    (() => {
+                        const __ifInstance20 = new WebAssembly.Instance(__ifWasmModule, {
+                            env: {
+                                impFunc1: () => {
+                                    {
+                                        myWidth = document.documentElement.clientWidth;
+                                        myHeight = document.documentElement.clientHeight;
+                                    }
+                                },
+                                impFunc2: () => {
+                                    (() => {
+                                        const __ifInstance21 = new WebAssembly.Instance(__ifWasmModule, {
+                                            env: {
+                                                impFunc1: () => {
+                                                    {
+                                                        myWidth = document.body.clientWidth;
+                                                        myHeight = document.body.clientHeight;
+                                                    }
+                                                },
+                                                impFunc2: () => {
+                                                }
+                                            }
+                                        });
+                                        const __exports = __ifInstance21.exports;
+                                        return __exports.data(document.body && (document.body.clientWidth || document.body.clientHeight) ? 1 : 0);
+                                    })();
+                                }
+                            }
+                        });
+                        const __exports = __ifInstance20.exports;
+                        return __exports.data(document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight) ? 1 : 0);
+                    })();
+                }
+            }
+        });
+        const __exports = __ifInstance19.exports;
+        return __exports.data(typeof window.innerWidth == lS(0, 8) ? 1 : 0);
+    })();
+    myHeight = myHeight - 20;
+    (() => {
+        const __ifInstance22 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        myHeight = maxHeight;
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance22.exports;
+        return __exports.data(maxHeight != null && maxHeight != lS(0, 9) && maxHeight > 0 && myHeight > maxHeight ? 1 : 0);
+    })();
+    (() => {
+        const __ifInstance23 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    myHeight = 50;
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance23.exports;
+        return __exports.data(myHeight < 50 ? 1 : 0);
+    })();
+    return myHeight;
+}
+function DetermineWindowWidth(maxWidth) {
+    var myWidth = 0, myHeight = 0;
+    (() => {
+        const __ifInstance24 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        myWidth = window.innerWidth;
+                        myHeight = window.innerHeight;
+                    }
+                },
+                impFunc2: () => {
+                    (() => {
+                        const __ifInstance25 = new WebAssembly.Instance(__ifWasmModule, {
+                            env: {
+                                impFunc1: () => {
+                                    {
+                                        myWidth = document.documentElement.clientWidth;
+                                        myHeight = document.documentElement.clientHeight;
+                                    }
+                                },
+                                impFunc2: () => {
+                                    (() => {
+                                        const __ifInstance26 = new WebAssembly.Instance(__ifWasmModule, {
+                                            env: {
+                                                impFunc1: () => {
+                                                    {
+                                                        myWidth = document.body.clientWidth;
+                                                        myHeight = document.body.clientHeight;
+                                                    }
+                                                },
+                                                impFunc2: () => {
+                                                }
+                                            }
+                                        });
+                                        const __exports = __ifInstance26.exports;
+                                        return __exports.data(document.body && (document.body.clientWidth || document.body.clientHeight) ? 1 : 0);
+                                    })();
+                                }
+                            }
+                        });
+                        const __exports = __ifInstance25.exports;
+                        return __exports.data(document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight) ? 1 : 0);
+                    })();
+                }
+            }
+        });
+        const __exports = __ifInstance24.exports;
+        return __exports.data(typeof window.innerWidth == lS(0, 10) ? 1 : 0);
+    })();
+    myWidth = myWidth - 20;
+    (() => {
+        const __ifInstance27 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        myWidth = maxWidth;
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance27.exports;
+        return __exports.data(maxWidth != null && maxWidth != lS(0, 11) && maxWidth > 0 && myWidth > maxWidth ? 1 : 0);
+    })();
+    return myWidth;
+}</script>
+</body>
+</html>

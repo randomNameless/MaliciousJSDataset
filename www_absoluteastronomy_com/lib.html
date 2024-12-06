@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lib.html</title>
+</head>
+<body>
+
+<script>
+var $POSTTYPE;
+
+function ShowMenu() {
+    $(".mobile-menu").css("left", "1000px");
+    $(".mobile-menu").animate({ left: 0 }, 500);
+    $(".mobile-menu").show();
+    $('html, body').css({
+        overflow: 'hidden',
+        height: '100%'
+    });
+}
+
+function HideMenu() {
+    $(".mobile-menu").hide();
+    $('html, body').css({
+        overflow: 'auto',
+        height: 'initial'
+    });
+}
+
+function OpenContentDialog(dialogName, title, message) {
+    var width; var url = "";
+
+    if (dialogName == "avatars") {
+        width = 700;
+        url = "/user/Avatars";
+    }
+    else if (dialogName == "modal")
+        width = 550;
+
+    if (url != "") {
+        $.ajax({
+            url: url, cache: false,
+            success: function (data, status) {
+                $(".dialog-content").html(data);
+            }
+        });
+        $(".ok-button-wrapper").hide();
+    }
+    else
+        $(".dialog-content").html(message);
+
+    $(".dialog-title").html(title);
+    setTimeout(function () { ShowContentDialog(width); }, 500);
+}
+
+function ShowEditBox(postID, postType, userID) {
+    if (userID == 0)
+        location.href = "/user/LoginSignup"
+    else {
+        $("#" + postID + "-box").animate({ height: 320 }, { duration: 300, queue: false });
+        if (postType == "edit") {
+            $POSTTYPE = "edit";
+            var url = "/topicpages/GetPostText2?id=" + postID;
+            $.ajax({
+                url: url, cache: false,
+                success: function (data, status) {
+                    if (data != "")
+                        $("#" + postID + "-input").val(data);
+                }
+            });
+        }
+        else
+            $POSTTYPE = "reply";
+
+        $("#" + postID + "-message").html("");
+    }
+}
+
+function GoLink(obj) {
+    window.location = $(obj).find("a").attr("href");
+    return false;
+}
+
+function GetSearchResults(searchBoxObj, e) {
+    if ($(searchBoxObj).val() == "" || e.keyCode == 27)
+        $(".search-results").fadeOut(200);
+    else {
+        //up and down arrows
+        if (e.keyCode == 40 || e.keyCode == 38) {
+            obj = $(".search-results").find(".selected");
+
+            var idx = 0;
+            if (obj.length != 0) idx = parseInt(obj.attr("id").replace("sr-", ""));
+
+            if (e.keyCode == 40)
+                idx++;
+            else if (e.keyCode == 38)
+                idx--;
+
+            if ($("#sr-" + idx).length != 0) {
+                $(".search-results").find(".selected").removeClass("selected");
+                $(".search-results").find("#sr-" + idx).addClass("selected");
+            }
+        }
+        else {
+            var submitThis = $(searchBoxObj).val();
+            if (e.keyCode == 13) {
+                obj = $(".search-results").find(".selected");
+                obj.click();
+            }
+            var url = "/search?searchThis=" + submitThis;
+            $.ajax({
+                url: url, cache: false,
+                success: function (data) {
+                    $(".search-results").html(data);
+                    $(".search-results").fadeIn(200);
+                }
+            });
+        }
+    }
+}
+
+function SetSelectedSearchResult(obj) {
+    $(".search-result").css("background-color", "#ffffff");
+    $(obj).css("background-color", "#f7f7f7");
+}
+
+function HideEditBox(postID) {
+    $("#" + postID + "-box").animate({ height: 0 }, { duration: 300, queue: false });
+    $("#" + postID + "-input").val("");
+}
+
+function Subscribe(topicID, userID) {
+    if (userID == 0)
+        location.href = "/user/LoginSignup";
+    else {
+        var url = "/user/Subscribe?topicID=" + topicID;
+        $.ajax({
+            url: url, cache: false,
+            success: function (data, status) {
+                if (data == "")
+                    OpenContentDialog("modal", "Successful", "You are now subscribed to this forum");
+                else
+                    OpenContentDialog("modal", "Already Subscribed", data);
+
+            }
+        });
+    }
+}
+
+function ShowHoverMenu(whichOne) {
+    if (whichOne == "home" || whichOne == "/")
+        $(".hover-menu").hide();
+    else {
+        if (whichOne == "/topiclist") whichOne = "topics";
+        var url = "/menu/" + whichOne;
+        $.ajax({
+            url: url, cache: true,
+            success: function (data, status) {
+                $(".hover-menu").html(data);
+                var left = $(".right-col").offset().left;
+                var width = $(window).width() - left;
+
+                if (GetScreenType() < 4) {
+                    $("#hm-col-3").hide();
+                    $(".hm-topic-box").css("width", "50%");
+                }
+                $(".hm-left-side").css("width", $(window).width() - width);
+                $(".hm-right-side").css("width", width);
+                $(".hm-right-side").css("left", left);
+                $(".hover-menu").show(100);
+            }
+        });
+    }
+}
+
+function Unsubscribe(subscriptionID) {
+    var url = "/user/UnSubscribeForum?subscriptionID=" + subscriptionID;
+    $.ajax({
+        url: url, cache: false,
+        success: function (data, status) {
+            location.reload();
+        }
+    });
+}
+
+function AskQuestion(topicID, userID) {
+    if (userID == 0)
+        location.href = "/user/LoginSignup";
+    else
+        location.href = '/topicpage/ask?topicID=' + topicID;
+}
+
+function NewDiscussion(topicID, userID) {
+    if (userID == 0)
+        location.href = "/user/LoginSignup";
+    else
+        location.href = '/topicpage/newdiscussion?topicID=' + topicID;
+}
+
+function StorePost(postID, topicID, postType, subject) {
+    if (postType == null || postType == "") postType = $POSTTYPE
+    var postText = $("#" + postID + "-input").val();
+    var subject = "";
+    if (postType == "newdiscussion") {
+        subject = $("#0-input-subject").val();
+        subject = encodeURIComponent(subject);
+    }
+    postText = postText.replace(/\r?\n/g, '[nl]')
+    postText = replaceAll(postText, '<', '[angleleft]')
+    postText = replaceAll(postText, '>', '[angleright]')
+    postText = encodeURIComponent(postText);
+
+    var url = "/topicpages/storepost?postID=" + postID + "&topicID=" + topicID + "&postText=" + postText + "&postType=" + postType + "&subject=" + subject;
+    $.ajax({
+        url: url, cache: false, type: "POST",
+        success: function (data, status) {
+            if (data != "") {
+                if (data.indexOf('/discussionpost/') == 0) {
+                    HideEditBox(postID);
+                    location.href = data;
+                }
+                else {
+                    if (data == "Post added")
+                        setTimeout(function () { HideEditBox(postID); }, 500);
+                    if (data == "done")
+                        OpenContentDialog("modal", "Error", "Sorry, there was an error processing your request.  Please try again later.");
+                    else if (data == "Updated") {
+                        HideEditBox(postID);
+                        setTimeout(function () { 
+                            var url = "/topicpages/GetPostText2?id=" + postID;
+                            $.ajax({
+                                url: url, cache: false,
+                                success: function (data, status) {
+                                    if (data != "") {
+                                        data = data.replace(/\r?\n/g, '<br>')
+                                        $("#" + postID + "-posttext").html(data);
+                                    }
+                                }
+                            });
+                        }, 100);
+                    }
+                    else
+                        $("#" + postID + "-message").html(data);
+                }
+            }
+        },
+        error: function (request, status, error) {
+        alert(request.responseText);
+    }
+    });
+}
+
+function replaceAll(str, find, replace) {
+    return str.replace(new RegExp(find, 'g'), replace);
+}
+
+function inputFocus(i) {
+    if (i.value == i.defaultValue) {
+        i.value = "";
+        i.style.color = "#000";
+    }
+}
+function inputBlur(i) {
+    if (i.value == "") {
+        i.value = i.defaultValue;
+        i.type = 'text';
+        i.style.color = "#888";
+    }
+}
+
+function ChangeAvatar(id) {
+    $("#icon-val").val(id);
+    $(".avatar").attr("src", "/images/usericons/" + id + ".gif");
+    CloseDialog();
+}
+
+function LogOut() {
+    document.cookie = 'User' + '=; path=/; expires=Thu, 01-Jan-70 00:00:01 GMT;';
+    setTimeout(function () { window.location = "/"; }, 10);
+}
+
+function ShowContentDialog(width) {
+    $(".dialog-wrapper").css("top", "-1000px");
+    if (GetScreenType() > 1) $(".dialog-pane").width(width);
+    $(".opacity-panel").fadeIn(25);
+    $(".dialog-wrapper").show();
+    $(".dialog-wrapper").animate({ top: 20 }, { duration: 250, queue: false });
+    var height = $(".dialog-wrapper").height();
+    $(".main-container").height(height);
+}
+
+function CloseDialog() {
+    $(".dialog-wrapper").hide();
+    $(".opacity-panel").fadeOut(0);
+    $(".dialog-content").html("");
+    $(".dialog-title").html("");
+    $(".main-container").css("height", "auto");
+}
+
+function ShowRepliedToText(replyId, postID) {
+    var image = $("#" + postID + "-ec-button").attr("src");
+    if (image.indexOf("expand") > 0) {
+        var url = "/topicpages/GetPostText?id=" + replyId;
+        $.ajax({
+            url: url, cache: false,
+            success: function (data, status) {
+                $("#" + postID + "-replytext").html(data);
+            }
+        });
+        newImage = $("#" + postID + "-ec-button").attr("src").replace("expand", "contract");
+        $("#" + postID + "-ec-button").attr("src", newImage);
+    }
+    else {
+        var txt = $("#" + postID + "-replytext").attr("data-content");
+        $("#" + postID + "-replytext").html(txt);
+        newImage = $("#" + postID + "-ec-button").attr("src").replace("contract", "expand");
+        $("#" + postID + "-ec-button").attr("src", newImage);
+    }
+}
+
+function GetScreenType() {
+    /* 1 = phone, 2 = tablet, 3 = desktop , 4 = desktop huge */
+    var w = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+    if (w <= 736)
+        return 1;
+    else if (w <= 1024)
+        return 2;
+    else if (w <= 1380)
+        return 3;
+    else if (w > 1380)
+        return 4;
+}
+
+function getYPosition(e) {
+    e = e || window.event;
+    var pos;
+    if (e.pageX || e.pageY)
+        pos = e.pageY;
+    else {
+        pos = e.clientY +
+            (document.documentElement.scrollTop ||
+                document.body.scrollTop) -
+            document.documentElement.clientTop;
+    }
+    return pos;
+}
+
+function ShowPop(SpanID, link, imageName, e) {
+    if (GetScreenType() > 2) {
+        masterSpan = "m" + SpanID;
+        imageSpan = "i" + SpanID;
+        if (document.getElementById) {
+            elem = document.getElementById(masterSpan);
+            elem.style.display = 'block';
+            elem.style.top = (getYPosition(e) - 70) + "px";
+            var posLeft = e.layerX - 50;
+            if (posLeft < 80)
+                posLeft = 80;
+            else if (posLeft > 470)
+                posLeft = 470;
+            elem.style.left = posLeft + "px";
+        }
+        else if (document.layers && document.layers[masterSpan]) {
+            document.layers[masterSpan].top = link.y + 25;
+            document.layers[masterSpan].display = 'block';
+        }
+        else if (document.all) {
+            document.all[masterSpan].style.display = 'block';
+
+            if (document.all[masterSpan].myFlag == null) {
+                document.all[masterSpan].style.posTop = document.all[masterSpan].offsetTop + 250;
+            }
+            document.all[masterSpan].myFlag = true;
+        }
+        imageObj = document.getElementById(imageSpan);
+        if (imageObj != null) {
+            ImagePath = "<img src='http://image.absoluteastronomy.com/images/topicthumbs/";
+            ImagePath = ImagePath + imageName.substring(0, 1) + "/" + imageName.substring(0, 2) + "/" + imageName + "' />";
+            imageObj.innerHTML = ImagePath;
+        }
+    }
+}
+
+function GetScreenType() {
+    /* 1 = phone, 2 = tablet, 3 = desktop , 4 = desktop huge */
+    var w = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+    if (w <= 736)
+        return 1;
+    else if (w <= 1024)
+        return 2;
+    else if (w <= 1380)
+        return 3;
+    else if (w > 1380)
+        return 4;
+}
+
+function HidePop(SpanID) {
+    masterSpan = "m" + SpanID;
+
+    if (document.getElementById)
+        elem = document.getElementById(masterSpan);
+    else if (document.all)
+        elem = document.all[masterSpan];
+    else if (document.layers)
+        elem = document.layers[masterSpan];
+    elem.style.display = 'none';
+}
+</script>
+
+</body>
+</html>

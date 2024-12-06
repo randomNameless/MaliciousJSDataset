@@ -1,1 +1,0 @@
-(self.webpackChunkfitt=self.webpackChunkfitt||[]).push([[4609],{118584:(e,t,a)=>{"use strict";var s=a(202517),f=a.n(s);a(252249).default.load("team",f())},202517:(e,t,a)=>{var s=a(857395),f=a(356901);e.exports=s.createPage(f)}},e=>{e.O(0,[3242,9264,4857,1765,6691,736,9574,9067,2053,6746,1992,9290,2553,5799,4923,4068,894,1794],(()=>(118584,e(e.s=118584)))),e.O()}]);

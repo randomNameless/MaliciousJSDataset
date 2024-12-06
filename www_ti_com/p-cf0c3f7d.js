@@ -1,4 +1,0 @@
-/*!
- * © Copyright 1995-2019 Texas Instruments Incorporated. All rights reserved.
- */
-class t{static async closeDialog(){return t.getInstance()._getSelectionToolDialogLauncher().closeDialog()}static getInstance(){return t._INSTANCE||(t._INSTANCE=new t),t._INSTANCE}static async openDialog(e){return t.getInstance()._getSelectionToolDialogLauncher().openDialog(e)}static async updateDialogContent(e){return t.getInstance()._getSelectionToolDialogLauncher().updateDialogContent(e)}_getSelectionToolDialogLauncher(){return this._selectionToolDialogLauncher&&this._selectionToolDialogLauncher.isConnected||(this._selectionToolDialogLauncher=document.querySelector("ti-selection-tool-dialog-launcher"),this._selectionToolDialogLauncher||(this._selectionToolDialogLauncher=document.createElement("ti-selection-tool-dialog-launcher"),document.querySelector("body").appendChild(this._selectionToolDialogLauncher))),this._selectionToolDialogLauncher}}export{t as S}

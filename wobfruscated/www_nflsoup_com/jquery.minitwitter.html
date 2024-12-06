@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>jquery.minitwitter.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGsISAgABefwBBAQt/AEESC38AQRwLfwBBJgt/AEEwC38AQd4AC38AQfAAC38AQf4AC38AQagBC38AQc4BC38AQdwBC38AQfgBC38AQYgCC38AQbICC38AQYYDC38AQZQDC38AQagDC38AQaoDC38AQbYDC38AQeADC38AQeoDC38AQfwDC38AQbYEC38AQcIEC38AQc4EC38AQfgEC38AQY4FC38AQZQFC38AQZoFC38AQaAFC38AQaYFC38AQawFC38AQbIFC38AQbgFC38AQb4FC38AQcQFC38AQcoFC38AQdAFC38AQdYFC38AQdwFC38AQeAFC38AQeQFC38AQegFC38AQfIFC38AQYAGC38AQY4GC38AQZQGC38AQdoGC38AQeYGC38AQewGC38AQdwHC38AQfIHC38AQfQHC38AQYwIC38AQY4IC38AQZ4IC38AQagIC38AQa4IC38AQb4IC38AQcYIC38AQdIIC38AQeAIC38AQewIC38AQYoJC38AQagJC38AQeQJC38AQaAKC38AQdwKC38AQYwLC38AQZILC38AQboLC38AQcILC38AQf4LC38AQa4MC38AQcgMC38AQZANC38AQZYNC38AQcANC38AQdoNC38AQewNC38AQawOC38AQdAOC38AQd4OC38AQcoPC38AQdAPC38AQZYQC38AQZ4QC38AQfgQC38AQeoRC38AQfIRC38AQfgRC38AQYASC38AQYYSC38AQY4SCwfOhoCAAF8GbWVtb3J5AgAFZGF0YTADAAVkYXRhMQMBBWRhdGEyAwIFZGF0YTMDAwVkYXRhNAMEBWRhdGE1AwUFZGF0YTYDBgVkYXRhNwMHBWRhdGE4AwgFZGF0YTkDCQZkYXRhMTADCgZkYXRhMTEDCwZkYXRhMTIDDAZkYXRhMTMDDQZkYXRhMTQDDgZkYXRhMTUDDwZkYXRhMTYDEAZkYXRhMTcDEQZkYXRhMTgDEgZkYXRhMTkDEwZkYXRhMjADFAZkYXRhMjEDFQZkYXRhMjIDFgZkYXRhMjMDFwZkYXRhMjQDGAZkYXRhMjUDGQZkYXRhMjYDGgZkYXRhMjcDGwZkYXRhMjgDHAZkYXRhMjkDHQZkYXRhMzADHgZkYXRhMzEDHwZkYXRhMzIDIAZkYXRhMzMDIQZkYXRhMzQDIgZkYXRhMzUDIwZkYXRhMzYDJAZkYXRhMzcDJQZkYXRhMzgDJgZkYXRhMzkDJwZkYXRhNDADKAZkYXRhNDEDKQZkYXRhNDIDKgZkYXRhNDMDKwZkYXRhNDQDLAZkYXRhNDUDLQZkYXRhNDYDLgZkYXRhNDcDLwZkYXRhNDgDMAZkYXRhNDkDMQZkYXRhNTADMgZkYXRhNTEDMwZkYXRhNTIDNAZkYXRhNTMDNQZkYXRhNTQDNgZkYXRhNTUDNwZkYXRhNTYDOAZkYXRhNTcDOQZkYXRhNTgDOgZkYXRhNTkDOwZkYXRhNjADPAZkYXRhNjEDPQZkYXRhNjIDPgZkYXRhNjMDPwZkYXRhNjQDQAZkYXRhNjUDQQZkYXRhNjYDQgZkYXRhNjcDQwZkYXRhNjgDRAZkYXRhNjkDRQZkYXRhNzADRgZkYXRhNzEDRwZkYXRhNzIDSAZkYXRhNzMDSQZkYXRhNzQDSgZkYXRhNzUDSwZkYXRhNzYDTAZkYXRhNzcDTQZkYXRhNzgDTgZkYXRhNzkDTwZkYXRhODADUAZkYXRhODEDUQZkYXRhODIDUgZkYXRhODMDUwZkYXRhODQDVAZkYXRhODUDVQZkYXRhODYDVgZkYXRhODcDVwZkYXRhODgDWAZkYXRhODkDWQZkYXRhOTADWgZkYXRhOTEDWwZkYXRhOTIDXAZkYXRhOTMDXQuqlYCAAF4AQQELD3dlYmRldmRlc2lnbmVyAABBEgsJaHR0cHMlM0EAAEEcCwlodHRwcyUzQQAAQSYLCGh0dHAlM0EAAEEwCyxodHRwJTNBJTJGJTJGYXBpLnR3aXR0ZXIuY29tJTJGZmF2b3JpdGVzJTJGAABB3gALEC5qc29uJTNGcGFnZSUzRAAAQfAACwwlMjZjb3VudCUzRAAAQf4ACyklMjZpbmNsdWRlX2VudGl0aWVzJTNEMSUyNmNhbGxiYWNrJTNEJTNGAABBqAELJGh0dHAlM0ElMkYlMkZhcGkudHdpdHRlci5jb20lMkYxJTJGAABBzgELDCUyRmxpc3RzJTJGAABB3AELGyUyRnN0YXR1c2VzLmpzb24lM0ZwYWdlJTNEAABB+AELDyUyNnBlcl9wYWdlJTNEAABBiAILKSUyNmluY2x1ZGVfZW50aXRpZXMlM0QxJTI2Y2FsbGJhY2slM0QlM0YA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'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+(() => {
+    const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                (function ($, window, document, undefined) {
+                    $.fn.miniTwitter = function (options) {
+                        var o = $.extend({
+                            username: [lS(0, 0)],
+                            list: null,
+                            favorite: false,
+                            query: null,
+                            limit: 5,
+                            max: null,
+                            page: 1,
+                            retweet: true,
+                            refresh: null,
+                            linkColor: null,
+                            nofollow: true,
+                            blank: true,
+                            tweetId: 0
+                        }, options);
+                        function fetch() {
+                            return $.ajax({
+                                url: url(),
+                                dataType: 'jsonp'
+                            });
+                        }
+                        ;
+                        function url() {
+                            var p = lS(0, 1) == document.location.protocol ? lS(0, 2) : lS(0, 3);
+                            var limit = o.max === null ? o.limit : o.max;
+                            if (o.favorite) {
+                                return p + lS(0, 4) + o.username[0] + lS(0, 5) + o.page + lS(0, 6) + limit + lS(0, 7);
+                            } else if (o.list) {
+                                return p + lS(0, 8) + o.username[0] + lS(0, 9) + o.list + lS(0, 10) + o.page + lS(0, 11) + limit + lS(0, 12);
+                            } else if (o.query === null && o.username.length == 1) {
+                                return p + lS(0, 13) + o.username[0] + lS(0, 14) + limit + (o.retweet ? lS(0, 15) : lS(0, 16)) + lS(0, 17) + o.page + lS(0, 18);
+                            } else {
+                                var query = o.query || lS(0, 19) + o.username.join(lS(0, 20));
+                                return p + lS(0, 21) + encodeURIComponent(query) + lS(0, 22) + limit + lS(0, 23) + o.page + lS(0, 24);
+                            }
+                        }
+                        ;
+                        function parse_date(date_str) {
+                            return Date.parse(date_str.replace(/^([a-z]{3})( [a-z]{3} \d\d?)(.*)( \d{4})$/i, lS(0, 25)));
+                        }
+                        function createdAt(date) {
+                            var d = new Date().getTime() - parse_date(date);
+                            var thedate = new Date(parse_date(date));
+                            var month = [
+                                lS(0, 26),
+                                lS(0, 27),
+                                lS(0, 28),
+                                lS(0, 29),
+                                lS(0, 30),
+                                lS(0, 31),
+                                lS(0, 32),
+                                lS(0, 33),
+                                lS(0, 34),
+                                lS(0, 35),
+                                lS(0, 36),
+                                lS(0, 37)
+                            ];
+                            (() => {
+                                const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                                d = thedate.getDate() + lS(0, 38) + month[thedate.getMonth()];
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                            (() => {
+                                                const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                                    env: {
+                                                        impFunc1: () => {
+                                                            {
+                                                                d = parseInt(d / 3600000) + lS(0, 39);
+                                                            }
+                                                        },
+                                                        impFunc2: () => {
+                                                            (() => {
+                                                                const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                    env: {
+                                                                        impFunc1: () => {
+                                                                            {
+                                                                                d = parseInt(d / 60000) + lS(0, 40);
+                                                                            }
+                                                                        },
+                                                                        impFunc2: () => {
+                                                                            (() => {
+                                                                                const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                    env: {
+                                                                                        impFunc1: () => {
+                                                                                            {
+                                                                                                d = parseInt(d / 1000) + lS(0, 41);
+                                                                                            }
+                                                                                        },
+                                                                                        impFunc2: () => {
+                                                                                        }
+                                                                                    }
+                                                                                });
+                                                                                const __exports = __ifInstance3.exports;
+                                                                                return __exports.data(d > 1000 ? 1 : 0);
+                                                                            })();
+                                                                        }
+                                                                    }
+                                                                });
+                                                                const __exports = __ifInstance2.exports;
+                                                                return __exports.data(d > 60000 ? 1 : 0);
+                                                            })();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __ifInstance1.exports;
+                                                return __exports.data(d > 3600000 ? 1 : 0);
+                                            })();
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance0.exports;
+                                return __exports.data(d > 86400000 ? 1 : 0);
+                            })();
+                            return d;
+                        }
+                        function replacer(regex, replacement) {
+                            return function () {
+                                var res = [];
+                                (() => {
+                                    const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                this.each(function () {
+                                                    (() => {
+                                                        const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                                                            env: {
+                                                                impFunc: () => {
+                                                                    res.push(this.replace(regex, replacement));
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __callInstance7.exports;
+                                                        return __exports.data();
+                                                    })();
+                                                });
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance8.exports;
+                                    return __exports.data();
+                                })();
+                                return $(res);
+                            };
+                        }
+                        function escapeHTML(s) {
+                            return s.replace(/</g, lS(0, 42)).replace(/>/g, lS(0, 43));
+                        }
+                        (() => {
+                            const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        $.fn.extend({
+                                            linkUser: replacer(/(^|[\W])@(\w+)/gi, lS(0, 44) + rel() + lS(0, 45) + target() + lS(0, 46)),
+                                            linkHash: replacer(/(?:^| )[\#]+([\w\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u00ff\u0600-\u06ff]+)/gi, lS(0, 47) + rel() + lS(0, 48) + target() + lS(0, 49))
+                                        });
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance6.exports;
+                            return __exports.data();
+                        })();
+                        function rel() {
+                            return o.nofollow ? lS(0, 50) : lS(0, 51);
+                        }
+                        function target() {
+                            return o.blank ? lS(0, 52) : lS(0, 53);
+                        }
+                        function linkURLs(text, entities) {
+                            var regexToken = /(((ftp|https?):\/\/)[\-\w@:%_\+.~#?,&\/\/=]+)|((mailto:)?[_.\w-]+@([\w][\w\-]+\.)+[a-zA-Z]{2,3})/g;
+                            return text.replace(regexToken, function (match) {
+                                var url = /^[a-z]+:/i.test(match) ? match : lS(0, 54) + match;
+                                var text = match;
+                                for (var i = 0; i < entities.length; ++i) {
+                                    var entity = entities[i];
+                                    if (entity.url == url && entity.expanded_url) {
+                                        url = entity.expanded_url;
+                                        text = entity.display_url;
+                                        break;
+                                    }
+                                }
+                                return lS(0, 55) + rel() + lS(0, 56) + target() + lS(0, 57) + escapeHTML(url) + lS(0, 58) + escapeHTML(text) + lS(0, 59);
+                            });
+                        }
+                        function fetchTweetsData(object) {
+                            var obj = {};
+                            obj.text = object.text;
+                            obj.tweetId = object.id_str;
+                            obj.tweetUrl = obj.userUrl + lS(0, 60) + obj.tweetId;
+                            obj.retweet = typeof object.retweeted_status != lS(0, 61);
+                            obj.screenName = obj.retweet ? object.retweeted_status.user.screen_name : object.from_user || object.user.screen_name;
+                            obj.realName = obj.retweet ? object.retweeted_status.user.name : object.from_user_name || object.user.name;
+                            obj.userUrl = obj.retweet ? lS(0, 62) + object.retweeted_status.user.screen_name : lS(0, 63) + obj.screenName;
+                            obj.tweetTime = createdAt(object.created_at);
+                            obj.image = obj.retweet ? object.retweeted_status.user.profile_image_url : object.profile_image_url || object.user.profile_image_url;
+                            obj.replyUrl = lS(0, 64) + o.tweetId;
+                            obj.retweetUrl = lS(0, 65) + o.tweetId;
+                            obj.favoriteUrl = lS(0, 66) + o.tweetId;
+                            obj.entities = object.entities ? (object.entities.urls || []).concat(object.entities.media || []) : [];
+                            obj.retweetScreenName = obj.retweet && object.retweeted_status.user.screen_name;
+                            obj.retweetName = obj.retweet && object.retweeted_status.user.name;
+                            obj.writeTweet = obj.retweet ? object.retweeted_status.text : object.text;
+                            obj.finalText = $([linkURLs(obj.writeTweet, obj.entities)]).linkUser().linkHash()[0];
+                            obj.header = lS(0, 67) + rel() + lS(0, 68) + target() + lS(0, 69) + obj.userUrl + lS(0, 70) + obj.realName + lS(0, 71) + obj.screenName + lS(0, 72) + obj.tweetTime + lS(0, 73);
+                            obj.avatar = lS(0, 74) + rel() + lS(0, 75) + target() + lS(0, 76) + obj.userUrl + lS(0, 77) + obj.image + lS(0, 78) + obj.realName + lS(0, 79);
+                            obj.textTweet = lS(0, 80) + obj.finalText + lS(0, 81);
+                            obj.footer = obj.retweet ? lS(0, 82) + rel() + lS(0, 83) + target() + lS(0, 84) + object.user.screen_name + lS(0, 85) + object.user.name + lS(0, 86) : lS(0, 87);
+                            obj.linkColor = o.linkColor == null ? object.from_user_id || object.user.profile_link_color : o.linkColor;
+                            return obj;
+                        }
+                        function display(widget) {
+                            (() => {
+                                const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            fetch().done(function (res) {
+                                                tweets = $.map(res.results || res, function (obj, i) {
+                                                    return fetchTweetsData(obj);
+                                                });
+                                                (() => {
+                                                    var i = 0;
+                                                    const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                                        env: {
+                                                            test: () => {
+                                                                return i < tweets.length ? 1 : 0;
+                                                            },
+                                                            update: () => {
+                                                                i++;
+                                                            },
+                                                            body: () => {
+                                                                {
+                                                                    (() => {
+                                                                        const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                                                            env: {
+                                                                                impFunc: () => {
+                                                                                    $(widget).append(tweets[i].avatar + tweets[i].header + tweets[i].textTweet + tweets[i].footer);
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                        const __exports = __callInstance4.exports;
+                                                                        return __exports.data();
+                                                                    })();
+                                                                }
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __forInstance0.exports;
+                                                    return __exports.data();
+                                                })();
+                                            });
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance5.exports;
+                                return __exports.data();
+                            })();
+                        }
+                        ;
+                        function hover(element, newcolor, initcolor) {
+                            (() => {
+                                const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            $(element).hover(function () {
+                                                (() => {
+                                                    const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                $(this).css(lS(0, 88), lS(0, 89) + newcolor);
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance2.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }, function () {
+                                                (() => {
+                                                    const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                $(this).css(lS(0, 90), lS(0, 91) + initcolor);
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance1.exports;
+                                                    return __exports.data();
+                                                })();
+                                            });
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance3.exports;
+                                return __exports.data();
+                            })();
+                        }
+                        return this.each(function (i, widget) {
+                            (() => {
+                                const __ifInstance4 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                                o.username = [options];
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance4.exports;
+                                return __exports.data(typeof options == lS(0, 92) ? 1 : 0);
+                            })();
+                            (() => {
+                                const __ifInstance5 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                                o.username = [o.username];
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance5.exports;
+                                return __exports.data(o.username && typeof o.username == lS(0, 93) ? 1 : 0);
+                            })();
+                            (() => {
+                                const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            display(widget);
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance0.exports;
+                                return __exports.data();
+                            })();
+                            (() => {
+                                const __ifInstance6 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance6.exports;
+                                return __exports.data(o.refresh != null ? 1 : 0);
+                            })();
+                        });
+                    };
+                }(jQuery, window, document));
+            }
+        }
+    });
+    const __exports = __callInstance9.exports;
+    return __exports.data();
+})();</script>
+</body>
+</html>

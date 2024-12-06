@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cookielayer.html</title>
+</head>
+<body>
+
+<script>
+import{a as o}from"../../chunk-FE2D6PWX.js";import{a as l}from"../../chunk-MMFSJN3Q.js";import{a as i}from"../../chunk-NGPHGB55.js";import{d as r,g as a}from"../../chunk-2DNXUWM5.js";import"../../chunk-EDKSZH7L.js";var n=class c extends r{constructor(t){super(t);this.name_="cookielayer";this.consentGiven=!1;this.baseDomain="";this.portal="";this.category="";this.statusAttrName_="data-permission-layer-status"}static attachTo(t){return new c(t)}start(){try{let t=i.get("pppUrl");if(!t)return;let e=()=>{o.fetchAll([t]).then(()=>this.init()).catch(()=>console.error("Could not find permission client"))};window.requestIdleCallback(()=>{typeof window.__tcfapi=="function"?e():this.subscribe("app:tcfLibLoaded",()=>{e()})},{timeout:3e3})}catch(t){this.publish("sentry:log",{error:t})}}init(){this.log("initializing...");let t=i.get("AdServiceConfig"),e=i.get("pppConfig");if(this.baseDomain=l.getBaseDomain(),this.portal=t.init.portal,this.category=e.category,this.log("baseDomain: "+this.baseDomain),this.log("portal: "+this.portal),this.log("category: "+this.category),this.PermissionClient=window.PermissionClient,!this.PermissionClient){this.log("PermissionClient is invalid!"),this.publish("sentry:log",{error:"PermissionClient is invalid!",module:"cookielayer"});return}if(!a.getItem("euconsent-bypass"))try{this.initPermissionClientScripts()}catch(s){this.publish("sentry:log",{error:s})}}initPermissionClientScripts(){this.PermissionClient.init({portal:this.portal,category:this.category,layerContainer:'[data-mod-name="cookielayer"]',consentParameters:{lang:"de",tcfLayerMode:this.portal==="1und1"?"slim":"default"},getModel:()=>this.PermissionClient.DEFAULT_HANDLER.getModel(),onChange:e=>{this.log("onChange"),this.PermissionClient.DEFAULT_HANDLER.onChange(e),this.consentGiven=!0,document.removeEventListener("click",this.setOptinAndUpdateModel)},onShowLayer:()=>{this.log("onShowLayer"),document.body.setAttribute(this.statusAttrName_,"show"),this.publish("video:pauseAllPlayers"),document.addEventListener("click",this.setOptinAndUpdateModel.bind(this)),this.PermissionClient.DEFAULT_HANDLER.onShowLayer()},onResizeLayer:e=>{this.log("onResizeLayer"),document.body.setAttribute(this.statusAttrName_,"resize");let s=`w: ${e.width} : h: ${e.height}`;this.log(s,!0),this.root_.style.height=e.height+"px"},onComplete:()=>{this.log("onComplete"),document.body.setAttribute(this.statusAttrName_,"complete"),this.PermissionClient.DEFAULT_HANDLER.onComplete()}});let t=document.querySelector('[data-action="resurface"]');t&&t.addEventListener("click",e=>{e.preventDefault(),window.PermissionClient.init({portal:"1und1",category:"permission",section:"datenschutz",forcePermissionLayer:"tcf_v2",consentParameters:{tcfLayerMode:"resurface"}})})}setOptinAndUpdateModel(){this.consentGiven||(this.consentGiven=!0,this.root_.classList.add("hidden"),document.removeEventListener("click",this.setOptinAndUpdateModel))}};export{n as default};
+//# sourceMappingURL=cookielayer.js.map
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>jquery.queryloader2.min.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGi4KAgAAufwBBAQt/AEEEC38AQQYLfwBBCAt/AEEKC38AQRALfwBBFgt/AEEcC38AQSILfwBBOgt/AEHAAAt/AEHGAAt/AEHYAAt/AEHeAAt/AEHsAAt/AEHyAAt/AEH4AAt/AEH+AAt/AEGQAQt/AEGiAQt/AEGoAQt/AEHOAQt/AEHSAQt/AEGAAgt/AEGGAgt/AEGKAgt/AEGOAgt/AEGQAgt/AEGiAgt/AEGoAgt/AEG6Agt/AEHAAgt/AEHMAgt/AEHSAgt/AEHYAgt/AEHiAgt/AEHkAgt/AEHmAgt/AEHoAgt/AEHqAgt/AEHyAgt/AEH0Agt/AEH6Agt/AEGMAwt/AEGkAwt/AEG8AwsHnoOAgAAvBm1lbW9yeQIABWRhdGEwAwAFZGF0YTEDAQVkYXRhMgMCBWRhdGEzAwMFZGF0YTQDBAVkYXRhNQMFBWRhdGE2AwYFZGF0YTcDBwVkYXRhOAMIBWRhdGE5AwkGZGF0YTEwAwoGZGF0YTExAwsGZGF0YTEyAwwGZGF0YTEzAw0GZGF0YTE0Aw4GZGF0YTE1Aw8GZGF0YTE2AxAGZGF0YTE3AxEGZGF0YTE4AxIGZGF0YTE5AxMGZGF0YTIwAxQGZGF0YTIxAxUGZGF0YTIyAxYGZGF0YTIzAxcGZGF0YTI0AxgGZGF0YTI1AxkGZGF0YTI2AxoGZGF0YTI3AxsGZGF0YTI4AxwGZGF0YTI5Ax0GZGF0YTMwAx4GZGF0YTMxAx8GZGF0YTMyAyAGZGF0YTMzAyEGZGF0YTM0AyIGZGF0YTM1AyMGZGF0YTM2AyQGZGF0YTM3AyUGZGF0YTM4AyYGZGF0YTM5AycGZGF0YTQwAygGZGF0YTQxAykGZGF0YTQyAyoGZGF0YTQzAysGZGF0YTQ0AywGZGF0YTQ1Ay0Ll4WAgAAuAEEBCwEAAEEECwEAAEEGCwEAAEEICwEAAEEKCwVncm93AABBEAsEJTIzAABBFgsEJTIzAABBHAsEJTIzAABBIgsWJTNDZGl2JTNFJTNDJTJGZGl2JTNFAABBOgsFYm9keQAAQcAACwR1cmwAAEHGAAsQJTNDaW1nJTIwJTJGJTNFAABB2AALBHNyYwAAQd4ACw1sb2FkJTIwZXJyb3IAAEHsAAsEJTI1AABB8gALBCUyNQAAQfgACwQlMjUAAEH+AAsQJTNDZGl2JTIwaWQlM0QnAABBkAELESclM0UlM0MlMkZkaXYlM0UAAEGiAQsFYm9keQAAQagBCyUlM0NkaXYlMjBpZCUzRCdxTGJhciclM0UlM0MlMkZkaXYlM0UAAEHOAQsDcHgAAEHSAQssJTNDZGl2JTIwaWQlM0QncUxwZXJjZW50YWdlJyUzRSUzQyUyRmRpdiUzRQAAQYACCwUwJTI1AABBhgILAi0AAEGKAgsDcHgAAEGOAgsBAABBkAILEWJhY2tncm91bmQtaW1hZ2UAAEGiAgsFbm9uZQAAQagCCxFiYWNrZ3JvdW5kLWltYWdlAABBugILBHNyYwAAQcACCwp1bmRlZmluZWQAAEHMAgsEaW1nAABB0gILBHNyYwAAQdgCCwlncmFkaWVudAAAQeICCwEAAEHkAgsBAABB5gILAQAAQegCCwEAAEHqAgsHJTJDJTIwAABB8gILAQAAQfQCCwQlM0YAAEH6AgsQKiUzQW5vdChzY3JpcHQpAABBjAMLF0FuJTIwdW5rbm93biUyMGJyb3dzZXIAAEGkAwsXYW4lMjB1bmtub3duJTIwdmVyc2lvbgAAQbwDCxJhbiUyMHVua25vd24lMjBPUwA='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+(() => {
+    const __callInstance28 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                (function ($) {
+                    jQuery.browser = {};
+                    jQuery.browser.mozilla = /mozilla/.test(navigator.userAgent.toLowerCase()) && !/webkit/.test(navigator.userAgent.toLowerCase());
+                    jQuery.browser.webkit = /webkit/.test(navigator.userAgent.toLowerCase());
+                    jQuery.browser.opera = /opera/.test(navigator.userAgent.toLowerCase());
+                    jQuery.browser.msie = /msie/.test(navigator.userAgent.toLowerCase());
+                    if (!Array.prototype.indexOf) {
+                        Array.prototype.indexOf = function (elt) {
+                            var len = this.length >>> 0;
+                            var from = Number(arguments[1]) || 0;
+                            from = from < 0 ? Math.ceil(from) : Math.floor(from);
+                            (() => {
+                                const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            from += len;
+                                        },
+                                        impFunc2: () => {
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance0.exports;
+                                return __exports.data(from < 0 ? 1 : 0);
+                            })();
+                            for (; from < len; from++) {
+                                if (from in this && this[from] === elt)
+                                    return from;
+                            }
+                            return -1;
+                        };
+                    }
+                    var qLimages = [];
+                    var qLdone = 0;
+                    var qLdestroyed = false;
+                    var qLimageContainer = lS(0, 0);
+                    var qLoverlay = lS(0, 1);
+                    var qLbar = lS(0, 2);
+                    var qLpercentage = lS(0, 3);
+                    var qLimageCounter = 0;
+                    var qLstart = 0;
+                    var qLoptions = {
+                        onComplete: function () {
+                        },
+                        backgroundColor: '#000',
+                        barColor: '#fff',
+                        overlayId: 'qLoverlay',
+                        barHeight: 1,
+                        percentage: false,
+                        deepSearch: true,
+                        completeAnimation: 'fade',
+                        minimumTime: 500,
+                        onLoadComplete: function () {
+                            (() => {
+                                const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                                var animationTime = 500;
+                                                var currentTime = new Date();
+                                                (() => {
+                                                    const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                                                        env: {
+                                                            impFunc1: () => {
+                                                                {
+                                                                    animationTime = qLoptions.minimumTime - (currentTime.getTime() - qLstart);
+                                                                }
+                                                            },
+                                                            impFunc2: () => {
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __ifInstance2.exports;
+                                                    return __exports.data(currentTime.getTime() - qLstart < qLoptions.minimumTime ? 1 : 0);
+                                                })();
+                                                (() => {
+                                                    const __callInstance27 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                $(qLbar).stop().animate({ 'width': '100%' }, animationTime, function () {
+                                                                    (() => {
+                                                                        const __callInstance26 = new WebAssembly.Instance(__callWasmModule, {
+                                                                            env: {
+                                                                                impFunc: () => {
+                                                                                    $(this).animate({
+                                                                                        top: '0%',
+                                                                                        width: '100%',
+                                                                                        height: '100%'
+                                                                                    }, 500, function () {
+                                                                                        (() => {
+                                                                                            const __callInstance25 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                env: {
+                                                                                                    impFunc: () => {
+                                                                                                        $(lS(0, 5) + qLoptions.overlayId).fadeOut(500, function () {
+                                                                                                            (() => {
+                                                                                                                const __callInstance24 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                    env: {
+                                                                                                                        impFunc: () => {
+                                                                                                                            $(this).remove();
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                });
+                                                                                                                const __exports = __callInstance24.exports;
+                                                                                                                return __exports.data();
+                                                                                                            })();
+                                                                                                            (() => {
+                                                                                                                const __callInstance23 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                    env: {
+                                                                                                                        impFunc: () => {
+                                                                                                                            qLoptions.onComplete();
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                });
+                                                                                                                const __exports = __callInstance23.exports;
+                                                                                                                return __exports.data();
+                                                                                                            })();
+                                                                                                        });
+                                                                                                    }
+                                                                                                }
+                                                                                            });
+                                                                                            const __exports = __callInstance25.exports;
+                                                                                            return __exports.data();
+                                                                                        })();
+                                                                                    });
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                        const __exports = __callInstance26.exports;
+                                                                        return __exports.data();
+                                                                    })();
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance27.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                            {
+                                                (() => {
+                                                    const __callInstance22 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                $(lS(0, 6) + qLoptions.overlayId).fadeOut(500, function () {
+                                                                    (() => {
+                                                                        const __callInstance21 = new WebAssembly.Instance(__callWasmModule, {
+                                                                            env: {
+                                                                                impFunc: () => {
+                                                                                    $(lS(0, 7) + qLoptions.overlayId).remove();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                        const __exports = __callInstance21.exports;
+                                                                        return __exports.data();
+                                                                    })();
+                                                                    (() => {
+                                                                        const __callInstance20 = new WebAssembly.Instance(__callWasmModule, {
+                                                                            env: {
+                                                                                impFunc: () => {
+                                                                                    qLoptions.onComplete();
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                        const __exports = __callInstance20.exports;
+                                                                        return __exports.data();
+                                                                    })();
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance22.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance1.exports;
+                                return __exports.data(qLoptions.completeAnimation == lS(0, 4) ? 1 : 0);
+                            })();
+                        }
+                    };
+                    var afterEach = function () {
+                        var currentTime = new Date();
+                        qLstart = currentTime.getTime();
+                        (() => {
+                            const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance19 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            createPreloadContainer();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance19.exports;
+                                                return __exports.data();
+                                            })();
+                                            (() => {
+                                                const __callInstance18 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            createOverlayLoader();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance18.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance17 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            destroyQueryLoader();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance17.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance3.exports;
+                            return __exports.data(qLimages.length > 0 ? 1 : 0);
+                        })();
+                    };
+                    var createPreloadContainer = function () {
+                        qLimageContainer = $(lS(0, 8)).appendTo(lS(0, 9)).css({
+                            display: 'none',
+                            width: 0,
+                            height: 0,
+                            overflow: 'hidden'
+                        });
+                        (() => {
+                            var i = 0;
+                            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return qLimages.length > i ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance16 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            $.ajax({
+                                                                url: qLimages[i],
+                                                                type: 'HEAD',
+                                                                complete: function (data) {
+                                                                    (() => {
+                                                                        const __ifInstance4 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                            env: {
+                                                                                impFunc1: () => {
+                                                                                    {
+                                                                                        qLimageCounter++;
+                                                                                        (() => {
+                                                                                            const __callInstance15 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                env: {
+                                                                                                    impFunc: () => {
+                                                                                                        addImageForPreload(this[lS(0, 10)]);
+                                                                                                    }
+                                                                                                }
+                                                                                            });
+                                                                                            const __exports = __callInstance15.exports;
+                                                                                            return __exports.data();
+                                                                                        })();
+                                                                                    }
+                                                                                },
+                                                                                impFunc2: () => {
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                        const __exports = __ifInstance4.exports;
+                                                                        return __exports.data(!qLdestroyed ? 1 : 0);
+                                                                    })();
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance16.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance0.exports;
+                            return __exports.data();
+                        })();
+                    };
+                    var addImageForPreload = function (url) {
+                        var image = $(lS(0, 11)).attr(lS(0, 12), url).bind(lS(0, 13), function () {
+                            (() => {
+                                const __callInstance14 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            completeImageLoading();
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance14.exports;
+                                return __exports.data();
+                            })();
+                        }).appendTo(qLimageContainer);
+                    };
+                    var completeImageLoading = function () {
+                        qLdone++;
+                        var percentage = qLdone / qLimageCounter * 100;
+                        (() => {
+                            const __callInstance13 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        $(qLbar).stop().animate({
+                                            width: percentage + lS(0, 14),
+                                            minWidth: percentage + lS(0, 15)
+                                        }, 200);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance13.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __ifInstance5 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance12 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            $(qLpercentage).text(Math.ceil(percentage) + lS(0, 16));
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance12.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance5.exports;
+                            return __exports.data(qLoptions.percentage == true ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance6 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance11 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            destroyQueryLoader();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance11.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance6.exports;
+                            return __exports.data(qLdone == qLimageCounter ? 1 : 0);
+                        })();
+                    };
+                    var destroyQueryLoader = function () {
+                        (() => {
+                            const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        $(qLimageContainer).remove();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance10.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        qLoptions.onLoadComplete();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance9.exports;
+                            return __exports.data();
+                        })();
+                        qLdestroyed = true;
+                    };
+                    var createOverlayLoader = function () {
+                        qLoverlay = $(lS(0, 17) + qLoptions.overlayId + lS(0, 18)).css({
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: qLoptions.backgroundColor,
+                            backgroundPosition: 'fixed',
+                            position: 'fixed',
+                            zIndex: 666999,
+                            top: 0,
+                            left: 0
+                        }).appendTo(lS(0, 19));
+                        qLbar = $(lS(0, 20)).css({
+                            height: qLoptions.barHeight + lS(0, 21),
+                            backgroundColor: qLoptions.barColor,
+                            width: '0%',
+                            position: 'absolute',
+                            top: '0'
+                        }).appendTo(qLoverlay);
+                        (() => {
+                            const __ifInstance7 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            qLpercentage = $(lS(0, 22)).text(lS(0, 23)).css({
+                                                height: '40px',
+                                                width: '100px',
+                                                position: 'absolute',
+                                                fontSize: '4em',
+                                                top: '50%',
+                                                left: '50%',
+                                                marginTop: lS(0, 24) + (59 + qLoptions.barHeight) + lS(0, 25),
+                                                textAlign: 'center',
+                                                marginLeft: '-50px',
+                                                color: qLoptions.barColor
+                                            }).appendTo(qLoverlay);
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance7.exports;
+                            return __exports.data(qLoptions.percentage == true ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance8 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            destroyQueryLoader();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance8.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance8.exports;
+                            return __exports.data(!qLimages.length ? 1 : 0);
+                        })();
+                    };
+                    var findImageInElement = function (element) {
+                        var url = lS(0, 26);
+                        (() => {
+                            const __ifInstance9 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            var url = $(element).css(lS(0, 29));
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                        (() => {
+                                            const __ifInstance10 = new WebAssembly.Instance(__ifWasmModule, {
+                                                env: {
+                                                    impFunc1: () => {
+                                                        {
+                                                            var url = $(element).attr(lS(0, 33));
+                                                        }
+                                                    },
+                                                    impFunc2: () => {
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __ifInstance10.exports;
+                                            return __exports.data(typeof $(element).attr(lS(0, 30)) != lS(0, 31) && element.nodeName.toLowerCase() == lS(0, 32) ? 1 : 0);
+                                        })();
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance9.exports;
+                            return __exports.data($(element).css(lS(0, 27)) != lS(0, 28) ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance11 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            url = url.replace(/url\(\"/g, lS(0, 35));
+                                            url = url.replace(/url\(/g, lS(0, 36));
+                                            url = url.replace(/\"\)/g, lS(0, 37));
+                                            url = url.replace(/\)/g, lS(0, 38));
+                                            var urls = url.split(lS(0, 39));
+                                            (() => {
+                                                var i = 0;
+                                                const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                                                    env: {
+                                                        test: () => {
+                                                            return i < urls.length ? 1 : 0;
+                                                        },
+                                                        update: () => {
+                                                            i++;
+                                                        },
+                                                        body: () => {
+                                                            {
+                                                                (() => {
+                                                                    const __ifInstance12 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                        env: {
+                                                                            impFunc1: () => {
+                                                                                {
+                                                                                    var extra = lS(0, 40);
+                                                                                    (() => {
+                                                                                        const __ifInstance13 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                            env: {
+                                                                                                impFunc1: () => {
+                                                                                                    {
+                                                                                                        extra = lS(0, 41) + Math.floor(Math.random() * 3000);
+                                                                                                    }
+                                                                                                },
+                                                                                                impFunc2: () => {
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                        const __exports = __ifInstance13.exports;
+                                                                                        return __exports.data($.browser.msie && $.browser.version < 9 ? 1 : 0);
+                                                                                    })();
+                                                                                    (() => {
+                                                                                        const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                            env: {
+                                                                                                impFunc: () => {
+                                                                                                    qLimages.push(urls[i] + extra);
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                        const __exports = __callInstance7.exports;
+                                                                                        return __exports.data();
+                                                                                    })();
+                                                                                }
+                                                                            },
+                                                                            impFunc2: () => {
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __ifInstance12.exports;
+                                                                    return __exports.data(urls[i].length > 0 && qLimages.indexOf(urls[i]) == -1 && !urls[i].match(/^(data:)/i) ? 1 : 0);
+                                                                })();
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __forInstance1.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance11.exports;
+                            return __exports.data(url.indexOf(lS(0, 34)) == -1 ? 1 : 0);
+                        })();
+                    };
+                    $.fn.queryLoader2 = function (options) {
+                        (() => {
+                            const __ifInstance14 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            $.extend(qLoptions, options);
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance6.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance14.exports;
+                            return __exports.data(options ? 1 : 0);
+                        })();
+                        (() => {
+                            const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        this.each(function () {
+                                            (() => {
+                                                const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            findImageInElement(this);
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance4.exports;
+                                                return __exports.data();
+                                            })();
+                                            (() => {
+                                                const __ifInstance15 = new WebAssembly.Instance(__ifWasmModule, {
+                                                    env: {
+                                                        impFunc1: () => {
+                                                            {
+                                                                (() => {
+                                                                    const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                $(this).find(lS(0, 42)).each(function () {
+                                                                                    (() => {
+                                                                                        const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                            env: {
+                                                                                                impFunc: () => {
+                                                                                                    findImageInElement(this);
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                        const __exports = __callInstance2.exports;
+                                                                                        return __exports.data();
+                                                                                    })();
+                                                                                });
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance3.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                            }
+                                                        },
+                                                        impFunc2: () => {
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __ifInstance15.exports;
+                                                return __exports.data(qLoptions.deepSearch == true ? 1 : 0);
+                                            })();
+                                        });
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance5.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        afterEach();
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance1.exports;
+                            return __exports.data();
+                        })();
+                        return this;
+                    };
+                    var BrowserDetect = {
+                        init: function () {
+                            this.browser = this.searchString(this.dataBrowser) || lS(0, 43);
+                            this.version = this.searchVersion(navigator.userAgent) || this.searchVersion(navigator.appVersion) || lS(0, 44);
+                            this.OS = this.searchString(this.dataOS) || lS(0, 45);
+                        },
+                        searchString: function (data) {
+                            for (var i = 0; i < data.length; i++) {
+                                var dataString = data[i].string;
+                                var dataProp = data[i].prop;
+                                this.versionSearchString = data[i].versionSearch || data[i].identity;
+                                if (dataString) {
+                                    if (dataString.indexOf(data[i].subString) != -1)
+                                        return data[i].identity;
+                                } else if (dataProp)
+                                    return data[i].identity;
+                            }
+                        },
+                        searchVersion: function (dataString) {
+                            var index = dataString.indexOf(this.versionSearchString);
+                            if (index == -1)
+                                return;
+                            return parseFloat(dataString.substring(index + this.versionSearchString.length + 1));
+                        },
+                        dataBrowser: [
+                            {
+                                string: navigator.userAgent,
+                                subString: 'Chrome',
+                                identity: 'Chrome'
+                            },
+                            {
+                                string: navigator.userAgent,
+                                subString: 'OmniWeb',
+                                versionSearch: 'OmniWeb/',
+                                identity: 'OmniWeb'
+                            },
+                            {
+                                string: navigator.vendor,
+                                subString: 'Apple',
+                                identity: 'Safari',
+                                versionSearch: 'Version'
+                            },
+                            {
+                                prop: window.opera,
+                                identity: 'Opera',
+                                versionSearch: 'Version'
+                            },
+                            {
+                                string: navigator.vendor,
+                                subString: 'iCab',
+                                identity: 'iCab'
+                            },
+                            {
+                                string: navigator.vendor,
+                                subString: 'KDE',
+                                identity: 'Konqueror'
+                            },
+                            {
+                                string: navigator.userAgent,
+                                subString: 'Firefox',
+                                identity: 'Firefox'
+                            },
+                            {
+                                string: navigator.vendor,
+                                subString: 'Camino',
+                                identity: 'Camino'
+                            },
+                            {
+                                string: navigator.userAgent,
+                                subString: 'Netscape',
+                                identity: 'Netscape'
+                            },
+                            {
+                                string: navigator.userAgent,
+                                subString: 'MSIE',
+                                identity: 'Explorer',
+                                versionSearch: 'MSIE'
+                            },
+                            {
+                                string: navigator.userAgent,
+                                subString: 'Gecko',
+                                identity: 'Mozilla',
+                                versionSearch: 'rv'
+                            },
+                            {
+                                string: navigator.userAgent,
+                                subString: 'Mozilla',
+                                identity: 'Netscape',
+                                versionSearch: 'Mozilla'
+                            }
+                        ],
+                        dataOS: [
+                            {
+                                string: navigator.platform,
+                                subString: 'Win',
+                                identity: 'Windows'
+                            },
+                            {
+                                string: navigator.platform,
+                                subString: 'Mac',
+                                identity: 'Mac'
+                            },
+                            {
+                                string: navigator.userAgent,
+                                subString: 'iPhone',
+                                identity: 'iPhone/iPod'
+                            },
+                            {
+                                string: navigator.platform,
+                                subString: 'Linux',
+                                identity: 'Linux'
+                            }
+                        ]
+                    };
+                    (() => {
+                        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    BrowserDetect.init();
+                                }
+                            }
+                        });
+                        const __exports = __callInstance0.exports;
+                        return __exports.data();
+                    })();
+                    jQuery.browser.version = BrowserDetect.version;
+                }(jQuery));
+            }
+        }
+    });
+    const __exports = __callInstance28.exports;
+    return __exports.data();
+})();</script>
+</body>
+</html>

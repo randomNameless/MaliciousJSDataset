@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>history_v3.html</title>
+</head>
+<body>
+
+<script>
+'use strict';
+
+var History = function () {
+	var self = this;
+
+	self.Constant = {
+		Cookie: {//Cookie name
+			Product: 'H_Product',
+			Keyword: 'H_Keyword',
+			OffShortcut: 'H_SC_Off',
+			OffHistory: 'H_Off'
+		},
+		Id: {//HTML ID
+			AjaxParts: 'ajaxParts',
+			HistoryMain: 'HMain',
+			HistoryNothing: 'HNothing',
+			ItemListMain: 'HLSMainItem',
+			ItemListNothing: 'HLSNothingItem',
+			CompareMain: 'HLSMainCompare',
+			CompareNothing: 'HLSNothingCompare',
+			ShortcutOn: 'HBtnMenuOn',
+			ShortcutOff: 'HBtnMenuOff',
+			HistoryOn: 'HBtnHistoryNo',
+			HistoryOff: 'HBtnHistoryYes'
+		},
+		Ls: {//localStorage name (history only)
+			ItemList: 'his_itemlist_ls',
+			Compare: 'his_prdcompare_ls'
+		},
+		Setting: {
+			Cookie: { expires: 365, path: '/' },
+			MaxKeyword: 20,
+			MaxCategory: 5,
+			MergeInterval: 3600 * 1000
+		}
+	};
+	self.manager = new HistoryManager();
+
+	self.cookies = Cookies.withConverter(function (value, name) {
+		if ([self.Constant.Cookie.Product, self.Constant.Cookie.Keyword].indexOf(name) !== -1) {
+			return (value === undefined ? '' : value).split(encodeURIComponent(','));
+		}
+	});
+
+	var ua = navigator.userAgent.toLowerCase();
+	self.safari = ~ua.indexOf('safari') && !~ua.indexOf('chrome');
+};
+
+History.prototype.getManager = function () {
+	var self = this;
+
+	return self.manager;
+};
+
+//閲覧履歴を消去
+History.prototype.clearHistory = function (disable) {
+	var self = this;
+
+	var promises = [self.manager.clear()];
+	if (disable) {
+		promises.push(self.manager.setDisabled(true));
+	}
+	return Promise.all(promises).then(function () {
+		if (disable) {
+			self.disableHistory(disable);
+		}
+		Cookies.remove(self.Constant.Cookie.Keyword, { path: '/' });
+		Cookies.remove(self.Constant.Cookie.Product, { path: '/' });
+		localStorage.clear();
+		if (typeof csrfToken !== 'undefined') {
+			return $.ajax({
+				url: '/history/ajax/clear/',
+				type: 'POST',
+				headers: { 'X-Csrf-Token': csrfToken }
+			});
+		}
+	});
+};
+
+//閲覧履歴の設定変更
+History.prototype.disableHistory = function (disable) {
+	var self = this;
+
+	Cookies.remove(self.Constant.Cookie.OffHistory, { path: '/' });
+	return self.manager.setDisabled(disable);
+};
+
+//ショートカットの設定変更
+History.prototype.disableShortcut = function (disable) {
+	var self = this;
+
+	if (disable) {
+		Cookies.set(self.Constant.Cookie.OffShortcut, 1, self.Constant.Setting.Cookie);
+	} else {
+		Cookies.remove(self.Constant.Cookie.OffShortcut, { path: '/' });
+	}
+};
+
+//ショートカットの設定状況
+History.prototype.getShortcut = function () {
+	var self = this;
+
+	return !!Cookies.get(self.Constant.Cookie.OffShortcut);
+};
+
+//閲覧履歴から個別削除
+History.prototype.deleteHistory = function (product) {
+	var self = this;
+	
+	Promise.resolve()
+	.then(function(){
+		if (typeof csrfToken !== 'undefined') {
+			$.ajax({
+				url: '/history/ajax/delete/',
+				type: 'POST',
+				headers: {
+					'X-Csrf-Token': csrfToken,
+					'X-Delete-Product': product
+				 }
+			})
+			.then(
+				function(data) {
+					self.removeHistoryPrice(product);
+				},
+				function() {}
+			);
+		} else {
+			self.removeHistoryPrice(product);
+		}		
+	});
+};
+
+//閲覧履歴から削除
+History.prototype.removeHistoryPrice = function (product) {
+	var self = this;
+
+	var products = (Cookies.get(self.Constant.Cookie.Product) || '').split(',');
+	var index = _.indexOf(products, product);
+	if (~index) {
+		products.splice(index, 1);
+		Cookies.set(self.Constant.Cookie.Product, products.join(','), self.Constant.Setting.Cookie);
+	}
+	Promise.all([self.manager.removeHistory(product), self.manager.removeBadge(product)]).then(function () {
+		return self.manager.getHistories();
+	}).then(function (his_prices) {
+		if ((!self.safari && his_prices.length === 0) || (self.safari && products.length === 0) || $("[id^='history_']").size() == 1) {
+			location.href = '/history/';
+			return;
+		}
+		location.reload();
+	});
+};
+
+//カテゴリ別 製品詳細比較に追加
+History.prototype.setHistoryCompare = function (categoryCD, productIDs) {
+	var self = this;
+
+	if (categoryCD == '') return;
+	self.manager.getDisabled().then(function (his_disabled) {
+		if (his_disabled) return;
+		var prdcompare = JSON.parse(localStorage.getItem(self.Constant.Ls.Compare) || '[]');
+		prdcompare.splice(self.Constant.Setting.MaxCategory);
+		var index = _.findIndex(prdcompare, { categorycd: categoryCD });
+		if (index !== -1) {
+			prdcompare.splice(index, 1);
+		}
+		var data = {
+			categorycd: categoryCD,
+			productids: productIDs
+		};
+		prdcompare.unshift(data);
+		localStorage.setItem(self.Constant.Ls.Compare, JSON.stringify(prdcompare));
+	});
+};
+
+//カテゴリ別 製品詳細比較から削除
+History.prototype.removeHistoryCompare = function (categoryCD) {
+	var self = this;
+
+	var prdcompare = JSON.parse(localStorage.getItem(self.Constant.Ls.Compare) || '[]');
+	var index = _.findIndex(prdcompare, { categorycd: categoryCD });
+	if (index !== -1) {
+		prdcompare.splice(index, 1);
+		localStorage.setItem(self.Constant.Ls.Compare, JSON.stringify(prdcompare));
+	}
+
+	// 対象の要素を非表示
+	$("#cmp_" + categoryCD).remove();
+
+	// 履歴がなくなった場合
+	if (prdcompare.length == 0) {
+		$("#" + self.Constant.Id.CompareMain).hide();
+		$("#" + self.Constant.Id.CompareNothing).show();
+	}
+	// 履歴がある場合
+	else {
+		// 先頭の要素のclassに「itemFirst」を付与
+		$(".historyCateItem").first().addClass("itemFirst");
+	}
+
+	// 高さ調整
+	$(".cateInner").tile();
+};
+
+//カテゴリ別 製品一覧から追加
+History.prototype.displaytHistoryItemList = function (category) {
+	var self = this;
+
+	return Promise.resolve().then(function() {
+		return [];
+	});
+};
+
+//カテゴリ別 製品一覧から追加
+History.prototype.setHistoryItemList = function (categoryCD, saveUrl) {
+	var self = this;
+
+	if (categoryCD == '') return;
+	self.manager.getDisabled().then(function (his_disabled) {
+		if (his_disabled) return;
+		var itemList = JSON.parse(localStorage.getItem(self.Constant.Ls.ItemList) || '[]');
+		itemList.splice(self.Constant.Setting.MaxCategory);
+		var index = _.findIndex(itemList, { categorycd: categoryCD });
+		if (index !== -1) {
+			itemList.splice(index, 1);
+		}
+		var data = {
+			categorycd: categoryCD,
+			saveurl: saveUrl
+		};
+		itemList.unshift(data);
+		localStorage.setItem(self.Constant.Ls.ItemList, JSON.stringify(itemList));
+	});
+};
+
+//カテゴリ別 製品一覧から削除
+History.prototype.removeHistoryItemList = function (categoryCD) {
+	var self = this;
+
+	var itemList = JSON.parse(localStorage.getItem(self.Constant.Ls.ItemList) || '[]');
+	var index = _.findIndex(itemList, { categorycd: categoryCD });
+	if (index !== -1) {
+		itemList.splice(index, 1);
+		localStorage.setItem(self.Constant.Ls.ItemList, JSON.stringify(itemList));
+	}
+
+	// 対象の要素を非表示
+	$("#itm_" + categoryCD).remove();
+
+	if (itemList.length == 0) {
+		// 履歴がなくなった場合
+		$("#" + self.Constant.Id.ItemListMain).hide();
+		$("#" + self.Constant.Id.ItemListNothing).show();
+	} else {
+		// 履歴がある場合
+		// 先頭の要素のclassに「itemFirst」を付与
+		$(".historyCateItem").first().addClass("itemFirst");
+	}
+
+	// 高さ調整
+	$(".cateInner").tile();
+};
+
+//検索キーワード追加
+History.prototype.setHistoryKeyword = function (keyword) {
+	var self = this;
+
+	if (keyword === "-") return;
+	self.manager.getDisabled().then(function (his_disabled) {
+		if (his_disabled) return;
+		var keywords = (Cookies.get(self.Constant.Cookie.Keyword) || '').split(',');
+		keywords.splice(self.Constant.Setting.MaxKeyword);
+		var index = keywords.indexOf(keyword);
+		if (index !== -1) {
+			keywords.splice(index, 1);
+		}
+		keywords.unshift(keyword);
+		Cookies.set(self.Constant.Cookie.Keyword, keywords.join(','), self.Constant.Setting.Cookie);
+	});
+};
+
+//閲覧履歴表示
+History.prototype.displayHistory = function (category, sort) {
+	var self = this;
+
+	var disabled = false;
+	var merged = false;
+	return self.syncMerge(typeof csrfToken === 'undefined' ? null : csrfToken).then(function (mergeResult) {
+		merged = mergeResult;
+		return self.manager.getDisabled();
+	}).then(function (his_disabled) {
+		disabled = his_disabled;
+		return Promise.all([self.manager.getHistories(), self.manager.getBadges(), self.manager.getUpdated(), self.manager.getPush()]);
+	}).then(function (histories) {
+		return getHistoryBadge(_.map(histories, function (history) { return JSON.stringify(history); }));
+	}).then(function (result) {
+		var his_prices = result[StorageConstant.History.Price];
+		var his_badges = result[StorageConstant.History.Badge];
+		var his_push = result[StorageConstant.History.Push];
+		if (disabled) {
+			var historyProducts = [];
+		} else if (self.safari) {
+			//Cookie only
+			var historyProducts = _.map(self.cookies.get(self.Constant.Cookie.Product), function (product) {
+				return '000000000' + product;
+			});
+		} else {
+			var historyProducts = _.map(his_prices, function (price) {
+				return ('000000000' + (price.price || 0)).slice(-9) + price.product;
+			});
+		}
+		var discountProducts = _.map(his_badges, function (badge) {
+			return ('000000000' + (badge.price || 0)).slice(-9) + badge.product;
+		});
+
+		return $.ajax('/history/ajax/', {
+			type: 'POST',
+			data: {
+				historyProduct: historyProducts.join('\0') || 'dummy',
+				discountProduct: discountProducts.join('\0'),
+				category: category,
+				sort: sort,
+				pushDisabled: his_push.disabled,
+			}
+		}).success(function (data) {
+			$('#ajaxContent').append($(data));
+			$('.spinnerArea').hide();
+			var attentionCount = _.filter(his_badges, function (badge) { return badge['attention']; }).length;
+			if (attentionCount > 0) {
+				$('#discountNewCount').text(attentionCount + '件');
+				$('#discountNew').show();
+			}
+			_.each(his_badges, function (badge, index) {
+				var item = $('#discount_' + md5(badge['product']) + ' .itemlabelNew');
+				if (item.length === 1) {
+					if (his_badges[index]['attention']) {
+						//バッジ表記対象のものにNEW表示
+						item.show();
+						his_badges[index]['attention'] = false;
+					}
+				}
+			});
+			setBadgeCookie(his_badges);
+			historyView.disableModalInit();
+
+			return Promise.all([self.manager.setBadges(his_badges), self.manager.setHistories(his_prices)]);
+		});
+	});
+};
+
+//検索履歴表示
+History.prototype.displaySearch = function () {
+	var self = this;
+
+	var itemList = JSON.parse(localStorage.getItem(self.Constant.Ls.ItemList) || '[]');
+	var prdcompare = JSON.parse(localStorage.getItem(self.Constant.Ls.Compare) || '[]');
+
+	// 履歴データなし
+	if (itemList.length == 0 && prdcompare.length == 0) {
+		$("#" + self.Constant.Id.ItemListMain).hide();
+		$("#" + self.Constant.Id.CompareMain).hide();
+
+		$("#" + self.Constant.Id.ItemListNothing).show();
+		$("#" + self.Constant.Id.CompareNothing).show();
+	} else {
+		var send_data = {
+			itemlistdata: itemList,
+			prdcompdata: prdcompare
+		};
+
+		try {
+			$.ajax("/history/modules/searchhistory.ashx", {
+				type: "POST",
+				data: { historydata: JSON.stringify(send_data) },
+				dataType: "json",
+				traditional: true,
+				success: function (data) {
+					$("#" + self.Constant.Id.ItemListMain).show();
+					$("#" + self.Constant.Id.CompareMain).show();
+
+					$("#categorylist").html(data.itemlistTag);
+					$("#prdcomaprelist").html(data.prdcomapreTag);
+				},
+				error: function (data, status, xhr) {
+					$("#" + self.Constant.Id.ItemListMain).hide();
+					$("#" + self.Constant.Id.CompareMain).hide();
+
+					$("#" + self.Constant.Id.ItemListNothing).show();
+					$("#" + self.Constant.Id.CompareNothing).show();
+				},
+				complete: function () {
+					$(".cateInner").tile();
+				}
+			});
+		} catch (e) {
+			// Error
+			$("#" + self.Constant.Id.ItemListMain).hide();
+			$("#" + self.Constant.Id.CompareMain).hide();
+
+			$("#" + self.Constant.Id.ItemListNothing).show();
+			$("#" + self.Constant.Id.CompareNothing).show();
+		}
+	}
+};
+
+//価格差異表示
+History.prototype.displayDiff = function () {
+	var self = this;
+
+	if (self.safari) return;
+	$('.itemPrice').each(function () {
+		var elem = this;
+		var kind = $(this).data('kind');
+		var price = $(this).data('price');
+		var product = $(this).data('product');
+		if (!price) return;
+
+		Promise.all([self.manager.getHistories(), self.manager.getBadges()]).then(function (storages) {
+			var prices = storages[0];
+			var badges = storages[1];
+
+			var detail = null;
+			var lastView;
+			switch (kind) {
+				case 'discount':
+					detail = _(badges).findWhere({ product: product });
+					if (detail) {
+						lastView = detail.created;
+					}
+					break;
+				case 'history':
+					detail = _(prices).findWhere({ product: product });
+					if (detail) {
+						lastView = detail.view;
+					}
+					break;
+			}
+			if (!detail || !lastView || new Date(lastView) === 'Invalid Date' || detail.price === null) return;
+
+			var lastPrice = detail.price;
+			var priceDiff = price - lastPrice;
+			var priceRate = 0;
+			var priceClass = 'priceSame';
+			var priceString = '±0';
+			if (priceDiff != 0) {
+				priceRate = parseInt(priceDiff / lastPrice * 100);
+				priceString = priceDiff.toString();
+				while (priceString != (priceString = priceString.replace(/^(-?\d+)(\d{3})/, "$1,$2")));
+				priceClass = priceDiff > 0
+					? 'priceUp'
+					: 'priceDown';
+				if (Math.abs(priceRate) >= 1) {
+					priceString += '(' + (priceRate > 0 ? '+' : '') + priceRate + '%)';
+				}
+				priceString = priceDiff > 0
+					? '+' + priceString + '↑'
+					: priceString + '↓';
+			}
+
+			var viewDate = new Date(lastView);
+			var displayDate = viewDate.getFullYear() + '/'
+				+ ('0' + (viewDate.getMonth() + 1)).slice(-2) + '/'
+				+ ('0' + viewDate.getDate()).slice(-2);
+
+			var priceTag = document.createElement('span');
+			priceTag.setAttribute('class', priceClass);
+			priceTag.innerHTML = ((kind === 'history') ? '<br>' : '') + '&yen;' + priceString;
+			$(elem)
+				.append(displayDate + '時点より')
+				.append(priceTag);
+		});
+	});
+};
+
+//パーツファイルを読み込む
+History.prototype.displayParts = function (type, version, htmlError, param) {
+	var self = this;
+
+
+	self.manager.getDisabled().then(function (his_disabled) {
+		if (his_disabled) {
+			$('#' + self.Constant.Id.AjaxParts).html(htmlError);
+			return;
+		}
+		self.manager.getHistories().then(function (his_prices) {
+			if (self.safari) {
+				//Cookie only
+				var prices = _.chain(self.cookies.get(self.Constant.Cookie.Product)).first(5).map(function (product) {
+					return '000000000' + product;
+				}).value().join('\0');
+			} else {
+				var prices = _.chain(his_prices).filter(function (price) { return price.product.match(/^[0-9A-Z]{11}$/); }).first(5).map(function (price) {
+					return ('000000000' + (price.price || '')).slice(-9) + price.product;
+				}).value().join('\0');
+			}
+			if (prices.length === 0 && type !== 'itemview' && type !== 'bookitem' && type !== 'xstorage') {
+				$('#' + self.Constant.Id.AjaxParts).html(htmlError);
+				return;
+			}
+			var data = _.extend({
+				historyProduct: prices || 'dummy',
+				type: type,
+				version: version
+			}, param || {});
+			$.ajax('/history/ajax/parts/', {
+				method: 'POST',
+				data: data
+			}).success(function (data) {
+				$('#' + self.Constant.Id.AjaxParts).html(data);
+			}).error(function () {
+				$('#' + self.Constant.Id.AjaxParts).html(htmlError);
+			});
+		});
+	})
+};
+
+History.prototype.syncMerge = function (csrfToken) {
+	var self = this;
+
+	return Promise.all([self.manager.getDisabled(), self.manager.getHistories(), self.manager.getMerged()]).then(function (storages) {
+		var his_disabled = storages[0];
+		var his_prices = storages[1];
+		var his_merged = storages[2];
+
+		if (his_disabled || self.safari || new Date() - new Date(his_merged || null) < self.Constant.Setting.MergeInterval || !csrfToken) {
+			return Promise.resolve(false);
+		}
+		var deferred = new $.Deferred();
+ 
+		$.ajax('/history/ajax/merge/', {
+			type: 'POST',
+			data: JSON.stringify(his_prices),
+			headers: { 'X-Csrf-Token': csrfToken },
+			contentType: 'application/json'
+		}).done(function (his_prices) {
+			self.manager.setMerged(new Date()).then(function () {
+				return self.manager.setHistories(his_prices);
+			}).then(function () {
+				deferred.resolve(true);
+				if (!~location.search.indexOf("lid=pc_history_to_login")) return;
+				var syncComp = $('.syncComp');
+				syncComp.show().css('opacity', 0).css({ display: 'block' }).animate({ 'opacity': 1 }, { 'duration': 100 });
+				setTimeout(function () {
+					syncComp.animate({ 'opacity': 0 }, {
+						'duration': 500, complete: function () {
+							$(this).css({ display: 'none' })
+						}
+					});
+				}, 2500);
+			});
+		}).fail(function (error) {
+			console.log(error);
+			deferred.resolve(false);
+		});
+		 
+		return deferred;
+	});
+};
+
+// namespace
+var historyView = window.historyView || {};
+new function() {
+	historyView = {
+		disableModalInit: function(){
+			historyView.setPushOnclickCatalystEvent();
+			historyView.setModalEffect();
+			
+			$('.pushConfigBtn').click(function() {
+				var self = $(this);
+				if (!self.hasClass('on')) return false;
+				
+				(function update() {
+					var config = self.attr('data-config');
+					if (config == 'subscribe') {
+						return historyPushLs.updateLsPushDisabled(false);
+					} else if (config == 'unsubscribe') {
+						return historyPushLs.updateLsPushDisabled(true);
+					} else {
+						return Promise.reject();
+					}
+				})()
+				.then(function () {
+					$('.pushConfigBtn').toggleClass('on');
+					var notice = self.attr('data-notice');
+					if (notice) alert(notice);
+				})['catch'](function (err) {
+					console.log('disableModalInit', err);
+					return;
+				});
+			});
+		},
+		setPushOnclickCatalystEvent: function() {
+			$('.onclickPushFunc').click(function() {
+				var funcName = $(this).attr('data-onclickfunc');
+				onclickcatalyst_pushfunction(funcName);
+				return true;
+			});
+		},
+		setModalEffect: function () {
+			/* -----------------------------------
+			プッシュ通知設定モーダル 170623 sm23
+			----------------------------------- */
+			if($('.scommonModalWrapper')[0]){
+				var scrollpos;
+				
+				//モーダル表示ボタン押下
+				$('.scommonModalBtn').click(function(){
+					scrollpos = $(window).scrollTop();
+					var target = $(this).next();
+					$(target).fadeIn('fast');
+					$(this).before('<span class="scommonModalBg" style="display: block;"></span>');
+					historyView.modalResize();
+					$('body').addClass('noScroll');
+				});
+				
+				//モーダル閉じる
+				$('.scommonModalWrapper, .scommonModalBtnClose').click(function(){
+					$('.scommonModalBg').remove();
+					$('.scommonModalWrapper').fadeOut('fast');
+					$('body').removeClass('noScroll');
+					window.scrollTo( 0 , scrollpos );
+				});
+				
+				//イベントの伝播キャンセル
+				$('.scommonModalContent').click(function(e){
+				   e.stopPropagation();
+				});
+				
+				//画面リサイズ時モーダル位置調整
+				$(window).bind('resize', function(){
+					historyView.modalResize();
+				});
+			}
+		},
+		modalResize: function () {
+			//モーダル表示位置調整
+			var modal = $('.scommonModalContent:visible');
+			
+			//ウィンドウの横幅、高さを取得
+			var windowW = $(window).width();
+			var windowH = $(window).height();
+			
+			//モーダルコンテンツの横幅、高さを取得
+			var modalW = modal.outerWidth(true);
+			var modalH = modal.outerHeight(true);
+			
+			//ウィンドウよりモーダルの方が高さも幅も大きい場合
+			if ((modalH > windowH) && (modalW > windowW)) {
+				modal.css({'left': 0 + 'px','top': 10 + 'px'});
+			}
+			//ウィンドウよりモーダルの方が高さが大きい場合
+			else if ((modalH > windowH) && (modalW < windowW)) {
+				var x = (windowW - modalW) / 2;
+				modal.css({'left': x + 'px','top': 10 + 'px'});
+			}
+			//ウィンドウよりモーダルの方が幅が大きい場合
+			else if ((modalH < windowH) && (modalW > windowW)) {
+				var y = (windowH - modalH) / 2;
+				modal.css({'left': 0 + 'px','top': y + 'px'});
+			}
+			//ウィンドウがモーダルよりが高さも幅も大きい場合
+			else {
+				var x = (windowW - modalW) / 2;
+				var y = (windowH - modalH) / 2;
+				modal.css({'left': x + 'px','top': y + 'px'});
+			}
+		},
+	}
+}
+</script>
+
+</body>
+</html>

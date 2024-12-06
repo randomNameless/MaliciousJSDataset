@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>companysnapshot.html</title>
+</head>
+<body>
+
+<script>
+
+$(document).ready(function(){var $w=$(window);var $lp=$("#left-panel");var $rp=$("#right-panel");var $lpsc=$("#left-panel-section-container");var pos=240;$lp.css('position','absolute');$w.on("scroll",function(){var top=$w.scrollTop();if(top>pos){$lp.css({'position':'fixed','top':'0'});$lpsc.css({"margin-top":"30px"});}else{$lp.css({'position':'absolute','top':pos});$lpsc.css({"margin-top":"0px"});}
+adjustLeftPanelHeight();});adjustLeftPanelHeight();$rp.css('min-height',$lpsc.height()+50+'px');function adjustLeftPanelHeight(){if($lpsc.height()+50>=$rp.height()){$lp.height($lpsc.height());}else if($w.height()+$w.scrollTop()>$(document).height()-100){$lp.css('height',$w.height()-$('#footer').height()-30);}else{$lp.css('height','100%');}}});function miniRes(e,params){var $e=$(e);var miniStatus=$e.attr('data-mini-status');if(typeof miniStatus==='null'||typeof miniStatus==='undefined'){miniStatus="0";}
+if(miniStatus=='0'){if(parseInt(params["total-matches"])>3){$e.closest('table').children('tbody').find('tr:gt(2)').fadeOut();$e.prev().css('display','none');var sec=$e.closest('.vo-section').attr("id");var title=sectionsInfo[sec].title;var label='More Results';if(title){label+=' from '+title;}
+e.value=label;$e.attr('data-mini-status','1');}else{$e.parent().detach();}}else{$e.closest('table').children('tbody').find('tr:gt(2)').fadeIn();$e.prev().fadeIn();e.value='Fewer Results';$e.attr('data-mini-status','0');}}
+function gotopage(div_id,pg){var hx=$("#hiddenxlsid").val();var xlsid=(hx)?hx:'';var swFirstIndex=((pg-1)*getBatchSize())+1;var myurl='/cgi-bin/alacraswitchISAPI.dll?app=companysearch4&msg=ExecContent&topic=Ajax&sk=guest&gis__rank=date,title&gis__ascending=0,1&xlsid='+xlsid+'&swBatchSize=5';var section=sectionsInfo[div_id];myurl+='&sectionName='+encodeURIComponent(section.title);myurl+='&vo-id=companySnapshotV4_'+section.div_id;$.each(section.dataparts,function(i,dpart){myurl+='&swFilterByPart='+dpart;});myurl=myurl+'&swFirstIndex='+swFirstIndex;$.ajax({type:"GET",cache:false,url:myurl,success:function(msg){if(msg&&msg.length>0){var replace_me=document.getElementById(div_id);if(replace_me){$rme=$(replace_me);$rme.html(msg);$rme.find('.resultsbodytbl').hide().fadeIn();}}}});}
+</script>
+
+</body>
+</html>

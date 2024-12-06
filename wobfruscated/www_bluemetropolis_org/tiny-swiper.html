@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>tiny-swiper.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGpYOAgABHfwBBAQt/AEEQC38AQRILfwBBGAt/AEEuC38AQTILfwBBwAALfwBB1AALfwBB6gALfwBB9gALfwBBhAELfwBBkAELfwBBngELfwBBpgELfwBBtAELfwBBxAELfwBB1AELfwBB3AELfwBB5AELfwBB7AELfwBB9gELfwBB/gELfwBBhgILfwBBigILfwBBjgILfwBBmgILfwBBpgILfwBBqgILfwBBrgILfwBBsAILfwBBtgILfwBBwgILfwBBzgILfwBB2AILfwBB5gILfwBB8gILfwBB/gILfwBBiAMLfwBBlAMLfwBBoAMLfwBBqgMLfwBBuAMLfwBBxAMLfwBB0AMLfwBB2gMLfwBB6AMLfwBB/gMLfwBBjAQLfwBBkgQLfwBBmAQLfwBBngQLfwBBpAQLfwBBqgQLfwBBsgQLfwBBugQLfwBBwgQLfwBBxgQLfwBB1AQLfwBB5AQLfwBB6AQLfwBB7gQLfwBB9AQLfwBBggULfwBBkgULfwBBnAULfwBBqgULfwBBugULfwBBvgULfwBBxgULfwBBygULfwBB4AULB/+EgIAASAZtZW1vcnkCAAVkYXRhMAMABWRhdGExAwEFZGF0YTIDAgVkYXRhMwMDBWRhdGE0AwQFZGF0YTUDBQVkYXRhNgMGBWRhdGE3AwcFZGF0YTgDCAVkYXRhOQMJBmRhdGExMAMKBmRhdGExMQMLBmRhdGExMgMMBmRhdGExMwMNBmRhdGExNAMOBmRhdGExNQMPBmRhdGExNgMQBmRhdGExNwMRBmRhdGExOAMSBmRhdGExOQMTBmRhdGEyMAMUBmRhdGEyMQMVBmRhdGEyMgMWBmRhdGEyMwMXBmRhdGEyNAMYBmRhdGEyNQMZBmRhdGEyNgMaBmRhdGEyNwMbBmRhdGEyOAMcBmRhdGEyOQMdBmRhdGEzMAMeBmRhdGEzMQMfBmRhdGEzMgMgBmRhdGEzMwMhBmRhdGEzNAMiBmRhdGEzNQMjBmRhdGEzNgMkBmRhdGEzNwMlBmRhdGEzOAMmBmRhdGEzOQMnBmRhdGE0MAMoBmRhdGE0MQMpBmRhdGE0MgMqBmRhdGE0MwMrBmRhdGE0NAMsBmRhdGE0NQMtBmRhdGE0NgMuBmRhdGE0NwMvBmRhdGE0OAMwBmRhdGE0OQMxBmRhdGE1MAMyBmRhdGE1MQMzBmRhdGE1MgM0BmRhdGE1MwM1BmRhdGE1NAM2BmRhdGE1NQM3BmRhdGE1NgM4BmRhdGE1NwM5BmRhdGE1OAM6BmRhdGE1OQM7BmRhdGE2MAM8BmRhdGE2MQM9BmRhdGE2MgM+BmRhdGE2MwM/BmRhdGE2NANABmRhdGE2NQNBBmRhdGE2NgNCBmRhdGE2NwNDBmRhdGE2OANEBmRhdGE2OQNFBmRhdGE3MANGC56IgIAARwBBAQsNdXNlJTIwc3RyaWN0AABBEAsBAABBEgsFbm9uZQAAQRgLFHRyYW5zZm9ybSUyMGVhc2UlMjAAAEEuCwNtcwAAQTILDXRyYW5zbGF0ZTNkKAAAQcAACxJweCUyQyUyMDAlMkMlMjAwKQAAQdQACxR0cmFuc2xhdGUzZCgwJTJDJTIwAABB6gALC3B4JTJDJTIwMCkAAEH2AAsMYmVmb3JlLWluaXQAAEGEAQsLYWZ0ZXItaW5pdAAAQZABCw1iZWZvcmUtc2xpZGUAAEGeAQsHc2Nyb2xsAABBpgELDGFmdGVyLXNsaWRlAABBtAELD2JlZm9yZS1kZXN0cm95AABBxAELDmFmdGVyLWRlc3Ryb3kAAEHUAQsGSU5QVVQAAEHcAQsHU0VMRUNUAABB5AELB09QVElPTgAAQewBCwlURVhUQVJFQQAAQfYBCwdCVVRUT04AAEH+AQsGVklERU8AAEGGAgsCeAAAQYoCCwJ5AABBjgILCnZlbG9jaXR5WAAAQZoCCwp2ZWxvY2l0eVkAAEGmAgsCeAAAQaoCCwJ5AABBrgILAQAAQbACCwQlMkMAAEG2AgsLdG91Y2hzdGFydAAAQcICCwp0b3VjaG1vdmUAAEHOAgsJdG91Y2hlbmQAAEHYAgsMdG91Y2hjYW5jZWwAAEHmAgsKbW91c2Vkb3duAABB8gILCm1vdXNlbW92ZQAAQf4CCwhtb3VzZXVwAABBiAMLC3RvdWNoc3RhcnQAAEGUAwsKdG91Y2htb3ZlAABBoAMLCXRvdWNoZW5kAABBqgMLDHRvdWNoY2FuY2VsAABBuAMLCm1vdXNlZG93bgAAQcQDCwptb3VzZW1vdmUAAEHQAwsIbW91c2V1cAAAQdoDCw1vbnRvdWNoc3RhcnQAAEHoAwsUZGF0YS1zaGFsbG93LXNsaWRlcgAAQf4DCwxkYXRhLXNsaWRlcgAAQYwECwQlNUIAAEGSBAsEJTVEAABBmAQLBCU1QgAAQZ4ECwQlNUQAAEGkBAsEcm93AABBqgQLB2NvbHVtbgAAQbIECwZ3aWR0aAAAQboECwdoZWlnaHQAAEHCBAsDcHgAAEHGBAsNbWFyZ2luLXJpZ2h0AABB1AQLDm1hcmdpbi1ib3R0b20AAEHkBAsDcHgAAEHoBAsEJTVCAABB7gQLBCU1RAAAQfQECw1tYXJnaW4tcmlnaHQAAEGCBQsObWFyZ2luLWJvdHRvbQAAQZIFCwhkaXNwbGF5AABBnAULDHdpbGwtY2hhbmdlAABBqgULD2ZsZXgtZGlyZWN0aW9uAABBugULAmUAAEG+BQsHc3RyaW5nAABBxgULAi4AAEHKBQsUZGF0YS1zaGFsbG93LXNsaWRlcgAAQeAFCwtob3Jpem9udGFsAA=='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+(() => {
+    const __callInstance18 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                (() => {
+                    var e = {
+                            2590: function (e) {
+                                e.exports = function () {
+                                    lS(0, 0);
+                                    function e() {
+                                        return e = Object.assign || function (e) {
+                                            (() => {
+                                                var t = 1;
+                                                const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                                    env: {
+                                                        test: () => {
+                                                            return t < arguments.length ? 1 : 0;
+                                                        },
+                                                        update: () => {
+                                                            t++;
+                                                        },
+                                                        body: () => {
+                                                            {
+                                                                var n = arguments[t];
+                                                                for (var i in n)
+                                                                    Object.prototype.hasOwnProperty.call(n, i) && (e[i] = n[i]);
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __forInstance0.exports;
+                                                return __exports.data();
+                                            })();
+                                            return e;
+                                        }, e.apply(this, arguments);
+                                    }
+                                    function t(e, t) {
+                                        void 0 === t && (t = []), Array.isArray(t) || (t = [t]), t.forEach(function (t) {
+                                            return !e.classList.contains(t) && e.classList.add(t);
+                                        });
+                                    }
+                                    function n(e, t, n, i) {
+                                        (() => {
+                                            const __callInstance17 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        e.addEventListener(t, n, i);
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance17.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                    function i(e, t, n) {
+                                        (() => {
+                                            const __callInstance16 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        e.removeEventListener(t, n);
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance16.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                    function r(e, t, n) {
+                                        return void 0 === n && (n = lS(0, 1)), e.setAttribute(t, n), e;
+                                    }
+                                    function o(e, t, n) {
+                                        return Object.keys(t).forEach(function (n) {
+                                            e.style[n] = t[n];
+                                        }), n && getComputedStyle(e), e;
+                                    }
+                                    var a = {
+                                        direction: 'horizontal',
+                                        touchRatio: 1,
+                                        touchAngle: 45,
+                                        longSwipesRatio: 0.5,
+                                        initialSlide: 0,
+                                        loop: !1,
+                                        freeMode: !1,
+                                        passiveListeners: !0,
+                                        resistance: !0,
+                                        resistanceRatio: 0.85,
+                                        speed: 300,
+                                        longSwipesMs: 300,
+                                        spaceBetween: 0,
+                                        slidesPerView: 1,
+                                        centeredSlides: !1,
+                                        slidePrevClass: 'swiper-slide-prev',
+                                        slideNextClass: 'swiper-slide-next',
+                                        slideActiveClass: 'swiper-slide-active',
+                                        slideClass: 'swiper-slide',
+                                        wrapperClass: 'swiper-wrapper',
+                                        touchStartPreventDefault: !0,
+                                        touchStartForcePreventDefault: !1,
+                                        touchMoveStopPropagation: !1,
+                                        excludeElements: [],
+                                        injections: {
+                                            translate: function (e, t, n, i) {
+                                                (() => {
+                                                    const __callInstance15 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                o(t.element.$wrapper, {
+                                                                    transition: e.isStart ? lS(0, 2) : lS(0, 3) + i + lS(0, 4),
+                                                                    transform: n.isHorizontal ? lS(0, 5) + e.transforms + lS(0, 6) : lS(0, 7) + e.transforms + lS(0, 8)
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance15.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        }
+                                    };
+                                    var s = lS(0, 9), c = lS(0, 10), u = lS(0, 11), l = lS(0, 12), f = lS(0, 13), p = lS(0, 14), d = lS(0, 15);
+                                    var m = 180 / Math.PI;
+                                    function v() {
+                                        var t = [];
+                                        return {
+                                            getDuration: function () {
+                                                var e = t[0], n = t[t.length - 1];
+                                                return e ? n.time - e.time : 0;
+                                            },
+                                            getOffset: function () {
+                                                var e = t[0], n = t[t.length - 1];
+                                                return e ? {
+                                                    x: n.x - e.x,
+                                                    y: n.y - e.y
+                                                } : {
+                                                    x: 0,
+                                                    y: 0
+                                                };
+                                            },
+                                            getLogs: function () {
+                                                return t;
+                                            },
+                                            vector: function () {
+                                                return function (t, n) {
+                                                    var i = t[n], r = t[n - 1] || i, o = {
+                                                            x: i.x - r.x,
+                                                            y: i.y - r.y
+                                                        }, a = i.time - r.time, s = o.x / a || 0, c = o.y / a || 0;
+                                                    return e({}, o, {
+                                                        angle: Math.atan2(Math.abs(o.y), Math.abs(o.x)) * m,
+                                                        velocityX: s,
+                                                        velocityY: c
+                                                    });
+                                                }(t, t.length - 1);
+                                            },
+                                            clear: function () {
+                                                t = [];
+                                            },
+                                            push: function (n) {
+                                                (() => {
+                                                    const __callInstance14 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                t.push(e({ time: Date.now() }, n));
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance14.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        };
+                                    }
+                                    function h() {
+                                        return performance ? performance.now() : Date.now();
+                                    }
+                                    var x = requestAnimationFrame || webkitRequestAnimationFrame || setTimeout, g = cancelAnimationFrame || webkitCancelAnimationFrame || clearTimeout;
+                                    function S() {
+                                        var e, t, n = {
+                                                run: function (n) {
+                                                    e = void 0 === e ? h() : e, t = x(function () {
+                                                        var t = h(), i = t - e;
+                                                        e = t, n(i);
+                                                    });
+                                                },
+                                                stop: function () {
+                                                    e = void 0, g(t);
+                                                }
+                                            };
+                                        return {
+                                            run: function e(t) {
+                                                (() => {
+                                                    const __callInstance13 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                n.run(function (n) {
+                                                                    e(t), t(n);
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance13.exports;
+                                                    return __exports.data();
+                                                })();
+                                            },
+                                            stop: function () {
+                                                (() => {
+                                                    const __callInstance12 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                n.stop();
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance12.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        };
+                                    }
+                                    function w(e, t) {
+                                        var n = e.tracker, i = t.initStatus;
+                                        n.clear(), i();
+                                    }
+                                    function y(e, t, r, o) {
+                                        var a = e.touchable, s = [
+                                                lS(0, 16),
+                                                lS(0, 17),
+                                                lS(0, 18),
+                                                lS(0, 19),
+                                                lS(0, 20),
+                                                lS(0, 21)
+                                            ], c = function (e, t, n, i) {
+                                                var r = i.initLayout, o = i.initStatus, a = i.render, s = i.scrollPixel, c = i.slideTo, u = i.getOffsetSteps, l = S();
+                                                return {
+                                                    preheat: function (e, t) {
+                                                        var i = n.tracker;
+                                                        l.stop(), i.clear(), i.push(e), r(t), o(t), n.isStart = !0, a();
+                                                    },
+                                                    move: function (t) {
+                                                        var i = n.tracker, r = e.touchRatio, o = e.touchAngle, c = e.isHorizontal;
+                                                        (() => {
+                                                            const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                env: {
+                                                                    impFunc1: () => {
+                                                                        {
+                                                                            (() => {
+                                                                                const __callInstance11 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                    env: {
+                                                                                        impFunc: () => {
+                                                                                            i.push(t);
+                                                                                        }
+                                                                                    }
+                                                                                });
+                                                                                const __exports = __callInstance11.exports;
+                                                                                return __exports.data();
+                                                                            })();
+                                                                            var u = i.vector(), l = i.getOffset();
+                                                                            (() => {
+                                                                                const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                    env: {
+                                                                                        impFunc1: () => {
+                                                                                            (() => {
+                                                                                                const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                    env: {
+                                                                                                        impFunc1: () => {
+                                                                                                            {
+                                                                                                                var f = u[c ? lS(0, 22) : lS(0, 23)] * r;
+                                                                                                                n.isTouching = !0, s(f), a();
+                                                                                                            }
+                                                                                                        },
+                                                                                                        impFunc2: () => {
+                                                                                                            n.isScrolling = !0, i.clear();
+                                                                                                        }
+                                                                                                    }
+                                                                                                });
+                                                                                                const __exports = __ifInstance2.exports;
+                                                                                                return __exports.data(c && u.angle < o || !c && 90 - u.angle < o || n.isTouching ? 1 : 0);
+                                                                                            })();
+                                                                                        },
+                                                                                        impFunc2: () => {
+                                                                                        }
+                                                                                    }
+                                                                                });
+                                                                                const __exports = __ifInstance1.exports;
+                                                                                return __exports.data(l.x || l.y ? 1 : 0);
+                                                                            })();
+                                                                        }
+                                                                    },
+                                                                    impFunc2: () => {
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __ifInstance0.exports;
+                                                            return __exports.data(n.isStart && !n.isScrolling ? 1 : 0);
+                                                        })();
+                                                    },
+                                                    stop: function () {
+                                                        var r = n.index, o = n.tracker, f = t.measure;
+                                                        (() => {
+                                                            const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                env: {
+                                                                    impFunc1: () => {
+                                                                        (() => {
+                                                                            const __ifInstance4 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            var p = o.vector()[e.isHorizontal ? lS(0, 24) : lS(0, 25)];
+                                                                                            (() => {
+                                                                                                const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                    env: {
+                                                                                                        impFunc: () => {
+                                                                                                            l.run(function (e) {
+                                                                                                                var t = p * e;
+                                                                                                                p *= 0.98, Math.abs(t) < 0.01 ? (l.stop(), w(n, i)) : (s(t), a(0));
+                                                                                                            });
+                                                                                                        }
+                                                                                                    }
+                                                                                                });
+                                                                                                const __exports = __callInstance10.exports;
+                                                                                                return __exports.data();
+                                                                                            })();
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                        {
+                                                                                            var d = o.getDuration(), m = o.getOffset()[e.isHorizontal ? lS(0, 26) : lS(0, 27)], v = Math.ceil(Math.abs(m) / f.boxSize), h = u(m);
+                                                                                            d > e.longSwipesMs ? c(r + h * (m > 0 ? -1 : 1)) : c(m > 0 ? r - v : r + v), w(n, i);
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance4.exports;
+                                                                            return __exports.data((n.isStart = !1, e.freeMode) ? 1 : 0);
+                                                                        })();
+                                                                    },
+                                                                    impFunc2: () => {
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __ifInstance3.exports;
+                                                            return __exports.data(n.isStart ? 1 : 0);
+                                                        })();
+                                                    }
+                                                };
+                                            }(r, e, t, o), u = c.preheat, l = c.move, f = c.stop;
+                                        function p(e) {
+                                            var t = a ? e.changedTouches[0] : e;
+                                            return {
+                                                x: t.pageX,
+                                                y: t.pageY
+                                            };
+                                        }
+                                        function d(t) {
+                                            for (var n = 0; n < r.excludeElements.length; n++)
+                                                if (r.excludeElements[n].contains(t.target))
+                                                    return;
+                                            var i, o, c, l, f = e.element.$wrapper, d = r.touchStartPreventDefault && -1 === s.indexOf(t.target.nodeName) || r.touchStartForcePreventDefault;
+                                            !a && d && t.preventDefault(), u(p(t), (i = f, o = r.isHorizontal, c = getComputedStyle(i).transform.replace(/[a-z]|\(|\)|\s/g, lS(0, 28)).split(lS(0, 29)).map(parseFloat), l = [], 16 === c.length ? l = c.slice(12, 14) : 6 === c.length && (l = c.slice(4, 6)), l[o ? 0 : 1] || 0));
+                                        }
+                                        function m(e) {
+                                            r.touchMoveStopPropagation && e.stopPropagation(), l(p(e)), t.isTouching && !1 !== e.cancelable && e.preventDefault();
+                                        }
+                                        function v() {
+                                            (() => {
+                                                const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            f();
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance9.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                        return {
+                                            attach: function () {
+                                                var t = e.element.$el;
+                                                a ? (n(t, lS(0, 30), d, {
+                                                    passive: r.passiveListeners,
+                                                    capture: !1
+                                                }), n(t, lS(0, 31), m), n(t, lS(0, 32), v), n(t, lS(0, 33), v)) : (n(t, lS(0, 34), d), n(document, lS(0, 35), m), n(document, lS(0, 36), v));
+                                            },
+                                            detach: function () {
+                                                var t = e.element.$el;
+                                                i(t, lS(0, 37), d), i(t, lS(0, 38), m), i(t, lS(0, 39), v), i(t, lS(0, 40), v), i(t, lS(0, 41), d), i(document, lS(0, 42), m), i(document, lS(0, 43), v);
+                                            }
+                                        };
+                                    }
+                                    function b(e, t, n) {
+                                        var i = e.$list, r = t.viewSize, o = t.slideSize, a = t.boxSize, s = function (e) {
+                                                return e.loop ? Math.ceil(e.slidesPerView) : 0;
+                                            }(n), c = s * a, u = -c + (n.centeredSlides ? (r - o) / 2 : 0);
+                                        return {
+                                            max: u,
+                                            min: n.spaceBetween + (n.loop ? o : r) + u - a * i.length,
+                                            base: u,
+                                            expand: s,
+                                            buffer: c,
+                                            minIndex: 0,
+                                            maxIndex: i.length - (n.centeredSlides || n.loop ? 1 : Math.ceil(n.slidesPerView))
+                                        };
+                                    }
+                                    function z(e, t) {
+                                        var n = {};
+                                        function i(e) {
+                                            var i = function (e, t) {
+                                                    var n = t.$el, i = e.isHorizontal ? n.offsetWidth : n.offsetHeight, r = (i - Math.ceil(e.slidesPerView - 1) * e.spaceBetween) / e.slidesPerView;
+                                                    return {
+                                                        boxSize: r + e.spaceBetween,
+                                                        viewSize: i,
+                                                        slideSize: r
+                                                    };
+                                                }(t, e), r = b(e, i, t), o = Boolean(lS(0, 44) in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 || window.DocumentTouch && document instanceof DocumentTouch);
+                                            (() => {
+                                                const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            Object.assign(n, {
+                                                                touchable: o,
+                                                                element: e,
+                                                                measure: i,
+                                                                limitation: r
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance8.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                        return n.update = i, i(e), n;
+                                    }
+                                    var T = lS(0, 45), P = lS(0, 46);
+                                    function E(e, n) {
+                                        function i(i) {
+                                            var r = e.element.$wrapper, o = i.index;
+                                            (() => {
+                                                const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            r.querySelectorAll(lS(0, 47) + P + lS(0, 48)).forEach(function (e) {
+                                                                var i, r, a = ~~e.getAttribute(P);
+                                                                i = e, void 0 === (r = [
+                                                                    n.slidePrevClass,
+                                                                    n.slideNextClass,
+                                                                    n.slideActiveClass
+                                                                ]) && (r = []), Array.isArray(r) || (r = [r]), r.forEach(function (e) {
+                                                                    return i.classList.contains(e) && i.classList.remove(e);
+                                                                }), a === o && t(e, n.slideActiveClass), a === o - 1 && t(e, n.slidePrevClass), a === o + 1 && t(e, n.slideNextClass);
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance7.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                        function a() {
+                                            (() => {
+                                                const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            e.element.$wrapper.querySelectorAll(lS(0, 49) + T + lS(0, 50)).forEach(function (t) {
+                                                                return e.element.$wrapper.removeChild(t);
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance6.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                        function s() {
+                                            e.element.$list.forEach(function (e, t) {
+                                                return r(e, P, t);
+                                            }), a(), function () {
+                                                if (n.loop) {
+                                                    var t = e.element, i = e.limitation, o = t.$list, a = t.$wrapper, s = i.expand, c = o.slice(-s).map(function (e) {
+                                                            return e.cloneNode(!0);
+                                                        }), u = o.slice(0, s).map(function (e) {
+                                                            return e.cloneNode(!0);
+                                                        });
+                                                    (() => {
+                                                        const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                                                            env: {
+                                                                impFunc: () => {
+                                                                    c.forEach(function (e, t) {
+                                                                        a.appendChild(r(u[t], T)), a.insertBefore(r(c[t], T), o[0]);
+                                                                    });
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __callInstance5.exports;
+                                                        return __exports.data();
+                                                    })();
+                                                }
+                                            }();
+                                        }
+                                        function c() {
+                                            var t, i = e.element, r = e.measure, a = i.$wrapper, s = {
+                                                    display: 'flex',
+                                                    willChange: 'transform',
+                                                    flexDirection: n.isHorizontal ? lS(0, 51) : lS(0, 52)
+                                                }, c = ((t = {})[n.isHorizontal ? lS(0, 53) : lS(0, 54)] = r.slideSize + lS(0, 55), t[n.isHorizontal ? lS(0, 56) : lS(0, 57)] = n.spaceBetween + lS(0, 58), t);
+                                            o(a, s), a.querySelectorAll(lS(0, 59) + P + lS(0, 60)).forEach(function (e) {
+                                                return o(e, c);
+                                            });
+                                        }
+                                        return {
+                                            init: function () {
+                                                s(), c();
+                                            },
+                                            render: function (t, r, o, a) {
+                                                var s = e.element.$wrapper, c = void 0 === r ? n.speed : r;
+                                                n.injections.translate(t, e, n, c), t.isStart || i(t), a && getComputedStyle(s).transform, o && setTimeout(o, c);
+                                            },
+                                            destroy: function () {
+                                                var t = e.element, i = t.$list, r = t.$wrapper, o = n.isHorizontal ? lS(0, 61) : lS(0, 62);
+                                                [
+                                                    lS(0, 63),
+                                                    lS(0, 64),
+                                                    lS(0, 65)
+                                                ].forEach(function (e) {
+                                                    (() => {
+                                                        const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                                            env: {
+                                                                impFunc: () => {
+                                                                    r.style.removeProperty(e);
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __callInstance4.exports;
+                                                        return __exports.data();
+                                                    })();
+                                                }), i.forEach(function (e) {
+                                                    return e.style.removeProperty(o);
+                                                }), a();
+                                            },
+                                            updateSize: c
+                                        };
+                                    }
+                                    function M(e, t) {
+                                        var n = e - t.max, i = e - t.min;
+                                        return n > 0 ? n : i < 0 ? i : 0;
+                                    }
+                                    function A(t, n, i, r, o) {
+                                        function a(e) {
+                                            var n = t.measure;
+                                            return Math.ceil(Math.abs(e) / n.boxSize - i.longSwipesRatio);
+                                        }
+                                        function s(e, t, i) {
+                                            (() => {
+                                                const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            r.render(n, e, t, i);
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance3.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                        function c(r) {
+                                            var a, s = t.limitation, c = s.min, u = s.max, f = u - c + (i.loop ? t.measure.boxSize : 0), p = f + 1;
+                                            n.transforms = r, i.loop ? (a = (u - r) % p / f, n.progress = a < 0 ? 1 + a : a > 1 ? a - 1 : a) : (a = (u - r) / f, n.progress = a < 0 ? 0 : a > 1 ? 1 : a), o.emit(l, e({}, n));
+                                        }
+                                        function p(e, r) {
+                                            var l = t.measure, p = t.limitation, d = p.maxIndex - p.minIndex + 1, m = i.loop ? (e % d + d) % d : e > p.maxIndex ? p.maxIndex : e < p.minIndex ? p.minIndex : e, v = -m * l.boxSize + p.base;
+                                            if (0 !== a(v - n.transforms) && i.loop) {
+                                                var h = M(n.transforms, p), x = m - n.index, g = function (e, t, n, i) {
+                                                        var r = n.maxIndex, o = (i > 0 ? 1 : -1) * (n.minIndex - r - 1) + t - e;
+                                                        return Math.abs(i) > Math.abs(o) ? o : i;
+                                                    }(n.index, m, p, x);
+                                                g === x || h ? n.index === m && c(h > 0 ? p.min - l.boxSize + h : p.max + l.boxSize + h) : c(g < 0 ? p.min - l.boxSize : p.max + l.boxSize), s(0, void 0, !0);
+                                            }
+                                            o.emit(u, n.index, n, m), n.index = m, c(v), s(r, function () {
+                                                (() => {
+                                                    const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                o.emit(f, m, n);
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance2.exports;
+                                                    return __exports.data();
+                                                })();
+                                            });
+                                        }
+                                        return {
+                                            update: function () {
+                                                p(n.index, 0), r.updateSize();
+                                            },
+                                            render: s,
+                                            transform: c,
+                                            slideTo: p,
+                                            scrollPixel: function (e) {
+                                                var r = n.transforms, o = t.measure, a = t.limitation, s = Number(e.toExponential().split(lS(0, 66))[1]), u = s <= 0 ? Math.pow(10, -(s - 1)) : 1, l = r;
+                                                if (i.resistance && !i.loop && (e > 0 && r >= a.max ? e -= Math.pow(e * u, i.resistanceRatio) / u : e < 0 && r <= a.min && (e += Math.pow(-e * u, i.resistanceRatio) / u)), l += e, i.loop) {
+                                                    var f = n.tracker.vector(), p = i.isHorizontal ? f.velocityX : f.velocityY, d = M(r, a);
+                                                    d && function (e, t, n) {
+                                                        return e > 0 && t > n.max || e < 0 && t < n.min;
+                                                    }(p, r, a) && (l = d > 0 ? a.min - o.boxSize + d : a.max + o.boxSize + d);
+                                                }
+                                                (() => {
+                                                    const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                c(l);
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance1.exports;
+                                                    return __exports.data();
+                                                })();
+                                            },
+                                            initStatus: function (e) {
+                                                void 0 === e && (e = 0), n.startTransform = e, n.isStart = !1, n.isScrolling = !1, n.isTouching = !1;
+                                            },
+                                            initLayout: function (e) {
+                                                (() => {
+                                                    const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                c(e);
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance0.exports;
+                                                    return __exports.data();
+                                                })();
+                                            },
+                                            getOffsetSteps: a
+                                        };
+                                    }
+                                    function C(e, t) {
+                                        var n = lS(0, 67) == typeof e ? document.body.querySelector(e) : e, i = n.querySelector(lS(0, 68) + t.wrapperClass), r = [].slice.call(n.getElementsByClassName(t.slideClass));
+                                        return {
+                                            $el: n,
+                                            $wrapper: i,
+                                            $list: r = r.filter(function (e) {
+                                                return null === e.getAttribute(lS(0, 69));
+                                            })
+                                        };
+                                    }
+                                    var $ = function t(n, i) {
+                                        var r, o = function (t) {
+                                                var n = e({}, a, t);
+                                                return e({}, n, { isHorizontal: lS(0, 70) === n.direction });
+                                            }(i), u = (r = {}, {
+                                                on: function (e, t) {
+                                                    r[e] ? r[e].push(t) : r[e] = [t];
+                                                },
+                                                off: function (e, t) {
+                                                    (() => {
+                                                        const __ifInstance5 = new WebAssembly.Instance(__ifWasmModule, {
+                                                            env: {
+                                                                impFunc1: () => {
+                                                                    {
+                                                                        var n = r[e].indexOf(t);
+                                                                        n > -1 && r[e].splice(n, 1);
+                                                                    }
+                                                                },
+                                                                impFunc2: () => {
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __ifInstance5.exports;
+                                                        return __exports.data(r[e] ? 1 : 0);
+                                                    })();
+                                                },
+                                                emit: function (e) {
+                                                    (() => {
+                                                        var t = arguments.length, n = new Array(t > 1 ? t - 1 : 0), i = 1;
+                                                        const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                                                            env: {
+                                                                test: () => {
+                                                                    return i < t ? 1 : 0;
+                                                                },
+                                                                update: () => {
+                                                                    i++;
+                                                                },
+                                                                body: () => {
+                                                                    n[i - 1] = arguments[i];
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __forInstance1.exports;
+                                                        return __exports.data();
+                                                    })();
+                                                    r[e] && r[e].forEach(function (e) {
+                                                        return e.apply(void 0, n);
+                                                    });
+                                                },
+                                                clear: function () {
+                                                    r = {};
+                                                }
+                                            }), l = z(C(n, o), o), f = {
+                                                tracker: v(),
+                                                index: 0,
+                                                startTransform: 0,
+                                                isStart: !1,
+                                                isScrolling: !1,
+                                                isTouching: !1,
+                                                transforms: 0,
+                                                progress: 0
+                                            }, m = u.on, h = u.off, x = u.emit, g = {
+                                                on: m,
+                                                off: h,
+                                                env: l,
+                                                state: f,
+                                                options: o
+                                            };
+                                        (o.plugins || t.plugins || []).forEach(function (e) {
+                                            return e(g, o);
+                                        }), x(s, g);
+                                        var S = E(l, o), w = A(l, f, o, S, u), b = y(l, f, o, w);
+                                        var T = w.slideTo;
+                                        return Object.assign(g, {
+                                            update: function () {
+                                                S.destroy(), l.update(C(n, o)), S.init(), w.update();
+                                            },
+                                            destroy: function () {
+                                                x(p, g), b.detach(), S.destroy(), x(d, g), u.clear();
+                                            },
+                                            slideTo: T,
+                                            updateSize: function () {
+                                                l.update(C(n, o)), w.update();
+                                            }
+                                        }), S.init(), b.attach(), T(o.initialSlide, 0), x(c, g), g;
+                                    };
+                                    return $.use = function (e) {
+                                        $.plugins = e;
+                                    }, $;
+                                }();
+                            }
+                        }, t = {};
+                    !function n(i) {
+                        var r = t[i];
+                        if (void 0 !== r)
+                            return r.exports;
+                        var o = t[i] = { exports: {} };
+                        return e[i].call(o.exports, o, o.exports, n), o.exports;
+                    }(2590);
+                })();
+            }
+        }
+    });
+    const __exports = __callInstance18.exports;
+    return __exports.data();
+})();</script>
+</body>
+</html>

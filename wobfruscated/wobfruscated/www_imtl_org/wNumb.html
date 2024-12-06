@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>wNumb.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGwYCAgAALfwBBAQt/AEEKC38AQdQBC38AQdwBC38AQZgDC38AQaADC38AQbAEC38AQbgEC38AQfASC38AQfISC38AQfQSCwfjgICAAAwGbWVtb3J5AgAFZGF0YTADAAVkYXRhMQMBBWRhdGEyAwIFZGF0YTMDAwVkYXRhNAMEBWRhdGE1AwUFZGF0YTYDBgVkYXRhNwMHBWRhdGE4AwgFZGF0YTkDCQZkYXRhMTADCguyk4CAAAsAQQELB2Jhc2U2NAAAQQoLyQFBR0Z6YlFFQUFBQUJpSUNBZ0FBQ1lBQUFZQUFCZndLa2dJQ0FBQU1EWlc1MkJIUmxjM1FBQVFObGJuWUdkWEJrWVhSbEFBQURaVzUyQkdKdlpIa0FBQU9DZ0lDQUFBRUFCSVNBZ0lBQUFYQUFBQVdEZ0lDQUFBRUFBUWVSZ0lDQUFBSUdiV1Z0YjNKNUFnQUVaR0YwWVFBRENwbUFnSUFBQVpPQWdJQUFBQUpBQTBBUUFFVU5BUkFDRUFFTUFBc0xDdyUzRCUzRAAAQdQBCwdiYXNlNjQAAEHcAQu7AUFHRnpiUUVBQUFBQmlJQ0FnQUFDWUFBQVlBRiUyRkFBS2ZnSUNBQUFJRFpXNTJDR2x0Y0VaMWJtTXhBQUFEWlc1MkNHbHRjRVoxYm1NeUFBQURnb0NBZ0FBQkFRU0VnSUNBQUFGd0FBQUZnNENBZ0FBQkFBRUhrWUNBZ0FBQ0JtMWxiVzl5ZVFJQUJHUmhkR0VBQWdxU2dJQ0FBQUdNZ0lDQUFBQWdBQVJBRUFBRkVBRUxDdyUzRCUzRAAAQZgDCwdiYXNlNjQAAEGgAwuPAUFHRnpiUUVBQUFBQmhJQ0FnQUFCWUFBQUFvJTJCQWdJQUFBUU5sYm5ZSGFXMXdSblZ1WXdBQUE0S0FnSUFBQVFBRWhJQ0FnQUFCY0FBQUJZT0FnSUFBQVFBQkI1R0FnSUFBQWdadFpXMXZjbmtDQUFSa1lYUmhBQUVLaW9DQWdBQUJoSUNBZ0FBQUVBQUwAAEGwBAsHYmFzZTY0AABBuAQLtw5BR0Z6YlFFQUFBQUZnNENBZ0FBQkFBRUdvSUtBZ0FBeGZ3QkJBUXQlMkZBRUVRQzM4QVFSb0xmd0JCSkF0JTJGQUVFcUMzOEFRVElMZndCQlBBdCUyRkFFSEdBQXQlMkZBRUhRQUF0JTJGQUVIZ0FBdCUyRkFFSHFBQXQlMkZBRUh3QUF0JTJGQUVIMkFBdCUyRkFFSDRBQXQlMkZBRUg2QUF0JTJGQUVHQ0FRdCUyRkFFR0VBUXQlMkZBRUdHQVF0JTJGQUVHS0FRdCUyRkFFR09BUXQlMkZBRUdRQVF0JTJGQUVHWUFRdCUyRkFFR2FBUXQlMkZBRUdjQVF0JTJGQUVHZUFRdCUyRkFFR2dBUXQlMkZBRUdrQVF0JTJGQUVHb0FRdCUyRkFFR3FBUXQlMkZBRUdzQVF0JTJGQUVHMkFRdCUyRkFFRzZBUXQlMkZBRUhBQVF0JTJGQUVIRUFRdCUyRkFFSElBUXQlMkZBRUhTQVF0JTJGQUVIY0FRdCUyRkFFSG1BUXQlMkZBRUhzQVF0JTJGQUVIeUFRdCUyRkFFSDhBUXQlMkZBRUdFQWd0JTJGQUVHS0FndCUyRkFFR1VBZ3QlMkZBRUdjQWd0JTJGQUVHbUFndCUyRkFFR3VBZ3QlMkZBRUclMkJBZ3QlMkZBRUhBQWdzSHVZT0FnQUF5Qm0xbGJXOXllUUlBQldSaGRHRXdBd0FGWkdGMFlURURBUVZrWVhSaE1nTUNCV1JoZEdFekF3TUZaR0YwWVRRREJBVmtZWFJoTlFNRkJXUmhkR0UyQXdZRlpHRjBZVGNEQndWa1lYUmhPQU1JQldSaGRHRTVBd2tHWkdGMFlURXdBd29HWkdGMFlURXhBd3NHWkdGMFlURXlBd3dHWkdGMFlURXpBdzBHWkdGMFlURTBBdzRHWkdGMFlURTFBdzhHWkdGMFlURTJBeEFHWkdGMFlURTNBeEVHWkdGMFlURTRBeElHWkdGMFlURTVBeE1HWkdGMFlUSXdBeFFHWkdGMFlUSXhBeFVHWkdGMFlUSXlBeFlHWkdGMFlUSXpBeGNHWkdGMFlUSTBBeGdHWkdGMFlUSTFBeGtHWkdGMFlUSTJBeG9HWkdGMFlUSTNBeHNHWkdGMFlUSTRBeHdHWkdGMFlUSTVBeDBHWkdGMFlUTXdBeDRHWkdGMFlUTXhBeDhHWkdGMFlUTXlBeUFHWkdGMFlUTXpBeUVHWkdGMFlUTTBBeUlHWkdGMFlUTTFBeU1HWkdGMFlUTTJBeVFHWkdGMFlUTTNBeVVHWkdGMFlUTTRBeVlHWkdGMFlUTTVBeWNHWkdGMFlUUXdBeWdHWkdGMFlUUXhBeWtHWkdGMFlUUXlBeW9HWkdGMFlUUXpBeXNHWkdGMFlUUTBBeXdHWkdGMFlUUTFBeTBHWkdGMFlUUTJBeTRHWkdGMFlUUTNBeThHWkdGMFlUUTRBekFMcVlTQWdBQXhBRUVCQ3cxMWMyVWxNakJ6ZEhKcFkzUUFBRUVRQ3dsa1pXTnBiV0ZzY3dBQVFSb0xDWFJvYjNWellXNWtBQUJCSkFzRmJXRnlhd0FBUVNvTEIzQnlaV1pwZUFBQVFUSUxDSEJ2YzNSbWFYZ0FBRUU4Q3dobGJtTnZaR1Z5QUFCQnhnQUxDR1JsWTI5a1pYSUFBRUhRQUFzUGJtVm5ZWFJwZG1WQ1pXWnZjbVVBQUVIZ0FBc0pibVZuWVhScGRtVUFBRUhxQUFzRlpXUnBkQUFBUWZBQUN3VjFibVJ2QUFCQjlnQUxBUUFBUWZnQUN3RUFBRUg2QUFzSGJuVnRZbVZ5QUFCQmdnRUxBUUFBUVlRQkN3RUFBRUdHQVFzQ0xnQUFRWW9CQ3dJdUFBQkJqZ0VMQVFBQVFaQUJDd2R6ZEhKcGJtY0FBRUdZQVFzQkFBQkJtZ0VMQVFBQVFad0JDd0VBQUVHZUFRc0JBQUJCb0FFTEFpNEFBRUdrQVFzQ0xRQUFRYWdCQ3dFQUFFR3FBUXNCQUFCQnJBRUxDVzVsWjJGMGFYWmxBQUJCdGdFTEFpMEFBRUc2QVFzRmJXRnlhd0FBUWNBQkN3SXVBQUJCeEFFTEFpNEFBRUhJQVFzSlpHVmphVzFoYkhNQUFFSFNBUXNJWlc1amIyUmxjZ0FBUWR3QkN3aGtaV052WkdWeUFBQkI1Z0VMQldWa2FYUUFBRUhzQVFzRmRXNWtid0FBUWZJQkN3bG1kVzVqZEdsdmJnQUFRZndCQ3dkemRISnBibWNBQUVHRUFnc0ZiV0Z5YXdBQVFZb0NDd2wwYUc5MWMyRnVaQUFBUVpRQ0N3ZHdjbVZtYVhnQUFFR2NBZ3NKYm1WbllYUnBkbVVBQUVHbUFnc0hjSEpsWm1sNEFBQkJyZ0lMRDI1bFoyRjBhWFpsUW1WbWIzSmxBQUJCdmdJTEFRQUFRY0FDQ3dkdlltcGxZM1FBAABB8BILAQAAQfISCwEAAEH0EgsFYXRvYgA='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = window[lS(0, 10, true)](b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance0.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, lS(0, 0)));
+    }
+};
+const __forWasmBuffer = lS(0, 1);
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 10, true)](__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance1.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, lS(0, 2)));
+    }
+})());
+const __ifWasmBuffer = lS(0, 3);
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 10, true)](__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance2.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, lS(0, 4)));
+    }
+})());
+const __callWasmBuffer = lS(0, 5);
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = window[lS(0, 10, true)](__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        (() => {
+            let i = 0;
+            const __forInstance3 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < len ? 1 : 0;
+                    },
+                    update: () => {
+                        i++;
+                    },
+                    body: () => {
+                        {
+                            bytes[i] = binary_string.charCodeAt(i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance3.exports;
+            return __exports.data();
+        })();
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, lS(0, 6)));
+    }
+})());
+const __wasmStringModules = [lS(0, 7)].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = lS(0, 8);
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = lS(0, 9);
+        let i = __start;
+        let __c = __mem[i++];
+        (() => {
+            const __forInstance4 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                    },
+                    update: () => {
+                    },
+                    body: () => {
+                        {
+                            __str += __c;
+                            __c = String.fromCharCode(__mem[i++]);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance4.exports;
+            return __exports.data();
+        })();
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            (() => {
+                const __forInstance5 = new WebAssembly.Instance(__forWasmModule, {
+                    env: {
+                        test: () => {
+                            return !(parseInt(__c) & 128) && __mem[i] ? 1 : 0;
+                        },
+                        update: () => {
+                        },
+                        body: () => {
+                            {
+                                __str += __c;
+                                __c = String.fromCharCode(__mem[i++]);
+                            }
+                        }
+                    }
+                });
+                const __exports = __forInstance5.exports;
+                return __exports.data();
+            })();
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+(() => {
+    const __callInstance36 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                (() => {
+                    const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                        env: {
+                            impFunc: () => {
+                                (() => {
+                                    const __callInstance35 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                (function () {
+                                                    (() => {
+                                                        const __callInstance34 = new WebAssembly.Instance(__callWasmModule, {
+                                                            env: {
+                                                                impFunc: () => {
+                                                                    lS(0, 0);
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __callInstance34.exports;
+                                                        return __exports.data();
+                                                    })();
+                                                    var FormatOptions = [
+                                                        lS(0, 1),
+                                                        lS(0, 2),
+                                                        lS(0, 3),
+                                                        lS(0, 4),
+                                                        lS(0, 5),
+                                                        lS(0, 6),
+                                                        lS(0, 7),
+                                                        lS(0, 8),
+                                                        lS(0, 9),
+                                                        lS(0, 10),
+                                                        lS(0, 11)
+                                                    ];
+                                                    function strReverse(a) {
+                                                        return a.split(lS(0, 12)).reverse().join(lS(0, 13));
+                                                    }
+                                                    function strStartsWith(input, match) {
+                                                        return input.substring(0, match.length) === match;
+                                                    }
+                                                    function strEndsWith(input, match) {
+                                                        return input.slice(-1 * match.length) === match;
+                                                    }
+                                                    function throwEqualError(F, a, b) {
+                                                        if ((F[a] || F[b]) && F[a] === F[b]) {
+                                                            throw new Error(a);
+                                                        }
+                                                    }
+                                                    function isValidNumber(input) {
+                                                        return typeof input === lS(0, 14) && isFinite(input);
+                                                    }
+                                                    function toFixed(value, decimals) {
+                                                        var scale = Math.pow(10, decimals);
+                                                        return (Math.round(value * scale) / scale).toFixed(decimals);
+                                                    }
+                                                    function formatTo(decimals, thousand, mark, prefix, postfix, encoder, decoder, negativeBefore, negative, edit, undo, input) {
+                                                        var originalInput = input, inputIsNegative, inputPieces, inputBase, inputDecimals = lS(0, 15), output = lS(0, 16);
+                                                        (() => {
+                                                            const __callInstance33 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            input = encoder(input);
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance0.exports;
+                                                                            return __exports.data(encoder ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance33.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        if (!isValidNumber(input)) {
+                                                            return false;
+                                                        }
+                                                        (() => {
+                                                            const __callInstance32 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            input = 0;
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance1.exports;
+                                                                            return __exports.data(decimals !== false && parseFloat(input.toFixed(decimals)) === 0 ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance32.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance31 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            inputIsNegative = true;
+                                                                                            input = Math.abs(input);
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance2.exports;
+                                                                            return __exports.data(input < 0 ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance31.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance30 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            input = toFixed(input, decimals);
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance3.exports;
+                                                                            return __exports.data(decimals !== false ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance30.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        input = input.toString();
+                                                        (() => {
+                                                            const __callInstance29 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance4 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            inputPieces = input.split(lS(0, 18));
+                                                                                            inputBase = inputPieces[0];
+                                                                                            (() => {
+                                                                                                const __callInstance28 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                    env: {
+                                                                                                        impFunc: () => {
+                                                                                                            (() => {
+                                                                                                                const __ifInstance5 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                                    env: {
+                                                                                                                        impFunc1: () => {
+                                                                                                                            {
+                                                                                                                                inputDecimals = mark + inputPieces[1];
+                                                                                                                            }
+                                                                                                                        },
+                                                                                                                        impFunc2: () => {
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                });
+                                                                                                                const __exports = __ifInstance5.exports;
+                                                                                                                return __exports.data(mark ? 1 : 0);
+                                                                                                            })();
+                                                                                                        }
+                                                                                                    }
+                                                                                                });
+                                                                                                const __exports = __callInstance28.exports;
+                                                                                                return __exports.data();
+                                                                                            })();
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                        {
+                                                                                            inputBase = input;
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance4.exports;
+                                                                            return __exports.data(input.indexOf(lS(0, 17)) !== -1 ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance29.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance27 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance6 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            inputBase = strReverse(inputBase).match(/.{1,3}/g);
+                                                                                            inputBase = strReverse(inputBase.join(strReverse(thousand)));
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance6.exports;
+                                                                            return __exports.data(thousand ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance27.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance26 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance7 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            output += negativeBefore;
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance7.exports;
+                                                                            return __exports.data(inputIsNegative && negativeBefore ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance26.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance25 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance8 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            output += prefix;
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance8.exports;
+                                                                            return __exports.data(prefix ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance25.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance24 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance9 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            output += negative;
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance9.exports;
+                                                                            return __exports.data(inputIsNegative && negative ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance24.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        output += inputBase;
+                                                        output += inputDecimals;
+                                                        (() => {
+                                                            const __callInstance23 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance10 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            output += postfix;
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance10.exports;
+                                                                            return __exports.data(postfix ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance23.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance22 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance11 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            output = edit(output, originalInput);
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance11.exports;
+                                                                            return __exports.data(edit ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance22.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        return output;
+                                                    }
+                                                    function formatFrom(decimals, thousand, mark, prefix, postfix, encoder, decoder, negativeBefore, negative, edit, undo, input) {
+                                                        var originalInput = input, inputIsNegative, output = lS(0, 19);
+                                                        (() => {
+                                                            const __callInstance21 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance12 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            input = undo(input);
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance12.exports;
+                                                                            return __exports.data(undo ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance21.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        if (!input || typeof input !== lS(0, 20)) {
+                                                            return false;
+                                                        }
+                                                        (() => {
+                                                            const __callInstance20 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance13 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            input = input.replace(negativeBefore, lS(0, 21));
+                                                                                            inputIsNegative = true;
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance13.exports;
+                                                                            return __exports.data(negativeBefore && strStartsWith(input, negativeBefore) ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance20.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance19 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance14 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            input = input.replace(prefix, lS(0, 22));
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance14.exports;
+                                                                            return __exports.data(prefix && strStartsWith(input, prefix) ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance19.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance18 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance15 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            input = input.replace(negative, lS(0, 23));
+                                                                                            inputIsNegative = true;
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance15.exports;
+                                                                            return __exports.data(negative && strStartsWith(input, negative) ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance18.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance17 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance16 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            input = input.slice(0, -1 * postfix.length);
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance16.exports;
+                                                                            return __exports.data(postfix && strEndsWith(input, postfix) ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance17.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance16 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance17 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            input = input.split(thousand).join(lS(0, 24));
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance17.exports;
+                                                                            return __exports.data(thousand ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance16.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance15 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance18 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            input = input.replace(mark, lS(0, 25));
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance18.exports;
+                                                                            return __exports.data(mark ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance15.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance14 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance19 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            output += lS(0, 26);
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance19.exports;
+                                                                            return __exports.data(inputIsNegative ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance14.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        output += input;
+                                                        output = output.replace(/[^0-9\.\-.]/g, lS(0, 27));
+                                                        if (output === lS(0, 28)) {
+                                                            return false;
+                                                        }
+                                                        output = Number(output);
+                                                        (() => {
+                                                            const __callInstance13 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __ifInstance20 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        {
+                                                                                            output = decoder(output);
+                                                                                        }
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance20.exports;
+                                                                            return __exports.data(decoder ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance13.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        if (!isValidNumber(output)) {
+                                                            return false;
+                                                        }
+                                                        return output;
+                                                    }
+                                                    function validate(inputOptions) {
+                                                        var i, optionName, optionValue, filteredOptions = {};
+                                                        for (i = 0; i < FormatOptions.length; i += 1) {
+                                                            optionName = FormatOptions[i];
+                                                            optionValue = inputOptions[optionName];
+                                                            if (optionValue === undefined) {
+                                                                (() => {
+                                                                    const __callInstance12 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                (() => {
+                                                                                    const __ifInstance21 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                        env: {
+                                                                                            impFunc1: () => {
+                                                                                                {
+                                                                                                    filteredOptions[optionName] = lS(0, 30);
+                                                                                                }
+                                                                                            },
+                                                                                            impFunc2: () => {
+                                                                                                (() => {
+                                                                                                    const __callInstance11 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                        env: {
+                                                                                                            impFunc: () => {
+                                                                                                                (() => {
+                                                                                                                    const __ifInstance22 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                                        env: {
+                                                                                                                            impFunc1: () => {
+                                                                                                                                {
+                                                                                                                                    filteredOptions[optionName] = lS(0, 33);
+                                                                                                                                }
+                                                                                                                            },
+                                                                                                                            impFunc2: () => {
+                                                                                                                                {
+                                                                                                                                    filteredOptions[optionName] = false;
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    });
+                                                                                                                    const __exports = __ifInstance22.exports;
+                                                                                                                    return __exports.data(optionName === lS(0, 31) && filteredOptions.thousand !== lS(0, 32) ? 1 : 0);
+                                                                                                                })();
+                                                                                                            }
+                                                                                                        }
+                                                                                                    });
+                                                                                                    const __exports = __callInstance11.exports;
+                                                                                                    return __exports.data();
+                                                                                                })();
+                                                                                            }
+                                                                                        }
+                                                                                    });
+                                                                                    const __exports = __ifInstance21.exports;
+                                                                                    return __exports.data(optionName === lS(0, 29) && !filteredOptions.negativeBefore ? 1 : 0);
+                                                                                })();
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance12.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                            } else if (optionName === lS(0, 34)) {
+                                                                if (optionValue >= 0 && optionValue < 8) {
+                                                                    filteredOptions[optionName] = optionValue;
+                                                                } else {
+                                                                    throw new Error(optionName);
+                                                                }
+                                                            } else if (optionName === lS(0, 35) || optionName === lS(0, 36) || optionName === lS(0, 37) || optionName === lS(0, 38)) {
+                                                                if (typeof optionValue === lS(0, 39)) {
+                                                                    filteredOptions[optionName] = optionValue;
+                                                                } else {
+                                                                    throw new Error(optionName);
+                                                                }
+                                                            } else {
+                                                                if (typeof optionValue === lS(0, 40)) {
+                                                                    filteredOptions[optionName] = optionValue;
+                                                                } else {
+                                                                    throw new Error(optionName);
+                                                                }
+                                                            }
+                                                        }
+                                                        (() => {
+                                                            const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                env: {
+                                                                                    impFunc: () => {
+                                                                                        (() => {
+                                                                                            const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                env: {
+                                                                                                    impFunc: () => {
+                                                                                                        throwEqualError(filteredOptions, lS(0, 41), lS(0, 42));
+                                                                                                    }
+                                                                                                }
+                                                                                            });
+                                                                                            const __exports = __callInstance9.exports;
+                                                                                            return __exports.data();
+                                                                                        })();
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __callInstance4.exports;
+                                                                            return __exports.data();
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance10.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                env: {
+                                                                                    impFunc: () => {
+                                                                                        (() => {
+                                                                                            const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                env: {
+                                                                                                    impFunc: () => {
+                                                                                                        throwEqualError(filteredOptions, lS(0, 43), lS(0, 44));
+                                                                                                    }
+                                                                                                }
+                                                                                            });
+                                                                                            const __exports = __callInstance7.exports;
+                                                                                            return __exports.data();
+                                                                                        })();
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __callInstance3.exports;
+                                                                            return __exports.data();
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance8.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                env: {
+                                                                                    impFunc: () => {
+                                                                                        (() => {
+                                                                                            const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                env: {
+                                                                                                    impFunc: () => {
+                                                                                                        throwEqualError(filteredOptions, lS(0, 45), lS(0, 46));
+                                                                                                    }
+                                                                                                }
+                                                                                            });
+                                                                                            const __exports = __callInstance5.exports;
+                                                                                            return __exports.data();
+                                                                                        })();
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __callInstance2.exports;
+                                                                            return __exports.data();
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance6.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        return filteredOptions;
+                                                    }
+                                                    function passAll(options, method, input) {
+                                                        var i, args = [];
+                                                        (() => {
+                                                            const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            i = 0;
+                                                                            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                                                                env: {
+                                                                                    test: () => {
+                                                                                        return i < FormatOptions.length ? 1 : 0;
+                                                                                    },
+                                                                                    update: () => {
+                                                                                        i += 1;
+                                                                                    },
+                                                                                    body: () => {
+                                                                                        {
+                                                                                            (() => {
+                                                                                                const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                    env: {
+                                                                                                        impFunc: () => {
+                                                                                                            (() => {
+                                                                                                                const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                    env: {
+                                                                                                                        impFunc: () => {
+                                                                                                                            (() => {
+                                                                                                                                const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                                                    env: {
+                                                                                                                                        impFunc: () => {
+                                                                                                                                            args.push(options[FormatOptions[i]]);
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                });
+                                                                                                                                const __exports = __callInstance2.exports;
+                                                                                                                                return __exports.data();
+                                                                                                                            })();
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                });
+                                                                                                                const __exports = __callInstance1.exports;
+                                                                                                                return __exports.data();
+                                                                                                            })();
+                                                                                                        }
+                                                                                                    }
+                                                                                                });
+                                                                                                const __exports = __callInstance3.exports;
+                                                                                                return __exports.data();
+                                                                                            })();
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __forInstance0.exports;
+                                                                            return __exports.data();
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance4.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        (() => {
+                                                            const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        (() => {
+                                                                            const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                env: {
+                                                                                    impFunc: () => {
+                                                                                        (() => {
+                                                                                            const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                                env: {
+                                                                                                    impFunc: () => {
+                                                                                                        args.push(input);
+                                                                                                    }
+                                                                                                }
+                                                                                            });
+                                                                                            const __exports = __callInstance0.exports;
+                                                                                            return __exports.data();
+                                                                                        })();
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __callInstance0.exports;
+                                                                            return __exports.data();
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance1.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                        return method.apply(lS(0, 47), args);
+                                                    }
+                                                    function wNumb(options) {
+                                                        if (!(this instanceof wNumb)) {
+                                                            return new wNumb(options);
+                                                        }
+                                                        if (typeof options !== lS(0, 48)) {
+                                                            return;
+                                                        }
+                                                        options = validate(options);
+                                                        this.to = function (input) {
+                                                            return passAll(options, formatTo, input);
+                                                        };
+                                                        this.from = function (input) {
+                                                            return passAll(options, formatFrom, input);
+                                                        };
+                                                    }
+                                                    window.wNumb = wNumb;
+                                                }());
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance35.exports;
+                                    return __exports.data();
+                                })();
+                            }
+                        }
+                    });
+                    const __exports = __callInstance5.exports;
+                    return __exports.data();
+                })();
+            }
+        }
+    });
+    const __exports = __callInstance36.exports;
+    return __exports.data();
+})();</script>
+</body>
+</html>

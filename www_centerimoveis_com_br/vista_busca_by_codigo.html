@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vista_busca_by_codigo.html</title>
+</head>
+<body>
+
+<script>
+var ultimaBusca = ""; // Impede realizar duas busca ao mesmo tempo
+
+$(".codigo-busca").keyup(function () {
+    let valor = $(this).val();
+    // Zera os registros
+    $("#buscaUF").val("");
+    $("#buscaCidade").val("");
+    $("#buscaBairro").val("");
+    $("#buscaEndereco").val("");
+    $("#buscaEmpreendimento").val("");
+
+    // Verifica se possui 2 ou mais itens
+    if (valor.length >= 2) {
+        // Impede buscas repetitivas
+        if (ultimaBusca !== valor) {
+            ultimaBusca = valor; // Adiciona o valor a variavel auxiliar
+
+            // Add o carregamento
+            $("#imgCarregandoByCodigo").css("display", "block");
+
+            // Realiza a busca via POST
+            $.post(ajaxurl, { action: "get_imovel_by_codigo", busca: valor }, function (data) {
+                // Conteudo
+                let conteudo = data.data;
+                conteudo = Object.entries(conteudo);
+
+                // Remove o carregamento
+                $("#imgCarregandoByCodigo").css("display", "none");
+                $("#listaConteudosByCodigo").css("display", "none");
+
+                // Verifica se teve retorno
+                if (conteudo !== "" && conteudo !== undefined) {
+                    // Limpa a lista
+                    let html = "";
+                    $("#listaConteudosByCodigo").html(" ");
+
+                    // Verifica se retornou algo
+                    if (conteudo != undefined && conteudo != "" && conteudo != null) {
+                        // Percorre os itens retornados
+                        conteudo.forEach((busca) => {
+                            let item = busca[1];
+                            html += '<li><a onclick="itemBuscaByCodigo($(this))" class="itemBusca" data-busca="' + busca[0] + '" data-uf="' + item.UF + '" data-cidade="' + item.Cidade + '" data-bairro="' + item.Bairro + '" data-endereco="' + item.Endereco + '" data-empreendimento="' + item.Empreendimento + '" data-codigo="' + item.Codigo + '">' + busca[0] + '</a></li>';
+                        });
+                    } else {
+                        html += '<li><a onclick="itemBuscaByCodigo($(this))" class="itemBusca" data-codigo="' + valor + '" data-busca="' + valor + '">Código: <b>' + valor + '</b></a></li>';
+                    }
+
+                    // Exibe a lista
+                    $("#listaConteudosByCodigo").append(html);
+                    $("#listaConteudosByCodigo").css("display", "block");
+                }
+            }, "json");
+        }
+    } else {
+        ultimaBusca = valor; // Adiciona o valor a variavel auxiliar
+
+        // zera a ul
+        $("#listaConteudosByCodigo").css("display", "none");
+        $("#listaConteudosByCodigo").html(" ");
+    }
+});
+
+function itemBuscaByCodigo(e) {
+    // Recupera os conteudos
+    let busca = e.data("busca");
+    let uf = e.data("uf");
+    let cidade = e.data("cidade");
+    let bairro = e.data("bairro");
+    let endereco = e.data("endereco");
+    let empreendimento = e.data("empreendimento");
+    let codigo = e.data("codigo");
+
+    // Altera a busca
+    ultimaBusca = busca;
+    console.log(codigo);
+    $(".codigo-busca").val(codigo);
+
+    // zera a ul
+    $("#listaConteudosByCodigo").css("display", "none");
+
+    // Zera os registros
+    $("#buscaUF").val("");
+    $("#buscaCidade").val("");
+    $("#buscaBairro").val("");
+    $("#buscaEndereco").val("");
+    $("#buscaEmpreendimento").val("");
+
+
+    // Add o conteudo
+    if (uf !== undefined && uf !== "" && uf !== "" && typeof uf !== 'undefined') {
+        $("#buscaUF").val(uf);
+    }
+
+    if (cidade !== undefined && cidade !== "" && cidade !== "" && typeof cidade !== 'undefined') {
+        $("#buscaCidade").val(cidade);
+    }
+
+    if (bairro !== undefined && bairro !== "" && bairro !== "" && typeof bairro !== 'undefined') {
+        $("#buscaBairro").val(bairro);
+    }
+
+    if (endereco !== undefined && endereco !== "" && endereco !== "" && typeof endereco !== 'undefined') {
+        $("#buscaEndereco").val(endereco);
+    }
+
+    if (empreendimento !== undefined && empreendimento !== "" && empreendimento !== "undefined" && typeof empreendimento !== 'undefined') {
+        $("#buscaEmpreendimento").val(empreendimento);
+    }
+
+    if (codigo !== undefined && codigo !== "" && codigo !== "undefined" && typeof codigo !== 'undefined') {
+        $("#buscaCodigo").val(codigo);
+    }
+}
+
+</script>
+
+</body>
+</html>

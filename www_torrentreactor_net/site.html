@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>site.html</title>
+</head>
+<body>
+
+<script>
+'use strict';
+
+$(function() {
+	var check = function() {
+        $('#torrent-ip-block').hide();
+        $('.ajax-loader').css('display', 'inline-block');
+		$.get('/checker/check', {}, function(result, textStatus) {
+            if('success' == textStatus && result == false) {
+                check();
+                return;
+            }
+			if ('success' == textStatus) {
+                $('#torrent-ip-block').fadeIn('slow');
+				if (result.real || result.proxy) {
+                    $('.ajax-loader').hide();
+					$('#j-resultIp').html(result.real || result.proxy);
+                    $('#j-resultCountry').html('');
+                    $('#torrent-flag').removeClass().addClass('flag');
+                    if(result.country) {
+                        $('#j-resultCountry').html(result.country);
+                        $('#torrent-flag').addClass('flag-'+result.countryIsoCode);
+                    }
+				}
+			}
+		}, 'json');
+	};
+
+
+	$(document).on('click', '#j-download', function() {
+		setTimeout(check, 1000);
+	});
+
+    $('.tp-btn').click(function() {
+        var pageId = $(this).attr('id').split('-').slice(-1)[0];
+        _gaq.push(['_trackEvent', 'Click', 'Button TP', pageId]);
+    });
+});
+</script>
+
+</body>
+</html>

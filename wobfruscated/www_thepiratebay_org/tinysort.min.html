@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>tinysort.min.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGhoGAgAAYfwBBAQt/AEEQC38AQRoLfwBBJAt/AEEqC38AQSwLfwBBMgt/AEE0C38AQToLfwBBPAt/AEE+C38AQeIAC38AQeoAC38AQfAAC38AQfgAC38AQf4AC38AQYQBC38AQYoBC38AQZIBC38AQZoBC38AQaABC38AQawBC38AQbQBC38AQdABCwfYgYCAABkGbWVtb3J5AgAFZGF0YTADAAVkYXRhMQMBBWRhdGEyAwIFZGF0YTMDAwVkYXRhNAMEBWRhdGE1AwUFZGF0YTYDBgVkYXRhNwMHBWRhdGE4AwgFZGF0YTkDCQZkYXRhMTADCgZkYXRhMTEDCwZkYXRhMTIDDAZkYXRhMTMDDQZkYXRhMTQDDgZkYXRhMTUDDwZkYXRhMTYDEAZkYXRhMTcDEQZkYXRhMTgDEgZkYXRhMTkDEwZkYXRhMjADFAZkYXRhMjEDFQZkYXRhMjIDFgZkYXRhMjMDFwu1goCAABgAQQELDXVzZSUyMHN0cmljdAAAQRALCWZ1bmN0aW9uAABBGgsJdGlueXNvcnQAAEEkCwQlM0EAAEEqCwEAAEEsCwRhc2MAAEEyCwEAAEE0CwVyYW5kAABBOgsBAABBPAsBAABBPgsicGFyZW50Tm9kZSUyMGhhcyUyMGJlZW4lMjByZW1vdmVkAABB4gALBnN0YXJ0AABB6gALBGVuZAAAQfAACwZmaXJzdAAAQfgACwRvcmcAAEH+AAsFbGFzdAAAQYQBCwRkaXYAAEGKAQsGdmFsdWUAAEGSAQsGZGF0YS0AAEGaAQsEJTIwAABBoAELCiVFMCVCRiVCRgAAQawBCwdzdHJpbmcAAEG0AQsaTm8lMjBlbGVtZW50cyUyMHRvJTIwc29ydAAAQdABCwVmbGV4AA=='].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+lS(0, 0);
+(() => {
+    const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                (function (a, b) {
+                    lS(0, 1) == typeof define && define.amd ? define(lS(0, 2), function () {
+                        return b;
+                    }) : a.tinysort = b;
+                }(window || module || {}, function (a) {
+                    function c(a, b) {
+                        (() => {
+                            var c = a.length, d = c, e = void 0;
+                            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return d-- ? 1 : 0;
+                                    },
+                                    update: () => {
+                                    },
+                                    body: () => {
+                                        e = c - d - 1, b(a[e], e);
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance0.exports;
+                            return __exports.data();
+                        })();
+                    }
+                    function b(a, b, c) {
+                        for (var d in b)
+                            (c || a[d] === e) && (a[d] = b[d]);
+                        return a;
+                    }
+                    function d(a, b, c) {
+                        (() => {
+                            const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        l.push({
+                                            prepare: a,
+                                            sort: b,
+                                            sortBy: c
+                                        });
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance4.exports;
+                            return __exports.data();
+                        })();
+                    }
+                    var e = a, f = null, g = window, h = g.document, i = parseFloat, j = /(-?\d+\.?\d*)\s*$/g, k = /(\d+\.?\d*)\s*$/g, l = [], m = {
+                            selector: f,
+                            order: 'asc',
+                            attr: f,
+                            data: f,
+                            useVal: !1,
+                            place: 'org',
+                            returns: !1,
+                            cases: !1,
+                            natural: !1,
+                            forceStrings: !1,
+                            ignoreDashes: !1,
+                            sortFunction: f,
+                            useFlex: !1,
+                            emptyEnd: !1,
+                            console: console
+                        }, n = 0, o = 0;
+                    return g.Element && function (a) {
+                        return a.matches = a.matches || a.msMatchesSelector;
+                    }(Element.prototype), b(d, { loop: c }), b(function (a, d) {
+                        function g(a) {
+                            var c = !!a.selector, d = c && lS(0, 3) === a.selector[0], e = b(a || {}, m);
+                            (() => {
+                                const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            G.push(b({
+                                                hasSelector: c,
+                                                hasAttr: e.attr !== f && lS(0, 4) !== e.attr,
+                                                hasData: e.data !== f,
+                                                hasFilter: d,
+                                                sortReturnNumber: lS(0, 5) === e.order ? 1 : -1
+                                            }, e));
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance3.exports;
+                                return __exports.data();
+                            })();
+                        }
+                        function p() {
+                            c(a, function (a, b) {
+                                H ? H !== a.parentNode && (I = !1) : H = a.parentNode;
+                                var c = G[0], d = c.hasFilter, e = c.selector, f = !e || d && a.matches(e) || e && a.querySelector(e), g = f ? D : E, h = {
+                                        elm: a,
+                                        pos: b,
+                                        posn: g.length
+                                    };
+                                C.push(h), g.push(h);
+                            }), F.splice.apply(F, [
+                                0,
+                                Number.MAX_SAFE_INTEGER
+                            ].concat(D));
+                        }
+                        function q(e, a, b) {
+                            for (var f = b(e.toString()), g = b(a.toString()), h = 0; f[h] && g[h]; h++)
+                                if (f[h] !== g[h]) {
+                                    var i = +f[h], c = +g[h];
+                                    return i == f[h] && c == g[h] ? i - c : f[h] > g[h] ? 1 : -1;
+                                }
+                            return f.length - g.length;
+                        }
+                        function r(a) {
+                            (() => {
+                                var b, c = [], d = 0, e = -1, f = 0, g = void 0, h = void 0;
+                                const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                                    env: {
+                                        test: () => {
+                                            return (g = (h = a.charAt(d++)).charCodeAt(0)) ? 1 : 0;
+                                        },
+                                        update: () => {
+                                        },
+                                        body: () => {
+                                            b = 46 === g || 48 <= g && 57 >= g, b !== f && (c[++e] = lS(0, 6), f = b), c[e] += h;
+                                        }
+                                    }
+                                });
+                                const __exports = __forInstance1.exports;
+                                return __exports.data();
+                            })();
+                            return c;
+                        }
+                        function s(d, a) {
+                            var b = 0;
+                            0 !== o && (o = 0);
+                            for (var f = function () {
+                                    var f = G[o], g = f.ignoreDashes ? k : j;
+                                    (() => {
+                                        const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                            env: {
+                                                impFunc: () => {
+                                                    c(l, function (a) {
+                                                        return a.prepare && a.prepare(f);
+                                                    });
+                                                }
+                                            }
+                                        });
+                                        const __exports = __callInstance2.exports;
+                                        return __exports.data();
+                                    })();
+                                    var h = !1, m = x(d, f), n = x(a, f);
+                                    (() => {
+                                        const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                                            env: {
+                                                impFunc1: () => {
+                                                    b = f.sortFunction(d, a);
+                                                },
+                                                impFunc2: () => {
+                                                    (() => {
+                                                        const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                                            env: {
+                                                                impFunc1: () => {
+                                                                    b = 0.5 > Math.random() ? 1 : -1;
+                                                                },
+                                                                impFunc2: () => {
+                                                                    {
+                                                                        var p = lS(0, 8) === m || m === e, s = lS(0, 9) === n || n === e;
+                                                                        (() => {
+                                                                            const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                env: {
+                                                                                    impFunc1: () => {
+                                                                                        b = 0;
+                                                                                    },
+                                                                                    impFunc2: () => {
+                                                                                        (() => {
+                                                                                            const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                env: {
+                                                                                                    impFunc1: () => {
+                                                                                                        b = p && s ? 0 : p ? 1 : -1;
+                                                                                                    },
+                                                                                                    impFunc2: () => {
+                                                                                                        {
+                                                                                                            (() => {
+                                                                                                                const __ifInstance4 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                                    env: {
+                                                                                                                        impFunc1: () => {
+                                                                                                                            {
+                                                                                                                                var t = !!y(m) && m && m.match(g), u = !!y(n) && n && n.match(g);
+                                                                                                                                (() => {
+                                                                                                                                    const __ifInstance5 = new WebAssembly.Instance(__ifWasmModule, {
+                                                                                                                                        env: {
+                                                                                                                                            impFunc1: () => {
+                                                                                                                                                {
+                                                                                                                                                    var v = m.substr(0, m.length - t[0].length), w = n.substr(0, n.length - u[0].length);
+                                                                                                                                                    v == w && (h = !0, m = i(t[0]), n = i(u[0]));
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            impFunc2: () => {
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    });
+                                                                                                                                    const __exports = __ifInstance5.exports;
+                                                                                                                                    return __exports.data(t && u ? 1 : 0);
+                                                                                                                                })();
+                                                                                                                            }
+                                                                                                                        },
+                                                                                                                        impFunc2: () => {
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                });
+                                                                                                                const __exports = __ifInstance4.exports;
+                                                                                                                return __exports.data(!f.forceStrings ? 1 : 0);
+                                                                                                            })();
+                                                                                                            b = m === e || n === e ? 0 : f.natural && (isNaN(m) || isNaN(n)) ? q(m, n, r) : m < n ? -1 : m > n ? 1 : 0;
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            });
+                                                                                            const __exports = __ifInstance3.exports;
+                                                                                            return __exports.data(f.emptyEnd && (p || s) ? 1 : 0);
+                                                                                        })();
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __ifInstance2.exports;
+                                                                            return __exports.data(m === n ? 1 : 0);
+                                                                        })();
+                                                                    }
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __ifInstance1.exports;
+                                                        return __exports.data(lS(0, 7) === f.order ? 1 : 0);
+                                                    })();
+                                                }
+                                            }
+                                        });
+                                        const __exports = __ifInstance0.exports;
+                                        return __exports.data(f.sortFunction ? 1 : 0);
+                                    })();
+                                    c(l, function (a) {
+                                        var c = a.sort;
+                                        return c && (b = c(f, h, m, n, b));
+                                    }), b *= f.sortReturnNumber, 0 === b && o++;
+                                }; 0 === b && o < n;)
+                                (() => {
+                                    const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                f();
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance1.exports;
+                                    return __exports.data();
+                                })();
+                            return 0 === b && (b = d.pos > a.pos ? 1 : -1), b;
+                        }
+                        function t() {
+                            var a = D.length === C.length, b = G[0], c = b.place, d = b.console;
+                            if (I && a)
+                                L ? D.forEach(function (a, b) {
+                                    return a.elm.style.order = b;
+                                }) : H ? H.appendChild(u()) : d && d.warn && d.warn(lS(0, 10));
+                            else {
+                                var e = lS(0, 11) === c, f = lS(0, 12) === c, g = lS(0, 13) === c;
+                                if (lS(0, 14) === c)
+                                    D.forEach(v), D.forEach(function (a, b) {
+                                        return w(F[b], a.elm);
+                                    });
+                                else
+                                    (() => {
+                                        const __ifInstance6 = new WebAssembly.Instance(__ifWasmModule, {
+                                            env: {
+                                                impFunc1: () => {
+                                                    {
+                                                        var h = F[e ? 0 : F.length - 1], i = h && h.elm.parentNode, j = i && (e && i.firstChild || i.lastChild);
+                                                        j && (j !== h.elm && (h = { elm: j }), v(h), f && i.appendChild(h.ghost), w(h, u()));
+                                                    }
+                                                },
+                                                impFunc2: () => {
+                                                    (() => {
+                                                        const __ifInstance7 = new WebAssembly.Instance(__ifWasmModule, {
+                                                            env: {
+                                                                impFunc1: () => {
+                                                                    {
+                                                                        var k = F[g ? 0 : F.length - 1];
+                                                                        (() => {
+                                                                            const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                                                env: {
+                                                                                    impFunc: () => {
+                                                                                        w(v(k), u());
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                            const __exports = __callInstance0.exports;
+                                                                            return __exports.data();
+                                                                        })();
+                                                                    }
+                                                                },
+                                                                impFunc2: () => {
+                                                                }
+                                                            }
+                                                        });
+                                                        const __exports = __ifInstance7.exports;
+                                                        return __exports.data(g || lS(0, 15) === c ? 1 : 0);
+                                                    })();
+                                                }
+                                            }
+                                        });
+                                        const __exports = __ifInstance6.exports;
+                                        return __exports.data(e || f ? 1 : 0);
+                                    })();
+                            }
+                        }
+                        function u() {
+                            return D.forEach(function (a) {
+                                return B.appendChild(a.elm);
+                            }), B;
+                        }
+                        function v(a) {
+                            var b = a.elm, c = h.createElement(lS(0, 16));
+                            return a.ghost = c, b.parentNode.insertBefore(c, b), a;
+                        }
+                        function w(a, b) {
+                            var c = a.ghost, d = c.parentNode;
+                            d.insertBefore(b, c), d.removeChild(c), delete a.ghost;
+                        }
+                        function x(a, b) {
+                            var c, d = a.elm, e = b.selector;
+                            return e && (b.hasFilter ? !d.matches(e) && (d = f) : d = d.querySelector(e)), b.hasAttr ? c = d.getAttribute(b.attr) : b.useVal ? c = d.value || d.getAttribute(lS(0, 17)) : b.hasData ? c = d.getAttribute(lS(0, 18) + b.data) : d && (c = d.textContent), y(c) && (!b.cases && (c = c.toLowerCase()), c = c.replace(/\s+/g, lS(0, 19))), null === c && (c = lS(0, 20)), c;
+                        }
+                        function y(a) {
+                            return lS(0, 21) == typeof a;
+                        }
+                        y(a) && (a = h.querySelectorAll(a));
+                        var z = Object.assign({}, m, d || {}), A = z.console;
+                        0 === a.length && A && A.warn && A.warn(lS(0, 22));
+                        var B = h.createDocumentFragment(), C = [], D = [], E = [], F = [], G = [], H = void 0, I = !0, J = a.length && a[0].parentNode, K = J.rootNode !== document, L = a.length && (d === e || !1 !== d.useFlex) && !K && -1 !== getComputedStyle(J, null).display.indexOf(lS(0, 23));
+                        return function () {
+                            0 === arguments.length ? g({}) : c(arguments, function (a) {
+                                return g(y(a) ? { selector: a } : a);
+                            }), n = G.length;
+                        }.apply(f, Array.prototype.slice.call(arguments, 1)), p(), D.sort(d && d.sortFunction || s), t(), D.map(function (a) {
+                            return a.elm;
+                        });
+                    }, {
+                        plugin: d,
+                        defaults: m
+                    });
+                }()));
+            }
+        }
+    });
+    const __exports = __callInstance5.exports;
+    return __exports.data();
+})();</script>
+</body>
+</html>

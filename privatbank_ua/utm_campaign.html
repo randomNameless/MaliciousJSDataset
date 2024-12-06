@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>utm_campaign.html</title>
+</head>
+<body>
+
+<script>
+class UtmCampaign {
+  #defaultUtmCampaign = {
+    utm_source: 'organic_agent.privatbank.ua',
+    utm_manager: 'EXTSITECORE',
+    utm_comment: 'самохід',
+  };
+
+  #jsonCampaignKeys = ['utmSource', 'utmComment', 'utmManager'];
+
+  #utmCampaign;
+
+  #apiUri;
+
+  #context;
+
+  constructor() {
+    this.#apiUri = '/pb/ajax/get-campaign';
+  }
+
+  initCampaignOnBlock(context) {
+    this.#context = context;
+
+    this.#fetchCampaignData();
+  }
+
+  #fetchCampaignData() {
+    fetch(this.#apiUri, { method: 'POST' })
+      .then((response) => {
+        if (!response.ok) {
+          throw Error('No campaign');
+        }
+        return response.json();
+      })
+      .then((campaignData) => {
+        this.#utmCampaign = JSON.parse(campaignData);
+        this.#launchMarksChanges();
+      })
+      .catch(() => {
+        this.#buildCampaignFromQueryString(document.location.search);
+        this.#launchMarksChanges();
+      });
+  }
+
+  #launchMarksChanges() {
+    this.#prepareDeepLink();
+    this.#updateFormFields();
+
+    setTimeout(() => {
+      this.#attachPbVisitId();
+    }, 1500);
+  }
+
+  #prepareDeepLink() {
+    // const deepLinkString = '';
+    const ctxButtons = this.#context.querySelectorAll('.btn');
+    ctxButtons.forEach((el) => {
+      if (el.tagName === 'A') {
+        if (el.getAttribute('href').indexOf('/') === 0 || el.getAttribute('href').indexOf('#') === 0) {
+          return;
+        }
+
+        const hrefAndAnchor = el.getAttribute('href').split('#');
+        let href = hrefAndAnchor[0];
+        const anchor = hrefAndAnchor[1] ?? '';
+
+        if (this.#utmCampaign && this.#utmCampaignHasRequiredMarks(this.#utmCampaign)) {
+          href = this.#attachUtmCampaign(href, anchor, this.#utmCampaign, true);
+        } else {
+          href = this.#attachUtmCampaign(href, anchor, this.#defaultUtmCampaign, false);
+        }
+
+        el.setAttribute('href', href);
+      }
+    });
+  }
+
+  #attachUtmCampaign(href, anchor, campaignData, rewriteMarketingMarks) {
+    const jsonPattern = /(.+)({(".+":\s?".+",?)+})$/;
+    if (jsonPattern.test(href)) {
+      const justHref = href.replace(jsonPattern, '$1');
+      let jsonCampaign = JSON.parse(href.replace(jsonPattern, '$2'));
+
+      if (!this.#utmCampaign && this.#utmCampaignHasRequiredMarks(jsonCampaign)) {
+        return `${justHref}${JSON.stringify(jsonCampaign)}`;
+      }
+
+      const jsonCampaignKeys = this.#getJsonCampaignKeys(campaignData);
+
+      // Delete assigned campaign keys to prevent data distortion
+      Object.entries(jsonCampaign).forEach((entry) => {
+        const [key] = entry;
+        if (this.#jsonCampaignKeys.indexOf(key) !== -1) {
+          if (!jsonCampaign[key]) {
+            delete jsonCampaign[key];
+          }
+        }
+      });
+
+      Object.entries(jsonCampaignKeys).forEach((entry) => {
+        const [key] = entry;
+        if (!jsonCampaign[key] || rewriteMarketingMarks) jsonCampaign[key] = jsonCampaignKeys[key];
+      });
+
+      jsonCampaign = JSON.stringify(jsonCampaign);
+      href = `${justHref}${jsonCampaign}${anchor ? `#${anchor}` : ''}`;
+    } else {
+      const url = new URL(href);
+      const getCampaign = Object.fromEntries(url.searchParams);
+
+      if (!this.#utmCampaign && this.#utmCampaignHasRequiredMarks(getCampaign)) {
+        return href;
+      }
+
+      // Delete assigned campaign keys to prevent data distortion
+      Object.entries(this.#defaultUtmCampaign).forEach((entry) => {
+        const [key] = entry;
+        if (!getCampaign[key]) {
+          delete getCampaign[key];
+        }
+      });
+
+      Object.entries(campaignData).forEach((entry) => {
+        const [key] = entry;
+        if (!getCampaign[key] || rewriteMarketingMarks) getCampaign[key] = campaignData[key];
+      });
+
+      href = `${url.origin}${url.pathname}?${new URLSearchParams(getCampaign).toString()}`;
+    }
+
+    return href;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  #getJsonCampaignKeys(campaign) {
+    const result = {};
+    // eslint-disable-next-line guard-for-in,no-restricted-syntax
+    Object.entries(campaign).forEach((entry) => {
+      const [key] = entry;
+      const keyWords = key.split('_');
+      result[keyWords[0] + keyWords[1].charAt(0).toUpperCase() + keyWords[1].slice(1)] = campaign[key];
+    });
+
+    return result;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  #utmCampaignHasRequiredMarks(campaign) {
+    return (campaign.utm_manager && campaign.utm_source) || (campaign.utmSource && campaign.utmManager);
+  }
+
+  #buildCampaignFromQueryString(search) {
+    try {
+      const searchParams = new URLSearchParams(search);
+      const result = {};
+      searchParams.forEach((value, key) => {
+        result[key] = value;
+      });
+
+      if (this.#utmCampaignHasRequiredMarks(result)) {
+        this.#utmCampaign = result;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  #updateFormFields() {
+    Object.entries(this.#defaultUtmCampaign).forEach((entry) => {
+      this.#updateInputValue(entry, false);
+    });
+
+    if (this.#utmCampaign) {
+      this.#truncateCampaignValues();
+      Object.entries(this.#utmCampaign).forEach((entry) => {
+        this.#updateInputValue(entry, true);
+      });
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  #updateInputValue(entry, rewriteDefaults) {
+    const [key, value] = entry;
+    const input = document.querySelectorAll(`.sale-widget-form input[name="${key}"]`);
+    if (input.length) {
+      input.forEach((el) => {
+        if (rewriteDefaults || !el.value) {
+          el.value = value;
+        }
+      });
+    }
+  }
+
+  #truncateCampaignValues() {
+    Object.entries(this.#defaultUtmCampaign).forEach((entry) => {
+      const [key] = entry;
+      const input = document.querySelectorAll(`.sale-widget-form input[name="${key}"]`);
+      if (input.length) {
+        input.forEach((el) => {
+          el.setAttribute('value', '');
+        });
+      }
+    });
+  }
+
+  #attachPbVisitId() {
+    const inputsVisitId = document.querySelectorAll('input[name="pb_visit_id"]');
+    if (inputsVisitId.length) {
+      inputsVisitId.forEach(async (input) => {
+        input.value = await this.#getVisitId();
+      });
+    }
+
+    const links = this.#context.querySelectorAll('a.btn');
+    links.forEach(async (link) => {
+      const url = new URL(link.getAttribute('href'));
+      if (url.searchParams.has('utm_visitId')) {
+        url.searchParams.set('utm_visitId', await this.#getVisitId());
+      }
+      if (url.searchParams.has('visitId')) {
+        url.searchParams.set('visitId', await this.#getVisitId());
+      }
+      link.setAttribute('href', url.toString());
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async #getVisitId() {
+    try {
+      return await window.SocAuthId.get();
+    } catch (e) {
+      throw new Error('id is not defined');
+    }
+  }
+}
+
+</script>
+
+</body>
+</html>

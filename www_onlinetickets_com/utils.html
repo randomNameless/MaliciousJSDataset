@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>utils.html</title>
+</head>
+<body>
+
+<script>
+function ajaxify(options){
+    var settings = $.extend({
+        type:'GET',
+        dataType: 'json',
+        statusCode:{
+            404: function(){console.warn('ERROR:-',404)}
+        }
+    },options)
+    $.ajax ({
+        type: settings.type ,
+        url: settings.url,
+        dataType: settings.dataType,
+        data:settings.data,
+        success: settings.success,
+        statusCode:settings.statusCode
+    })
+}
+var Profile = {
+    check: function (id) {
+        if ($.trim($("#" + id)[0].value) == '') {
+            $("#" + id)[0].focus();
+            $("#" + id + "_alert").show();
+
+            return false;
+        };
+
+        return true;
+    },
+    validate: function () {
+        if (SignUp.check("name") == false) {
+            return false;
+        }
+        if (SignUp.check("email") == false) {
+            return false;
+        }
+        $("#profileForm")[0].submit();
+    }
+};
+
+var SignUp = {
+    check: function (id) {
+        if ($.trim($("#" + id)[0].value) == '') {
+            $("#" + id)[0].focus();
+            $("#" + id + "_alert").show();
+
+            return false;
+        };
+
+        return true;
+    },
+    validate: function () {
+        if (SignUp.check("name") == false) {
+            return false;
+        }
+        if (SignUp.check("username") == false) {
+            return false;
+        }
+        if (SignUp.check("email") == false) {
+            return false;
+        }
+        if (SignUp.check("password") == false) {
+            return false;
+        }
+        if ($("#password")[0].value != $("#repeatPassword")[0].value) {
+            $("#repeatPassword")[0].focus();
+            $("#repeatPassword_alert").show();
+
+            return false;
+        }
+        $("#registerForm")[0].submit();
+    }
+}
+$.fn.show_more = function(options){
+    var settings = $.extend({
+        appendid:'',
+        type:'POST',
+        
+        success:function(response, textStatus, xhr){
+            if(xhr.status==200){
+              var html = '';
+              $.each(response['result'],function(i,v){
+                html+='<div class="theatre-category-box"><a href="/'+v.url+'" class="category-anchor-wrap"><img class="category-img lazy" src="https://media.giphy.com/media/N256GFy1u6M6Y/giphy.gif" data-src="'+v.img_path+'"><span class="category-name-wrap"><span class="category-name">'+v.description+'</span></span></a></div>';
+              })
+              $('*[data-id="'+settings.appendid+'"] div.show-more-btn-wrapp').before(html);
+              $('img.lazy').loadLazy({onFinishedAll:function(){
+                $('a.show-more-btn i').addClass('hide');
+              }});
+            }
+        },
+    }, options );
+    this.each(function(){
+     $(this).click(function(){
+        $(this).find('i').removeClass('hide');
+        var length = $(this).parent().siblings().length;
+        ajaxify({
+            type: settings.type,
+            url: settings.url,
+            dataType: 'json' ,
+            data:{data:{length:length,get_type:settings.appendid}},
+            success: settings.success,
+            statusCode:{
+                404: function(){
+                    $('a.show-more-btn').remove();
+                },
+            }
+        })
+     })   
+    });
+    return this;
+};
+function loadInstafeed(){
+    var feed = new Instafeed({
+        get: 'user',
+        userId:'2074461523',
+        clientId: '200d790ec6084e319dcf81c799288fcf',
+        accessToken:'2074461523.200d790.5f76312ee014465084f11a9ce01e0fa2',
+        sortBy: 'most-recent',
+        limit: 6,
+        template: '<div class="insta-feed-main-wrapp"><a href="{{image}}" target="_blank"><div class="img-featured-container"><div class="img-backdrop"></div><div class="description-container"><p class="caption">{{caption}}</p><span class="likes"><i class="icon ion-heart"></i> {{likes}}</span><span class="comments"><i class="icon ion-chatbubble"></i> {{comments}}</span></div><div class="img-wrapp"><img src="{{image}}" class="img-responsive"></div></div></a></div>',
+        resolution:'standard_resolution',
+        after: function() {
+            
+        }
+    });
+    feed.run();
+   
+}
+$.fn.loadLazy = function(options){
+    var settings = $.extend({
+        effect: "fadeIn",
+        effectTime: 2000,
+        visibleOnly: true,
+        event: "lazyload",
+        onError: function(element) {
+            console.log('error loading ' + element.data('src'));
+        },
+        beforeLoad: function(element) {
+            // called before an elements gets handled
+        },
+        afterLoad: function(element) {
+            // called after an element was successfully handled
+            //console.log('element',element);
+        },
+        onFinishedAll: function() {
+            //console.log('onfinished');
+        }
+    }, options );
+    this.each(function(){
+      $(this).lazy(settings).removeClass("lazy");
+    });
+    return this;
+};
+//console.log($.fn.loadLazy);
+$(document).ready(function () {
+    //siteRun();
+    $("#registerForm .alert").hide();
+    $("div.profile .alert").hide();
+    if (typeof $.fn.loadLazy === "function")
+    $('img.lazy').loadLazy();
+    if($('body').find('div#instafeed').length > 0)
+        loadInstafeed();
+    // $('div.mlbpage div.left-container div.theatre-event-box img').attr('src','images/MLB.jpg');
+    // $('div.nhlpage div.left-container div.theatre-event-box img').attr('src','images/NHL.jpg');
+    // $('div.nflpage div.left-container div.theatre-event-box img').attr('src','images/NFL.jpg');
+    // $('div.nbapage div.left-container div.theatre-event-box img').attr('src','images/NBA.jpg');
+});
+function siteRun() {
+    $(".animsition").animsition({
+    inClass: 'fade-in',
+    outClass: 'fade-out',
+    inDuration: 800,
+    outDuration: 500,
+    linkElement: '.animsition-link',
+    // e.g. linkElement: 'a:not([target="_blank"]):not([href^="#"])'
+    loading: true,
+    loadingParentElement: 'body', //animsition wrapper element
+    loadingClass: 'loader',
+    loadingInner: '', // e.g '<img src="loading.svg" />'
+    timeout: false,
+    timeoutCountdown: 5000,
+    onLoadEvent: true,
+    browser: [ 'animation-duration', '-webkit-animation-duration'],
+    // "browser" option allows you to disable the "animsition" in case the css property in the array is not supported by your browser.
+    // The default setting is to disable the "animsition" in a browser that does not support "animation-duration".
+    overlay : false,
+    overlayClass : 'animsition-overlay-slide',
+    overlayParentElement : 'body',
+    transition: function(url){ window.location.href = url; }
+  });
+}
+</script>
+
+</body>
+</html>

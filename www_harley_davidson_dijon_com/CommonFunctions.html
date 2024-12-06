@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CommonFunctions.html</title>
+</head>
+<body>
+
+<script>
+(function ($) {
+    $.fn.extend({
+        center: function () {
+            return this.each(function () {
+                var top = ($(window).height() - $(this).outerHeight()) / 2;
+                var left = ($(window).width() - $(this).outerWidth()) / 2;
+                $(this).css({position: 'absolute', margin: 0, top: (top > 0 ? top : 0) + 'px', left: (left > 0 ? left : 0) + 'px'});
+            });
+        }
+    });
+})(jQuery);
+
+
+function createDisplayDivIfNotExist(createdName, addedOnName, appendTruePrependFalse) {
+    var $divForDisplay = $("#" + createdName);
+    if ($divForDisplay.length == 0) {
+        if (appendTruePrependFalse) {
+            $("<div id='" + createdName + "' class='" + createdName + "'></div>").appendTo($("#" + addedOnName));
+        } else {
+            $("<div id='" + createdName + "' class='" + createdName + "'></div>").prependTo($("#" + addedOnName));
+        }
+    }
+    return $("#" + createdName);
+}
+function extractValueInClassesFor(caller, searchValue) {
+    var classes = $(caller).attr("class");
+    var split = classes.split(" ");
+    for (var i = 0; i < (split).length; i++) {
+        var indexOf = (split)[i].indexOf("data" + searchValue + "_");
+        if (indexOf > -1) {
+            return (split)[i].substring(("data" + searchValue + "_").length);
+        }
+    }
+    alert("Données non trouvées, une erreur s'est produite! Contacter l'administrateur du site !");
+    return null;
+}
+function extractValueInParentForm(caller, searchValue) {
+    var form = $(caller).closest("form");
+    var input = $(form.get(0)).children("[name='" + searchValue + "']");
+    if (input.length > 0) return input.val();
+    alert("Données non trouvées, une erreur s'est produite! Contacter l'administrateur du site !");
+    return null;
+}
+function doRedirection(href) {
+    href = href.replace("\\","");
+    var confirmOk = $(".confirmOk");
+    if (confirmOk.length > 0) {
+        confirmOk.click(function(){
+            if (href == "#") {
+                document.location.reload();
+            } else {
+                document.location = href;
+            }
+        });
+    } else {
+        if (href == "#") {
+            document.location.reload();
+        } else {
+            document.location = href;
+        }
+    }
+}
+String.prototype.startsWith = function (s) {
+    return this.indexOf(s) == 0;
+};
+function quoteattr(s, preserveCR) {
+    preserveCR = preserveCR ? '&#13;' : '\n';
+    return ('' + s)/* Forces the conversion to string. */
+        .replace(/&/g, '&amp;')/* This MUST be the 1st replacement. */
+        .replace(/'/g, '&apos;')/* The 4 other predefined entities, required. */
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        /*
+         You may add other replacements here for HTML only
+         (but it's not necessary).
+         Or for XML, only if the named entities are defined in its DTD.
+         */
+        .replace(/\r\n/g, preserveCR)/* Must be before the next replacement. */
+        .replace(/[\r\n]/g, preserveCR);
+    ;
+}
+</script>
+
+</body>
+</html>

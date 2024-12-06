@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>dtm_common.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEG1oGAgAAlfwBBAQt/AEEEC38AQQwLfwBBEgt/AEEYC38AQR4LfwBBJAt/AEEsC38AQTILfwBBxgALfwBB0AALfwBB2gALfwBB4gALfwBB6AALfwBB7gALfwBB9AALfwBB+gALfwBBggELfwBBigELfwBBngELfwBBpgELfwBBsAELfwBBuAELfwBBwAELfwBB1AELfwBB3AELfwBB4gELfwBB7gELfwBBgAILfwBBlgILfwBBqAILfwBBvAILfwBBwgILfwBB0AILfwBB3AILfwBB7AILfwBB9gILB82CgIAAJgZtZW1vcnkCAAVkYXRhMAMABWRhdGExAwEFZGF0YTIDAgVkYXRhMwMDBWRhdGE0AwQFZGF0YTUDBQVkYXRhNgMGBWRhdGE3AwcFZGF0YTgDCAVkYXRhOQMJBmRhdGExMAMKBmRhdGExMQMLBmRhdGExMgMMBmRhdGExMwMNBmRhdGExNAMOBmRhdGExNQMPBmRhdGExNgMQBmRhdGExNwMRBmRhdGExOAMSBmRhdGExOQMTBmRhdGEyMAMUBmRhdGEyMQMVBmRhdGEyMgMWBmRhdGEyMwMXBmRhdGEyNAMYBmRhdGEyNQMZBmRhdGEyNgMaBmRhdGEyNwMbBmRhdGEyOAMcBmRhdGEyOQMdBmRhdGEzMAMeBmRhdGEzMQMfBmRhdGEzMgMgBmRhdGEzMwMhBmRhdGEzNAMiBmRhdGEzNQMjBmRhdGEzNgMkC6KEgIAAJQBBAQsBAABBBAsHaWZyYW1lAABBDAsEc3JjAABBEgsFbm9uZQAAQRgLBDFweAAAQR4LBDFweAAAQSQLB3NjcmlwdAAAQSwLBHNyYwAAQTILEnRleHQlMkZqYXZhc2NyaXB0AABBxgALCW5vc2NyaXB0AABB0AALCW5vc2NyaXB0AABB2gALB2lmcmFtZQAAQeIACwRzcmMAAEHoAAsFbm9uZQAAQe4ACwQxcHgAAEH0AAsEMXB4AABB+gALB3NjcmlwdAAAQYIBCwdzY3JpcHQAAEGKAQsSdGV4dCUyRmphdmFzY3JpcHQAAEGeAQsHbG9hZGVkAABBpgELCWNvbXBsZXRlAABBsAELB2xvYWRlZAAAQbgBCwdsb2FkZWQAAEHAAQsSdG0lM0ElMjBwYWdlR3JvdXAAAEHUAQsGcmVhbG0AAEHcAQsFQU5PTgAAQeIBCwtSRUdfTk9fQlVZAABB7gELEUZPUk1FUl9DUkVESVRfQUwAAEGAAgsVRk9STUVSX05PTl9DUkVESVRfQUwAAEGWAgsQRk9STUVSX1RSSUFMX0FMAABBqAILE0ZPUk1FUl9HSUZUX01FTUJFUgAAQbwCCwRBTEMAAEHCAgsMRlJFRUJJRV9CVVkAAEHQAgsKQ1JFRElUX0FMAABB3AILDk5PTl9DUkVESVRfQUwAAEHsAgsJVFJJQUxfQUwAAEH2AgsMR0lGVF9NRU1CRVIA'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+var DTM = {};
+DTM.getVariable = function (a) {
+    var satelliteVar = _satellite.getVar(a);
+    if (satelliteVar === undefined || satelliteVar == null) {
+        return lS(0, 0);
+    }
+    return satelliteVar;
+};
+DTM.appendToUrl = function (src, a) {
+    return src + a;
+};
+DTM.safeIframeInsert = function (u) {
+    var iframe = document.createElement(lS(0, 1));
+    (() => {
+        const __callInstance11 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    iframe.setAttribute(lS(0, 2), u);
+                }
+            }
+        });
+        const __exports = __callInstance11.exports;
+        return __exports.data();
+    })();
+    iframe.style.display = lS(0, 3);
+    iframe.frameBorder = 0;
+    iframe.style.width = lS(0, 4);
+    iframe.style.height = lS(0, 5);
+    (() => {
+        const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    document.body.appendChild(iframe);
+                }
+            }
+        });
+        const __exports = __callInstance10.exports;
+        return __exports.data();
+    })();
+};
+DTM.imageRequest = function (a) {
+    var b = new Image(0, 0);
+    b.src = a;
+    return b;
+};
+DTM.addScript = function (src) {
+    var s = document.createElement(lS(0, 6));
+    (() => {
+        const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    s.setAttribute(lS(0, 7), src);
+                }
+            }
+        });
+        const __exports = __callInstance9.exports;
+        return __exports.data();
+    })();
+    s.type = lS(0, 8);
+    s.async = !0;
+    (() => {
+        const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    document.body.appendChild(s);
+                }
+            }
+        });
+        const __exports = __callInstance8.exports;
+        return __exports.data();
+    })();
+};
+DTM.noscriptImageRequest = function (a) {
+    var n = document.createElement(lS(0, 9));
+    var b = new Image(0, 0);
+    b.src = a;
+    (() => {
+        const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    n.appendChild(b);
+                }
+            }
+        });
+        const __exports = __callInstance7.exports;
+        return __exports.data();
+    })();
+    (() => {
+        const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    document.body.appendChild(n);
+                }
+            }
+        });
+        const __exports = __callInstance6.exports;
+        return __exports.data();
+    })();
+};
+DTM.noscriptIframeInsert = function (u) {
+    var n = document.createElement(lS(0, 10));
+    var iframe = document.createElement(lS(0, 11));
+    (() => {
+        const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    iframe.setAttribute(lS(0, 12), u);
+                }
+            }
+        });
+        const __exports = __callInstance5.exports;
+        return __exports.data();
+    })();
+    iframe.style.display = lS(0, 13);
+    iframe.frameBorder = 0;
+    iframe.style.width = lS(0, 14);
+    iframe.style.height = lS(0, 15);
+    (() => {
+        const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    n.appendChild(iframe);
+                }
+            }
+        });
+        const __exports = __callInstance4.exports;
+        return __exports.data();
+    })();
+    (() => {
+        const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    document.body.appendChild(n);
+                }
+            }
+        });
+        const __exports = __callInstance3.exports;
+        return __exports.data();
+    })();
+};
+DTM.loadScriptCallback = function (a, b, e) {
+    var d = document.getElementsByTagName(lS(0, 16)), c;
+    e = d[0];
+    for (c = 0; c < d.length; c++)
+        if (d[c].src === a && d[c].readyState && /loaded|complete/.test(d[c].readyState))
+            try {
+                (() => {
+                    const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                        env: {
+                            impFunc: () => {
+                                b();
+                            }
+                        }
+                    });
+                    const __exports = __callInstance2.exports;
+                    return __exports.data();
+                })();
+            } catch (f) {
+            } finally {
+                return;
+            }
+    d = document.createElement(lS(0, 17));
+    d.type = lS(0, 18);
+    d.async = !0;
+    d.src = a;
+    d.onerror = function () {
+        this.addEventListener && (this.readyState = lS(0, 19));
+    };
+    d.onload = d.onreadystatechange = function () {
+        (() => {
+            const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                env: {
+                    impFunc1: () => {
+                        {
+                            this.onload = this.onreadystatechange = null;
+                            this.addEventListener && (this.readyState = lS(0, 22));
+                            try {
+                                (() => {
+                                    const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                b.call(this);
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance1.exports;
+                                    return __exports.data();
+                                })();
+                            } catch (f) {
+                            }
+                        }
+                    },
+                    impFunc2: () => {
+                    }
+                }
+            });
+            const __exports = __ifInstance0.exports;
+            return __exports.data(!this.readyState || lS(0, 20) === this.readyState || lS(0, 21) === this.readyState ? 1 : 0);
+        })();
+    };
+    (() => {
+        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+            env: {
+                impFunc: () => {
+                    e.parentNode.insertBefore(d, e);
+                }
+            }
+        });
+        const __exports = __callInstance0.exports;
+        return __exports.data();
+    })();
+};
+DTM.comparePageGroups = function (a) {
+    var pageGroup = DTM.getVariable(lS(0, 23));
+    if (pageGroup.toUpperCase() == a.toUpperCase()) {
+        return true;
+    }
+    return false;
+};
+DTM.compareRealms = function (r) {
+    var realm = DTM.getVariable(lS(0, 24));
+    if (realm.toUpperCase() == r.toUpperCase()) {
+        return true;
+    }
+    return false;
+};
+DTM.isCustomerAnon = function (customerType) {
+    if (customerType == lS(0, 25) || customerType == lS(0, 26)) {
+        return true;
+    }
+};
+DTM.isCustomerNonMember = function (customerType) {
+    if (customerType == lS(0, 27) || customerType == lS(0, 28) || customerType == lS(0, 29) || customerType == lS(0, 30) || customerType == lS(0, 31) || customerType == lS(0, 32)) {
+        return true;
+    }
+};
+DTM.isCustomerMember = function (customerType) {
+    if (customerType == lS(0, 33) || customerType == lS(0, 34) || customerType == lS(0, 35) || customerType == lS(0, 36)) {
+        return true;
+    }
+};</script>
+</body>
+</html>

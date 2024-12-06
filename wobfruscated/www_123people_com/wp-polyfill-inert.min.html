@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>wp-polyfill-inert.min.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['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'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+!function (e) {
+    lS(0, 0) == typeof exports && lS(0, 1) != typeof module || lS(0, 2) != typeof define || !define.amd ? e() : define(lS(0, 3), e);
+}(function () {
+    lS(0, 4);
+    var e, t, n, i, o, r, s = function (e, t, n) {
+            return t && a(e.prototype, t), n && a(e, n), e;
+        };
+    function a(e, t) {
+        (() => {
+            var n = 0;
+            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return n < t.length ? 1 : 0;
+                    },
+                    update: () => {
+                        n++;
+                    },
+                    body: () => {
+                        {
+                            var i = t[n];
+                            i.enumerable = i.enumerable || !1, i.configurable = !0, lS(0, 5) in i && (i.writable = !0), Object.defineProperty(e, i.key, i);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance0.exports;
+            return __exports.data();
+        })();
+    }
+    function d(e, t) {
+        if (!(e instanceof t))
+            throw new TypeError(lS(0, 6));
+    }
+    function u(e, t) {
+        d(this, u), this._inertManager = t, this._rootElement = e, this._managedNodes = new Set(), this._rootElement.hasAttribute(lS(0, 7)) ? this._savedAriaHidden = this._rootElement.getAttribute(lS(0, 8)) : this._savedAriaHidden = null, this._rootElement.setAttribute(lS(0, 9), lS(0, 10)), this._makeSubtreeUnfocusable(this._rootElement), this._observer = new MutationObserver(this._onMutation.bind(this)), this._observer.observe(this._rootElement, {
+            attributes: !0,
+            childList: !0,
+            subtree: !0
+        });
+    }
+    function h(e, t) {
+        d(this, h), this._node = e, this._overrodeFocusMethod = !1, this._inertRoots = new Set([t]), this._savedTabIndex = null, this._destroyed = !1, this.ensureUntabbable();
+    }
+    function l(e) {
+        if (d(this, l), !e)
+            throw new Error(lS(0, 11));
+        this._document = e, this._managedNodes = new Map(), this._inertRoots = new Map(), this._observer = new MutationObserver(this._watchForInert.bind(this)), _(e.head || e.body || e.documentElement), lS(0, 12) === e.readyState ? e.addEventListener(lS(0, 13), this._onDocumentLoaded.bind(this)) : this._onDocumentLoaded();
+    }
+    function c(e, t, n) {
+        if (e.nodeType == Node.ELEMENT_NODE) {
+            var i = e;
+            if (s = (t && t(i), i.shadowRoot))
+                return void c(s, t, s);
+            if (lS(0, 14) == i.localName) {
+                (() => {
+                    var o = (s = i).getDistributedNodes ? s.getDistributedNodes() : [], r = 0;
+                    const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                        env: {
+                            test: () => {
+                                return r < o.length ? 1 : 0;
+                            },
+                            update: () => {
+                                r++;
+                            },
+                            body: () => {
+                                (() => {
+                                    const __callInstance13 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                c(o[r], t, n);
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance13.exports;
+                                    return __exports.data();
+                                })();
+                            }
+                        }
+                    });
+                    const __exports = __forInstance1.exports;
+                    return __exports.data();
+                })();
+                return;
+            }
+            if (lS(0, 15) == i.localName) {
+                (() => {
+                    var s, a = (s = i).assignedNodes ? s.assignedNodes({ flatten: !0 }) : [], d = 0;
+                    const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                        env: {
+                            test: () => {
+                                return d < a.length ? 1 : 0;
+                            },
+                            update: () => {
+                                d++;
+                            },
+                            body: () => {
+                                (() => {
+                                    const __callInstance12 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                c(a[d], t, n);
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance12.exports;
+                                    return __exports.data();
+                                })();
+                            }
+                        }
+                    });
+                    const __exports = __forInstance2.exports;
+                    return __exports.data();
+                })();
+                return;
+            }
+        }
+        (() => {
+            var u = e.firstChild;
+            const __forInstance3 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return null != u ? 1 : 0;
+                    },
+                    update: () => {
+                    },
+                    body: () => {
+                        c(u, t, n), u = u.nextSibling;
+                    }
+                }
+            });
+            const __exports = __forInstance3.exports;
+            return __exports.data();
+        })();
+    }
+    function _(e) {
+        var t;
+        e.querySelector(lS(0, 16)) || ((t = document.createElement(lS(0, 17))).setAttribute(lS(0, 18), lS(0, 19)), t.textContent = lS(0, 20), e.appendChild(t));
+    }
+    lS(0, 21) != typeof window && (e = Array.prototype.slice, t = Element.prototype.matches || Element.prototype.msMatchesSelector, n = [
+        lS(0, 22),
+        lS(0, 23),
+        lS(0, 24),
+        lS(0, 25),
+        lS(0, 26),
+        lS(0, 27),
+        lS(0, 28),
+        lS(0, 29),
+        lS(0, 30),
+        lS(0, 31),
+        lS(0, 32),
+        lS(0, 33)
+    ].join(lS(0, 34)), s(u, [
+        {
+            key: 'destructor',
+            value: function () {
+                this._observer.disconnect(), this._rootElement && (null !== this._savedAriaHidden ? this._rootElement.setAttribute(lS(0, 35), this._savedAriaHidden) : this._rootElement.removeAttribute(lS(0, 36))), this._managedNodes.forEach(function (e) {
+                    (() => {
+                        const __callInstance11 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    this._unmanageNode(e.node);
+                                }
+                            }
+                        });
+                        const __exports = __callInstance11.exports;
+                        return __exports.data();
+                    })();
+                }, this), this._observer = null, this._rootElement = null, this._managedNodes = null, this._inertManager = null;
+            }
+        },
+        {
+            key: '_makeSubtreeUnfocusable',
+            value: function (e) {
+                var t = this, n = (c(e, function (e) {
+                        return t._visitNode(e);
+                    }), document.activeElement);
+                if (!document.body.contains(e)) {
+                    for (var i = e, o = void 0; i;) {
+                        if (i.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+                            o = i;
+                            break;
+                        }
+                        i = i.parentNode;
+                    }
+                    o && (n = o.activeElement);
+                }
+                e.contains(n) && (n.blur(), n === document.activeElement && document.body.focus());
+            }
+        },
+        {
+            key: '_visitNode',
+            value: function (e) {
+                e.nodeType === Node.ELEMENT_NODE && (e !== this._rootElement && e.hasAttribute(lS(0, 37)) && this._adoptInertRoot(e), (t.call(e, n) || e.hasAttribute(lS(0, 38))) && this._manageNode(e));
+            }
+        },
+        {
+            key: '_manageNode',
+            value: function (e) {
+                e = this._inertManager.register(e, this), this._managedNodes.add(e);
+            }
+        },
+        {
+            key: '_unmanageNode',
+            value: function (e) {
+                (e = this._inertManager.deregister(e, this)) && this._managedNodes.delete(e);
+            }
+        },
+        {
+            key: '_unmanageSubtree',
+            value: function (e) {
+                var t = this;
+                (() => {
+                    const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+                        env: {
+                            impFunc: () => {
+                                c(e, function (e) {
+                                    return t._unmanageNode(e);
+                                });
+                            }
+                        }
+                    });
+                    const __exports = __callInstance10.exports;
+                    return __exports.data();
+                })();
+            }
+        },
+        {
+            key: '_adoptInertRoot',
+            value: function (e) {
+                var t = this._inertManager.getInertRoot(e);
+                t || (this._inertManager.setInert(e, !0), t = this._inertManager.getInertRoot(e)), t.managedNodes.forEach(function (e) {
+                    (() => {
+                        const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    this._manageNode(e.node);
+                                }
+                            }
+                        });
+                        const __exports = __callInstance9.exports;
+                        return __exports.data();
+                    })();
+                }, this);
+            }
+        },
+        {
+            key: '_onMutation',
+            value: function (t, n) {
+                (() => {
+                    const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                        env: {
+                            impFunc: () => {
+                                t.forEach(function (t) {
+                                    var n, i = t.target;
+                                    lS(0, 39) === t.type ? (e.call(t.addedNodes).forEach(function (e) {
+                                        (() => {
+                                            const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        this._makeSubtreeUnfocusable(e);
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance7.exports;
+                                            return __exports.data();
+                                        })();
+                                    }, this), e.call(t.removedNodes).forEach(function (e) {
+                                        (() => {
+                                            const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        this._unmanageSubtree(e);
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance6.exports;
+                                            return __exports.data();
+                                        })();
+                                    }, this)) : lS(0, 40) === t.type && (lS(0, 41) === t.attributeName ? this._manageNode(i) : i !== this._rootElement && lS(0, 42) === t.attributeName && i.hasAttribute(lS(0, 43)) && (this._adoptInertRoot(i), n = this._inertManager.getInertRoot(i), this._managedNodes.forEach(function (e) {
+                                        i.contains(e.node) && n._manageNode(e.node);
+                                    })));
+                                }, this);
+                            }
+                        }
+                    });
+                    const __exports = __callInstance8.exports;
+                    return __exports.data();
+                })();
+            }
+        },
+        {
+            key: 'managedNodes',
+            get: function () {
+                return new Set(this._managedNodes);
+            }
+        },
+        {
+            key: 'hasSavedAriaHidden',
+            get: function () {
+                return null !== this._savedAriaHidden;
+            }
+        },
+        {
+            key: 'savedAriaHidden',
+            set: function (e) {
+                this._savedAriaHidden = e;
+            },
+            get: function () {
+                return this._savedAriaHidden;
+            }
+        }
+    ]), i = u, s(h, [
+        {
+            key: 'destructor',
+            value: function () {
+                var e;
+                this._throwIfDestroyed(), this._node && this._node.nodeType === Node.ELEMENT_NODE && (e = this._node, null !== this._savedTabIndex ? e.setAttribute(lS(0, 44), this._savedTabIndex) : e.removeAttribute(lS(0, 45)), this._overrodeFocusMethod && delete e.focus), this._node = null, this._inertRoots = null, this._destroyed = !0;
+            }
+        },
+        {
+            key: '_throwIfDestroyed',
+            value: function () {
+                if (this.destroyed)
+                    throw new Error(lS(0, 46));
+            }
+        },
+        {
+            key: 'ensureUntabbable',
+            value: function () {
+                var e;
+                this.node.nodeType === Node.ELEMENT_NODE && (e = this.node, t.call(e, n) ? -1 === e.tabIndex && this.hasSavedTabIndex || (e.hasAttribute(lS(0, 47)) && (this._savedTabIndex = e.tabIndex), e.setAttribute(lS(0, 48), lS(0, 49)), e.nodeType === Node.ELEMENT_NODE && (e.focus = function () {
+                }, this._overrodeFocusMethod = !0)) : e.hasAttribute(lS(0, 50)) && (this._savedTabIndex = e.tabIndex, e.removeAttribute(lS(0, 51))));
+            }
+        },
+        {
+            key: 'addInertRoot',
+            value: function (e) {
+                this._throwIfDestroyed(), this._inertRoots.add(e);
+            }
+        },
+        {
+            key: 'removeInertRoot',
+            value: function (e) {
+                this._throwIfDestroyed(), this._inertRoots.delete(e), 0 === this._inertRoots.size && this.destructor();
+            }
+        },
+        {
+            key: 'destroyed',
+            get: function () {
+                return this._destroyed;
+            }
+        },
+        {
+            key: 'hasSavedTabIndex',
+            get: function () {
+                return null !== this._savedTabIndex;
+            }
+        },
+        {
+            key: 'node',
+            get: function () {
+                return this._throwIfDestroyed(), this._node;
+            }
+        },
+        {
+            key: 'savedTabIndex',
+            set: function (e) {
+                this._throwIfDestroyed(), this._savedTabIndex = e;
+            },
+            get: function () {
+                return this._throwIfDestroyed(), this._savedTabIndex;
+            }
+        }
+    ]), o = h, s(l, [
+        {
+            key: 'setInert',
+            value: function (e, t) {
+                (() => {
+                    const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                        env: {
+                            impFunc1: () => {
+                                {
+                                    (() => {
+                                        const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                            env: {
+                                                impFunc1: () => {
+                                                    for (var n = e.parentNode; n;)
+                                                        11 === n.nodeType && _(n), n = n.parentNode;
+                                                },
+                                                impFunc2: () => {
+                                                }
+                                            }
+                                        });
+                                        const __exports = __ifInstance1.exports;
+                                        return __exports.data(!this._inertRoots.has(e) && (t = new i(e, this), e.setAttribute(lS(0, 52), lS(0, 53)), this._inertRoots.set(e, t), !this._document.body.contains(e)) ? 1 : 0);
+                                    })();
+                                }
+                            },
+                            impFunc2: () => {
+                                this._inertRoots.has(e) && (this._inertRoots.get(e).destructor(), this._inertRoots.delete(e), e.removeAttribute(lS(0, 54)));
+                            }
+                        }
+                    });
+                    const __exports = __ifInstance0.exports;
+                    return __exports.data(t ? 1 : 0);
+                })();
+            }
+        },
+        {
+            key: 'getInertRoot',
+            value: function (e) {
+                return this._inertRoots.get(e);
+            }
+        },
+        {
+            key: 'register',
+            value: function (e, t) {
+                var n = this._managedNodes.get(e);
+                return void 0 !== n ? n.addInertRoot(t) : n = new o(e, t), this._managedNodes.set(e, n), n;
+            }
+        },
+        {
+            key: 'deregister',
+            value: function (e, t) {
+                var n = this._managedNodes.get(e);
+                return n ? (n.removeInertRoot(t), n.destroyed && this._managedNodes.delete(e), n) : null;
+            }
+        },
+        {
+            key: '_onDocumentLoaded',
+            value: function () {
+                e.call(this._document.querySelectorAll(lS(0, 55))).forEach(function (e) {
+                    (() => {
+                        const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    this.setInert(e, !0);
+                                }
+                            }
+                        });
+                        const __exports = __callInstance5.exports;
+                        return __exports.data();
+                    })();
+                }, this), this._observer.observe(this._document.body || this._document.documentElement, {
+                    attributes: !0,
+                    subtree: !0,
+                    childList: !0
+                });
+            }
+        },
+        {
+            key: '_watchForInert',
+            value: function (n, i) {
+                var o = this;
+                (() => {
+                    const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                        env: {
+                            impFunc: () => {
+                                n.forEach(function (n) {
+                                    switch (n.type) {
+                                    case lS(0, 56):
+                                        (() => {
+                                            const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        e.call(n.addedNodes).forEach(function (n) {
+                                                            var i;
+                                                            n.nodeType === Node.ELEMENT_NODE && (i = e.call(n.querySelectorAll(lS(0, 57))), t.call(n, lS(0, 58)) && i.unshift(n), i.forEach(function (e) {
+                                                                (() => {
+                                                                    const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                this.setInert(e, !0);
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance2.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                            }, o));
+                                                        }, o);
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance3.exports;
+                                            return __exports.data();
+                                        })();
+                                        break;
+                                    case lS(0, 59):
+                                        if (lS(0, 60) !== n.attributeName)
+                                            return;
+                                        var i = n.target, r = i.hasAttribute(lS(0, 61));
+                                        (() => {
+                                            const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        o.setInert(i, r);
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance1.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                }, this);
+                            }
+                        }
+                    });
+                    const __exports = __callInstance4.exports;
+                    return __exports.data();
+                })();
+            }
+        }
+    ]), s = l, HTMLElement.prototype.hasOwnProperty(lS(0, 62)) || (r = new s(document), Object.defineProperty(HTMLElement.prototype, lS(0, 63), {
+        enumerable: !0,
+        get: function () {
+            return this.hasAttribute(lS(0, 64));
+        },
+        set: function (e) {
+            (() => {
+                const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                    env: {
+                        impFunc: () => {
+                            r.setInert(this, e);
+                        }
+                    }
+                });
+                const __exports = __callInstance0.exports;
+                return __exports.data();
+            })();
+        }
+    })));
+});</script>
+</body>
+</html>

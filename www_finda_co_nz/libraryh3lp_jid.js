@@ -1,1 +1,0 @@
-window.libraryh3lp_jid="22874540418579446564@web.libraryh3lp.com";

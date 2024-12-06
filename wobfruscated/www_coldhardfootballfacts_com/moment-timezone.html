@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>moment-timezone.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGxYKAgAA3fwBBAQt/AEEQC38AQRgLfwBBIgt/AEEqC38AQTgLfwBBwAALfwBByAALfwBBxAELfwBByAELfwBBqAILfwBBwAILfwBBxAILfwBBxgILfwBBzAILfwBB0gILfwBB1AILfwBB2gILfwBB4AILfwBBqgMLfwBBrAMLfwBBsgMLfwBBtAMLfwBB0gMLfwBBogQLfwBBpAQLfwBBqAQLfwBBsAQLfwBBtgQLfwBBvAQLfwBBxAQLfwBBzAQLfwBB0gQLfwBB2AQLfwBB3gQLfwBB9gQLfwBBugULfwBBvgULfwBBwgULfwBBxgULfwBB0gULfwBB3AULfwBB5gULfwBB6AULfwBB8gULfwBB+gULfwBBtAYLfwBBvAYLfwBBwgYLfwBB8AYLfwBBwAcLfwBBrggLfwBBsggLfwBByAgLfwBBzAgLB++DgIAAOAZtZW1vcnkCAAVkYXRhMAMABWRhdGExAwEFZGF0YTIDAgVkYXRhMwMDBWRhdGE0AwQFZGF0YTUDBQVkYXRhNgMGBWRhdGE3AwcFZGF0YTgDCAVkYXRhOQMJBmRhdGExMAMKBmRhdGExMQMLBmRhdGExMgMMBmRhdGExMwMNBmRhdGExNAMOBmRhdGExNQMPBmRhdGExNgMQBmRhdGExNwMRBmRhdGExOAMSBmRhdGExOQMTBmRhdGEyMAMUBmRhdGEyMQMVBmRhdGEyMgMWBmRhdGEyMwMXBmRhdGEyNAMYBmRhdGEyNQMZBmRhdGEyNgMaBmRhdGEyNwMbBmRhdGEyOAMcBmRhdGEyOQMdBmRhdGEzMAMeBmRhdGEzMQMfBmRhdGEzMgMgBmRhdGEzMwMhBmRhdGEzNAMiBmRhdGEzNQMjBmRhdGEzNgMkBmRhdGEzNwMlBmRhdGEzOAMmBmRhdGEzOQMnBmRhdGE0MAMoBmRhdGE0MQMpBmRhdGE0MgMqBmRhdGE0MwMrBmRhdGE0NAMsBmRhdGE0NQMtBmRhdGE0NgMuBmRhdGE0NwMvBmRhdGE0OAMwBmRhdGE0OQMxBmRhdGE1MAMyBmRhdGE1MQMzBmRhdGE1MgM0BmRhdGE1MwM1BmRhdGE1NAM2C8aKgIAANwBBAQsNdXNlJTIwc3RyaWN0AABBEAsHb2JqZWN0AABBGAsJZnVuY3Rpb24AAEEiCwdtb21lbnQAAEEqCw11c2UlMjBzdHJpY3QAAEE4CwcwLjUuMzcAAEHAAAsHc3RyaW5nAABByAALe01vbWVudCUyMFRpbWV6b25lJTIwcmVxdWlyZXMlMjBNb21lbnQuanMuJTIwU2VlJTIwaHR0cHMlM0ElMkYlMkZtb21lbnRqcy5jb20lMkZ0aW1lem9uZSUyRmRvY3MlMkYlMjMlMkZ1c2UtaXQlMkZicm93c2VyJTJGAABBxAELAi4AAEHIAQteTW9tZW50JTIwVGltZXpvbmUlMjByZXF1aXJlcyUyME1vbWVudC5qcyUyMCUzRSUzRCUyMDIuNi4wLiUyMFlvdSUyMGFyZSUyMHVzaW5nJTIwTW9tZW50LmpzJTIwAABBqAILFy4lMjBTZWUlMjBtb21lbnRqcy5jb20AAEHAAgsCLgAAQcQCCwEAAEHGAgsEJTdDAABBzAILBCUyMAAAQdICCwEAAEHUAgsEJTIwAABB2gILBCUyMAAAQeACC0l6b25lLm9mZnNldCUyMGhhcyUyMGJlZW4lMjBkZXByZWNhdGVkJTIwaW4lMjBmYXZvciUyMG9mJTIwem9uZS51dGNPZmZzZXQAAEGqAwsBAABBrAMLBEdNVAAAQbIDCwEAAEG0AwsdTW9tZW50JTIwVGltZXpvbmUlMjBmb3VuZCUyMAAAQdIDC08lMjBmcm9tJTIwdGhlJTIwSW50bCUyMGFwaSUyQyUyMGJ1dCUyMGRpZCUyMG5vdCUyMGhhdmUlMjB0aGF0JTIwZGF0YSUyMGxvYWRlZC4AAEGiBAsBAABBpAQLAl8AAEGoBAsHc3RyaW5nAABBsAQLBCU3QwAAQbYECwQlMjAAAEG8BAsHc3RyaW5nAABBxAQLB3N0cmluZwAAQcwECwQlN0MAAEHSBAsEJTdDAABB2AQLBCUyMAAAQd4ECxdtb21lbnQudHouem9uZUV4aXN0cygnAABB9gQLQycpJTIwaGFzJTIwYmVlbiUyMGRlcHJlY2F0ZWQlMjBpbiUyMGZhdm9yJTIwb2YlMjAhbW9tZW50LnR6LnpvbmUoJwAAQboFCwMnKQAAQb4FCwJYAABBwgULAngAAEHGBQsKdW5kZWZpbmVkAABB0gULCWZ1bmN0aW9uAABB3AULCG1pbnV0ZXMAAEHmBQsBAABB6AULCG1pbnV0ZXMAAEHyBQsHc3RyaW5nAABB+gULOFRpbWUlMjB6b25lJTIwbmFtZSUyMG11c3QlMjBiZSUyMGElMjBzdHJpbmclMkMlMjBnb3QlMjAAAEG0BgsHJTIwJTVCAABBvAYLBCU1RAAAQcIGCy1Nb21lbnQlMjBUaW1lem9uZSUyMGhhcyUyMG5vJTIwZGF0YSUyMGZvciUyMAAAQfAGC08uJTIwU2VlJTIwaHR0cCUzQSUyRiUyRm1vbWVudGpzLmNvbSUyRnRpbWV6b25lJTJGZG9jcyUyRiUyMyUyRmRhdGEtbG9hZGluZyUyRi4AAEHABwttTW9tZW50JTIwVGltZXpvbmUlMjBzZXREZWZhdWx0KCklMjByZXF1aXJlcyUyME1vbWVudC5qcyUyMCUzRSUzRCUyMDIuOS4wLiUyMFlvdSUyMGFyZSUyMHVzaW5nJTIwTW9tZW50LmpzJTIwAABBrggLAi4AAEGyCAsVJTVCb2JqZWN0JTIwQXJyYXklNUQAAEHICAsDX3oAAEHMCAsDX2EA'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+(() => {
+    const __callInstance38 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                (function (root, factory) {
+                    lS(0, 0);
+                    (() => {
+                        const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                            env: {
+                                impFunc1: () => {
+                                    {
+                                        module.exports = factory(require('moment'));
+                                    }
+                                },
+                                impFunc2: () => {
+                                    (() => {
+                                        const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                                            env: {
+                                                impFunc1: () => {
+                                                    {
+                                                        (() => {
+                                                            const __callInstance37 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        define([lS(0, 3)], factory);
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance37.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                    }
+                                                },
+                                                impFunc2: () => {
+                                                    {
+                                                        (() => {
+                                                            const __callInstance36 = new WebAssembly.Instance(__callWasmModule, {
+                                                                env: {
+                                                                    impFunc: () => {
+                                                                        factory(root.moment);
+                                                                    }
+                                                                }
+                                                            });
+                                                            const __exports = __callInstance36.exports;
+                                                            return __exports.data();
+                                                        })();
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        const __exports = __ifInstance1.exports;
+                                        return __exports.data(typeof define === lS(0, 2) && define.amd ? 1 : 0);
+                                    })();
+                                }
+                            }
+                        });
+                        const __exports = __ifInstance0.exports;
+                        return __exports.data(typeof module === lS(0, 1) && module.exports ? 1 : 0);
+                    })();
+                }(this, function (moment) {
+                    lS(0, 4);
+                    (() => {
+                        const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                            env: {
+                                impFunc1: () => {
+                                    {
+                                        moment = moment.default;
+                                    }
+                                },
+                                impFunc2: () => {
+                                }
+                            }
+                        });
+                        const __exports = __ifInstance2.exports;
+                        return __exports.data(moment.version === undefined && moment.default ? 1 : 0);
+                    })();
+                    var VERSION = lS(0, 5), zones = {}, links = {}, countries = {}, names = {}, guesses = {}, cachedGuess;
+                    (() => {
+                        const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+                            env: {
+                                impFunc1: () => {
+                                    {
+                                        (() => {
+                                            const __callInstance35 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        logError(lS(0, 7));
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance35.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                },
+                                impFunc2: () => {
+                                }
+                            }
+                        });
+                        const __exports = __ifInstance3.exports;
+                        return __exports.data(!moment || typeof moment.version !== lS(0, 6) ? 1 : 0);
+                    })();
+                    var momentVersion = moment.version.split(lS(0, 8)), major = +momentVersion[0], minor = +momentVersion[1];
+                    (() => {
+                        const __ifInstance4 = new WebAssembly.Instance(__ifWasmModule, {
+                            env: {
+                                impFunc1: () => {
+                                    {
+                                        (() => {
+                                            const __callInstance34 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        logError(lS(0, 9) + moment.version + lS(0, 10));
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance34.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                },
+                                impFunc2: () => {
+                                }
+                            }
+                        });
+                        const __exports = __ifInstance4.exports;
+                        return __exports.data(major < 2 || major === 2 && minor < 6 ? 1 : 0);
+                    })();
+                    function charCodeToInt(charCode) {
+                        if (charCode > 96) {
+                            return charCode - 87;
+                        } else if (charCode > 64) {
+                            return charCode - 29;
+                        }
+                        return charCode - 48;
+                    }
+                    function unpackBase60(string) {
+                        var i = 0, parts = string.split(lS(0, 11)), whole = parts[0], fractional = parts[1] || lS(0, 12), multiplier = 1, num, out = 0, sign = 1;
+                        (() => {
+                            const __ifInstance5 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            i = 1;
+                                            sign = -1;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance5.exports;
+                            return __exports.data(string.charCodeAt(0) === 45 ? 1 : 0);
+                        })();
+                        (() => {
+                            i;
+                            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < whole.length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            num = charCodeToInt(whole.charCodeAt(i));
+                                            out = 60 * out + num;
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance0.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            i = 0;
+                            const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < fractional.length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            multiplier = multiplier / 60;
+                                            num = charCodeToInt(fractional.charCodeAt(i));
+                                            out += num * multiplier;
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance1.exports;
+                            return __exports.data();
+                        })();
+                        return out * sign;
+                    }
+                    function arrayToInt(array) {
+                        (() => {
+                            var i = 0;
+                            const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < array.length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            array[i] = unpackBase60(array[i]);
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance2.exports;
+                            return __exports.data();
+                        })();
+                    }
+                    function intToUntil(array, length) {
+                        (() => {
+                            var i = 0;
+                            const __forInstance3 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            array[i] = Math.round((array[i - 1] || 0) + array[i] * 60000);
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance3.exports;
+                            return __exports.data();
+                        })();
+                        array[length - 1] = Infinity;
+                    }
+                    function mapIndices(source, indices) {
+                        var out = [], i;
+                        (() => {
+                            i = 0;
+                            const __forInstance4 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < indices.length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            out[i] = source[indices[i]];
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance4.exports;
+                            return __exports.data();
+                        })();
+                        return out;
+                    }
+                    function unpack(string) {
+                        var data = string.split(lS(0, 13)), offsets = data[2].split(lS(0, 14)), indices = data[3].split(lS(0, 15)), untils = data[4].split(lS(0, 16));
+                        (() => {
+                            const __callInstance33 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        arrayToInt(offsets);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance33.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance32 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        arrayToInt(indices);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance32.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance31 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        arrayToInt(untils);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance31.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance30 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        intToUntil(untils, indices.length);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance30.exports;
+                            return __exports.data();
+                        })();
+                        return {
+                            name: data[0],
+                            abbrs: mapIndices(data[1].split(lS(0, 17)), indices),
+                            offsets: mapIndices(offsets, indices),
+                            untils: untils,
+                            population: data[5] | 0
+                        };
+                    }
+                    function Zone(packedString) {
+                        (() => {
+                            const __ifInstance6 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance29 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            this._set(unpack(packedString));
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance29.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance6.exports;
+                            return __exports.data(packedString ? 1 : 0);
+                        })();
+                    }
+                    Zone.prototype = {
+                        _set: function (unpacked) {
+                            this.name = unpacked.name;
+                            this.abbrs = unpacked.abbrs;
+                            this.untils = unpacked.untils;
+                            this.offsets = unpacked.offsets;
+                            this.population = unpacked.population;
+                        },
+                        _index: function (timestamp) {
+                            var target = +timestamp, untils = this.untils, i;
+                            for (i = 0; i < untils.length; i++) {
+                                if (target < untils[i]) {
+                                    return i;
+                                }
+                            }
+                        },
+                        countries: function () {
+                            var zone_name = this.name;
+                            return Object.keys(countries).filter(function (country_code) {
+                                return countries[country_code].zones.indexOf(zone_name) !== -1;
+                            });
+                        },
+                        parse: function (timestamp) {
+                            var target = +timestamp, offsets = this.offsets, untils = this.untils, max = untils.length - 1, offset, offsetNext, offsetPrev, i;
+                            for (i = 0; i < max; i++) {
+                                offset = offsets[i];
+                                offsetNext = offsets[i + 1];
+                                offsetPrev = offsets[i ? i - 1 : i];
+                                (() => {
+                                    const __ifInstance7 = new WebAssembly.Instance(__ifWasmModule, {
+                                        env: {
+                                            impFunc1: () => {
+                                                {
+                                                    offset = offsetNext;
+                                                }
+                                            },
+                                            impFunc2: () => {
+                                                (() => {
+                                                    const __ifInstance8 = new WebAssembly.Instance(__ifWasmModule, {
+                                                        env: {
+                                                            impFunc1: () => {
+                                                                {
+                                                                    offset = offsetPrev;
+                                                                }
+                                                            },
+                                                            impFunc2: () => {
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __ifInstance8.exports;
+                                                    return __exports.data(offset > offsetPrev && tz.moveInvalidForward ? 1 : 0);
+                                                })();
+                                            }
+                                        }
+                                    });
+                                    const __exports = __ifInstance7.exports;
+                                    return __exports.data(offset < offsetNext && tz.moveAmbiguousForward ? 1 : 0);
+                                })();
+                                if (target < untils[i] - offset * 60000) {
+                                    return offsets[i];
+                                }
+                            }
+                            return offsets[max];
+                        },
+                        abbr: function (mom) {
+                            return this.abbrs[this._index(mom)];
+                        },
+                        offset: function (mom) {
+                            (() => {
+                                const __callInstance28 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            logError(lS(0, 18));
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance28.exports;
+                                return __exports.data();
+                            })();
+                            return this.offsets[this._index(mom)];
+                        },
+                        utcOffset: function (mom) {
+                            return this.offsets[this._index(mom)];
+                        }
+                    };
+                    function Country(country_name, zone_names) {
+                        this.name = country_name;
+                        this.zones = zone_names;
+                    }
+                    function OffsetAt(at) {
+                        var timeString = at.toTimeString();
+                        var abbr = timeString.match(/\([a-z ]+\)/i);
+                        (() => {
+                            const __ifInstance9 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            abbr = abbr[0].match(/[A-Z]/g);
+                                            abbr = abbr ? abbr.join(lS(0, 19)) : undefined;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                        {
+                                            abbr = timeString.match(/[A-Z]{3,5}/g);
+                                            abbr = abbr ? abbr[0] : undefined;
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance9.exports;
+                            return __exports.data(abbr && abbr[0] ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance10 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            abbr = undefined;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance10.exports;
+                            return __exports.data(abbr === lS(0, 20) ? 1 : 0);
+                        })();
+                        this.at = +at;
+                        this.abbr = abbr;
+                        this.offset = at.getTimezoneOffset();
+                    }
+                    function ZoneScore(zone) {
+                        this.zone = zone;
+                        this.offsetScore = 0;
+                        this.abbrScore = 0;
+                    }
+                    ZoneScore.prototype.scoreOffsetAt = function (offsetAt) {
+                        this.offsetScore += Math.abs(this.zone.utcOffset(offsetAt.at) - offsetAt.offset);
+                        (() => {
+                            const __ifInstance11 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            this.abbrScore++;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance11.exports;
+                            return __exports.data(this.zone.abbr(offsetAt.at).replace(/[^A-Z]/g, lS(0, 21)) !== offsetAt.abbr ? 1 : 0);
+                        })();
+                    };
+                    function findChange(low, high) {
+                        var mid, diff;
+                        (() => {
+                            const __forInstance14 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return (diff = ((high.at - low.at) / 120000 | 0) * 60000) ? 1 : 0;
+                                    },
+                                    update: () => {
+                                    },
+                                    body: () => {
+                                        {
+                                            mid = new OffsetAt(new Date(low.at + diff));
+                                            (() => {
+                                                const __ifInstance12 = new WebAssembly.Instance(__ifWasmModule, {
+                                                    env: {
+                                                        impFunc1: () => {
+                                                            {
+                                                                low = mid;
+                                                            }
+                                                        },
+                                                        impFunc2: () => {
+                                                            {
+                                                                high = mid;
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __ifInstance12.exports;
+                                                return __exports.data(mid.offset === low.offset ? 1 : 0);
+                                            })();
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance14.exports;
+                            return __exports.data();
+                        })();
+                        return low;
+                    }
+                    function userOffsets() {
+                        var startYear = new Date().getFullYear() - 2, last = new OffsetAt(new Date(startYear, 0, 1)), offsets = [last], change, next, i;
+                        (() => {
+                            i = 1;
+                            const __forInstance5 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < 48 ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            next = new OffsetAt(new Date(startYear, i, 1));
+                                            (() => {
+                                                const __ifInstance13 = new WebAssembly.Instance(__ifWasmModule, {
+                                                    env: {
+                                                        impFunc1: () => {
+                                                            {
+                                                                change = findChange(last, next);
+                                                                (() => {
+                                                                    const __callInstance27 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                offsets.push(change);
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance27.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                                (() => {
+                                                                    const __callInstance26 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                offsets.push(new OffsetAt(new Date(change.at + 60000)));
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance26.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                            }
+                                                        },
+                                                        impFunc2: () => {
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __ifInstance13.exports;
+                                                return __exports.data(next.offset !== last.offset ? 1 : 0);
+                                            })();
+                                            last = next;
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance5.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            i = 0;
+                            const __forInstance6 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < 4 ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance25 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            offsets.push(new OffsetAt(new Date(startYear + i, 0, 1)));
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance25.exports;
+                                                return __exports.data();
+                                            })();
+                                            (() => {
+                                                const __callInstance24 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            offsets.push(new OffsetAt(new Date(startYear + i, 6, 1)));
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance24.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance6.exports;
+                            return __exports.data();
+                        })();
+                        return offsets;
+                    }
+                    function sortZoneScores(a, b) {
+                        if (a.offsetScore !== b.offsetScore) {
+                            return a.offsetScore - b.offsetScore;
+                        }
+                        if (a.abbrScore !== b.abbrScore) {
+                            return a.abbrScore - b.abbrScore;
+                        }
+                        if (a.zone.population !== b.zone.population) {
+                            return b.zone.population - a.zone.population;
+                        }
+                        return b.zone.name.localeCompare(a.zone.name);
+                    }
+                    function addToGuesses(name, offsets) {
+                        var i, offset;
+                        (() => {
+                            const __callInstance23 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        arrayToInt(offsets);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance23.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            i = 0;
+                            const __forInstance7 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < offsets.length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            offset = offsets[i];
+                                            guesses[offset] = guesses[offset] || {};
+                                            guesses[offset][name] = true;
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance7.exports;
+                            return __exports.data();
+                        })();
+                    }
+                    function guessesForUserOffsets(offsets) {
+                        var offsetsLength = offsets.length, filteredGuesses = {}, out = [], i, j, guessesOffset;
+                        (() => {
+                            i = 0;
+                            const __forInstance8 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < offsetsLength ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            guessesOffset = guesses[offsets[i].offset] || {};
+                                            for (j in guessesOffset) {
+                                                (() => {
+                                                    const __ifInstance14 = new WebAssembly.Instance(__ifWasmModule, {
+                                                        env: {
+                                                            impFunc1: () => {
+                                                                {
+                                                                    filteredGuesses[j] = true;
+                                                                }
+                                                            },
+                                                            impFunc2: () => {
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __ifInstance14.exports;
+                                                    return __exports.data(guessesOffset.hasOwnProperty(j) ? 1 : 0);
+                                                })();
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance8.exports;
+                            return __exports.data();
+                        })();
+                        for (i in filteredGuesses) {
+                            (() => {
+                                const __ifInstance15 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                                (() => {
+                                                    const __callInstance22 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                out.push(names[i]);
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance22.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance15.exports;
+                                return __exports.data(filteredGuesses.hasOwnProperty(i) ? 1 : 0);
+                            })();
+                        }
+                        return out;
+                    }
+                    function rebuildGuess() {
+                        try {
+                            var intlName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                            if (intlName && intlName.length > 3) {
+                                var name = names[normalizeName(intlName)];
+                                if (name) {
+                                    return name;
+                                }
+                                (() => {
+                                    const __callInstance21 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                logError(lS(0, 22) + intlName + lS(0, 23));
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance21.exports;
+                                    return __exports.data();
+                                })();
+                            }
+                        } catch (e) {
+                        }
+                        var offsets = userOffsets(), offsetsLength = offsets.length, guesses = guessesForUserOffsets(offsets), zoneScores = [], zoneScore, i, j;
+                        (() => {
+                            i = 0;
+                            const __forInstance9 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < guesses.length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            zoneScore = new ZoneScore(getZone(guesses[i]), offsetsLength);
+                                            (() => {
+                                                j = 0;
+                                                const __forInstance10 = new WebAssembly.Instance(__forWasmModule, {
+                                                    env: {
+                                                        test: () => {
+                                                            return j < offsetsLength ? 1 : 0;
+                                                        },
+                                                        update: () => {
+                                                            j++;
+                                                        },
+                                                        body: () => {
+                                                            {
+                                                                (() => {
+                                                                    const __callInstance20 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                zoneScore.scoreOffsetAt(offsets[j]);
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance20.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __forInstance10.exports;
+                                                return __exports.data();
+                                            })();
+                                            (() => {
+                                                const __callInstance19 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            zoneScores.push(zoneScore);
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance19.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance9.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance18 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        zoneScores.sort(sortZoneScores);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance18.exports;
+                            return __exports.data();
+                        })();
+                        return zoneScores.length > 0 ? zoneScores[0].zone.name : undefined;
+                    }
+                    function guess(ignoreCache) {
+                        (() => {
+                            const __ifInstance16 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            cachedGuess = rebuildGuess();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance16.exports;
+                            return __exports.data(!cachedGuess || ignoreCache ? 1 : 0);
+                        })();
+                        return cachedGuess;
+                    }
+                    function normalizeName(name) {
+                        return (name || lS(0, 24)).toLowerCase().replace(/\//g, lS(0, 25));
+                    }
+                    function addZone(packed) {
+                        var i, name, split, normalized;
+                        (() => {
+                            const __ifInstance17 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            packed = [packed];
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance17.exports;
+                            return __exports.data(typeof packed === lS(0, 26) ? 1 : 0);
+                        })();
+                        (() => {
+                            i = 0;
+                            const __forInstance11 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < packed.length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            split = packed[i].split(lS(0, 27));
+                                            name = split[0];
+                                            normalized = normalizeName(name);
+                                            zones[normalized] = packed[i];
+                                            names[normalized] = name;
+                                            (() => {
+                                                const __callInstance17 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            addToGuesses(normalized, split[2].split(lS(0, 28)));
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance17.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance11.exports;
+                            return __exports.data();
+                        })();
+                    }
+                    function getZone(name, caller) {
+                        name = normalizeName(name);
+                        var zone = zones[name];
+                        var link;
+                        if (zone instanceof Zone) {
+                            return zone;
+                        }
+                        if (typeof zone === lS(0, 29)) {
+                            zone = new Zone(zone);
+                            zones[name] = zone;
+                            return zone;
+                        }
+                        if (links[name] && caller !== getZone && (link = getZone(links[name], getZone))) {
+                            zone = zones[name] = new Zone();
+                            (() => {
+                                const __callInstance16 = new WebAssembly.Instance(__callWasmModule, {
+                                    env: {
+                                        impFunc: () => {
+                                            zone._set(link);
+                                        }
+                                    }
+                                });
+                                const __exports = __callInstance16.exports;
+                                return __exports.data();
+                            })();
+                            zone.name = names[name];
+                            return zone;
+                        }
+                        return null;
+                    }
+                    function getNames() {
+                        var i, out = [];
+                        for (i in names) {
+                            (() => {
+                                const __ifInstance18 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                                (() => {
+                                                    const __callInstance15 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                out.push(names[i]);
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance15.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance18.exports;
+                                return __exports.data(names.hasOwnProperty(i) && (zones[i] || zones[links[i]]) && names[i] ? 1 : 0);
+                            })();
+                        }
+                        return out.sort();
+                    }
+                    function getCountryNames() {
+                        return Object.keys(countries);
+                    }
+                    function addLink(aliases) {
+                        var i, alias, normal0, normal1;
+                        (() => {
+                            const __ifInstance19 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            aliases = [aliases];
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance19.exports;
+                            return __exports.data(typeof aliases === lS(0, 30) ? 1 : 0);
+                        })();
+                        (() => {
+                            i = 0;
+                            const __forInstance12 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < aliases.length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            alias = aliases[i].split(lS(0, 31));
+                                            normal0 = normalizeName(alias[0]);
+                                            normal1 = normalizeName(alias[1]);
+                                            links[normal0] = normal1;
+                                            names[normal0] = alias[0];
+                                            links[normal1] = normal0;
+                                            names[normal1] = alias[1];
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance12.exports;
+                            return __exports.data();
+                        })();
+                    }
+                    function addCountries(data) {
+                        var i, country_code, country_zones, split;
+                        if (!data || !data.length)
+                            return;
+                        (() => {
+                            i = 0;
+                            const __forInstance13 = new WebAssembly.Instance(__forWasmModule, {
+                                env: {
+                                    test: () => {
+                                        return i < data.length ? 1 : 0;
+                                    },
+                                    update: () => {
+                                        i++;
+                                    },
+                                    body: () => {
+                                        {
+                                            split = data[i].split(lS(0, 32));
+                                            country_code = split[0].toUpperCase();
+                                            country_zones = split[1].split(lS(0, 33));
+                                            countries[country_code] = new Country(country_code, country_zones);
+                                        }
+                                    }
+                                }
+                            });
+                            const __exports = __forInstance13.exports;
+                            return __exports.data();
+                        })();
+                    }
+                    function getCountry(name) {
+                        name = name.toUpperCase();
+                        return countries[name] || null;
+                    }
+                    function zonesForCountry(country, with_offset) {
+                        country = getCountry(country);
+                        if (!country)
+                            return null;
+                        var zones = country.zones.sort();
+                        if (with_offset) {
+                            return zones.map(function (zone_name) {
+                                var zone = getZone(zone_name);
+                                return {
+                                    name: zone_name,
+                                    offset: zone.utcOffset(new Date())
+                                };
+                            });
+                        }
+                        return zones;
+                    }
+                    function loadData(data) {
+                        (() => {
+                            const __callInstance14 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        addZone(data.zones);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance14.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance13 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        addLink(data.links);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance13.exports;
+                            return __exports.data();
+                        })();
+                        (() => {
+                            const __callInstance12 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        addCountries(data.countries);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance12.exports;
+                            return __exports.data();
+                        })();
+                        tz.dataVersion = data.version;
+                    }
+                    function zoneExists(name) {
+                        (() => {
+                            const __ifInstance20 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            zoneExists.didShowError = true;
+                                            (() => {
+                                                const __callInstance11 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            logError(lS(0, 34) + name + lS(0, 35) + name + lS(0, 36));
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance11.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance20.exports;
+                            return __exports.data(!zoneExists.didShowError ? 1 : 0);
+                        })();
+                        return !!getZone(name);
+                    }
+                    function needsOffset(m) {
+                        var isUnixTimestamp = m._f === lS(0, 37) || m._f === lS(0, 38);
+                        return !!(m._a && m._tzm === undefined && !isUnixTimestamp);
+                    }
+                    function logError(message) {
+                        (() => {
+                            const __ifInstance21 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            console.error(message);
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance10.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance21.exports;
+                            return __exports.data(typeof console !== lS(0, 39) && typeof console.error === lS(0, 40) ? 1 : 0);
+                        })();
+                    }
+                    function tz(input) {
+                        var args = Array.prototype.slice.call(arguments, 0, -1), name = arguments[arguments.length - 1], zone = getZone(name), out = moment.utc.apply(null, args);
+                        (() => {
+                            const __ifInstance22 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            out.add(zone.parse(out), lS(0, 41));
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance9.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance22.exports;
+                            return __exports.data(zone && !moment.isMoment(input) && needsOffset(out) ? 1 : 0);
+                        })();
+                        (() => {
+                            const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                                env: {
+                                    impFunc: () => {
+                                        out.tz(name);
+                                    }
+                                }
+                            });
+                            const __exports = __callInstance8.exports;
+                            return __exports.data();
+                        })();
+                        return out;
+                    }
+                    tz.version = VERSION;
+                    tz.dataVersion = lS(0, 42);
+                    tz._zones = zones;
+                    tz._links = links;
+                    tz._names = names;
+                    tz._countries = countries;
+                    tz.add = addZone;
+                    tz.link = addLink;
+                    tz.load = loadData;
+                    tz.zone = getZone;
+                    tz.zoneExists = zoneExists;
+                    tz.guess = guess;
+                    tz.names = getNames;
+                    tz.Zone = Zone;
+                    tz.unpack = unpack;
+                    tz.unpackBase60 = unpackBase60;
+                    tz.needsOffset = needsOffset;
+                    tz.moveInvalidForward = true;
+                    tz.moveAmbiguousForward = false;
+                    tz.countries = getCountryNames;
+                    tz.zonesForCountry = zonesForCountry;
+                    var fn = moment.fn;
+                    moment.tz = tz;
+                    moment.defaultZone = null;
+                    moment.updateOffset = function (mom, keepTime) {
+                        var zone = moment.defaultZone, offset;
+                        (() => {
+                            const __ifInstance23 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __ifInstance24 = new WebAssembly.Instance(__ifWasmModule, {
+                                                    env: {
+                                                        impFunc1: () => {
+                                                            {
+                                                                mom._d = moment.utc(mom._a)._d;
+                                                                (() => {
+                                                                    const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                mom.utc().add(zone.parse(mom), lS(0, 43));
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance7.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                            }
+                                                        },
+                                                        impFunc2: () => {
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __ifInstance24.exports;
+                                                return __exports.data(zone && needsOffset(mom) && !mom._isUTC ? 1 : 0);
+                                            })();
+                                            mom._z = zone;
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance23.exports;
+                            return __exports.data(mom._z === undefined ? 1 : 0);
+                        })();
+                        (() => {
+                            const __ifInstance25 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            offset = mom._z.utcOffset(mom);
+                                            (() => {
+                                                const __ifInstance26 = new WebAssembly.Instance(__ifWasmModule, {
+                                                    env: {
+                                                        impFunc1: () => {
+                                                            {
+                                                                offset = offset / 60;
+                                                            }
+                                                        },
+                                                        impFunc2: () => {
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __ifInstance26.exports;
+                                                return __exports.data(Math.abs(offset) < 16 ? 1 : 0);
+                                            })();
+                                            (() => {
+                                                const __ifInstance27 = new WebAssembly.Instance(__ifWasmModule, {
+                                                    env: {
+                                                        impFunc1: () => {
+                                                            {
+                                                                var z = mom._z;
+                                                                (() => {
+                                                                    const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                mom.utcOffset(-offset, keepTime);
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance6.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                                mom._z = z;
+                                                            }
+                                                        },
+                                                        impFunc2: () => {
+                                                            {
+                                                                (() => {
+                                                                    const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                                                                        env: {
+                                                                            impFunc: () => {
+                                                                                mom.zone(offset, keepTime);
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    const __exports = __callInstance5.exports;
+                                                                    return __exports.data();
+                                                                })();
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __ifInstance27.exports;
+                                                return __exports.data(mom.utcOffset !== undefined ? 1 : 0);
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance25.exports;
+                            return __exports.data(mom._z ? 1 : 0);
+                        })();
+                    };
+                    fn.tz = function (name, keepTime) {
+                        if (name) {
+                            if (typeof name !== lS(0, 44)) {
+                                throw new Error(lS(0, 45) + name + lS(0, 46) + typeof name + lS(0, 47));
+                            }
+                            this._z = getZone(name);
+                            (() => {
+                                const __ifInstance28 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                                (() => {
+                                                    const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                moment.updateOffset(this, keepTime);
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance4.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                            {
+                                                (() => {
+                                                    const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                logError(lS(0, 48) + name + lS(0, 49));
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance3.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance28.exports;
+                                return __exports.data(this._z ? 1 : 0);
+                            })();
+                            return this;
+                        }
+                        if (this._z) {
+                            return this._z.name;
+                        }
+                    };
+                    function abbrWrap(old) {
+                        return function () {
+                            if (this._z) {
+                                return this._z.abbr(this);
+                            }
+                            return old.call(this);
+                        };
+                    }
+                    function resetZoneWrap(old) {
+                        return function () {
+                            this._z = null;
+                            return old.apply(this, arguments);
+                        };
+                    }
+                    function resetZoneWrap2(old) {
+                        return function () {
+                            (() => {
+                                const __ifInstance29 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            this._z = null;
+                                        },
+                                        impFunc2: () => {
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance29.exports;
+                                return __exports.data(arguments.length > 0 ? 1 : 0);
+                            })();
+                            return old.apply(this, arguments);
+                        };
+                    }
+                    fn.zoneName = abbrWrap(fn.zoneName);
+                    fn.zoneAbbr = abbrWrap(fn.zoneAbbr);
+                    fn.utc = resetZoneWrap(fn.utc);
+                    fn.local = resetZoneWrap(fn.local);
+                    fn.utcOffset = resetZoneWrap2(fn.utcOffset);
+                    moment.tz.setDefault = function (name) {
+                        (() => {
+                            const __ifInstance30 = new WebAssembly.Instance(__ifWasmModule, {
+                                env: {
+                                    impFunc1: () => {
+                                        {
+                                            (() => {
+                                                const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                                                    env: {
+                                                        impFunc: () => {
+                                                            logError(lS(0, 50) + moment.version + lS(0, 51));
+                                                        }
+                                                    }
+                                                });
+                                                const __exports = __callInstance2.exports;
+                                                return __exports.data();
+                                            })();
+                                        }
+                                    },
+                                    impFunc2: () => {
+                                    }
+                                }
+                            });
+                            const __exports = __ifInstance30.exports;
+                            return __exports.data(major < 2 || major === 2 && minor < 9 ? 1 : 0);
+                        })();
+                        moment.defaultZone = name ? getZone(name) : null;
+                        return moment;
+                    };
+                    var momentProperties = moment.momentProperties;
+                    (() => {
+                        const __ifInstance31 = new WebAssembly.Instance(__ifWasmModule, {
+                            env: {
+                                impFunc1: () => {
+                                    {
+                                        (() => {
+                                            const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        momentProperties.push(lS(0, 53));
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance1.exports;
+                                            return __exports.data();
+                                        })();
+                                        (() => {
+                                            const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                                env: {
+                                                    impFunc: () => {
+                                                        momentProperties.push(lS(0, 54));
+                                                    }
+                                                }
+                                            });
+                                            const __exports = __callInstance0.exports;
+                                            return __exports.data();
+                                        })();
+                                    }
+                                },
+                                impFunc2: () => {
+                                    (() => {
+                                        const __ifInstance32 = new WebAssembly.Instance(__ifWasmModule, {
+                                            env: {
+                                                impFunc1: () => {
+                                                    {
+                                                        momentProperties._z = null;
+                                                    }
+                                                },
+                                                impFunc2: () => {
+                                                }
+                                            }
+                                        });
+                                        const __exports = __ifInstance32.exports;
+                                        return __exports.data(momentProperties ? 1 : 0);
+                                    })();
+                                }
+                            }
+                        });
+                        const __exports = __ifInstance31.exports;
+                        return __exports.data(Object.prototype.toString.call(momentProperties) === lS(0, 52) ? 1 : 0);
+                    })();
+                    return moment;
+                }));
+            }
+        }
+    });
+    const __exports = __callInstance38.exports;
+    return __exports.data();
+})();</script>
+</body>
+</html>

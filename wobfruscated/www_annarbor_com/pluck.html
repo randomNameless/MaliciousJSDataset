@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>pluck.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __forWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAABfwKkgICAAAMDZW52BHRlc3QAAQNlbnYGdXBkYXRlAAADZW52BGJvZHkAAAOCgICAAAEABISAgIAAAXAAAAWDgICAAAEAAQeRgICAAAIGbWVtb3J5AgAEZGF0YQADCpmAgIAAAZOAgIAAAAJAA0AQAEUNARACEAEMAAsLCw==';
+const __forWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__forWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__forWasmBuffer, 'base64'));
+    }
+})());
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['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'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+window.a2p = function () {
+    var commentCountQueue, getCommentCountsComplete, getMostCommentedArticlesComplete, getFullDayName, getFullMonthName, getTimeString, getRelativeOrAbsoluteDateString;
+    commentCountQueue = [];
+    getCommentCountsComplete = function (responses) {
+        var i, r, articleKey, commentCount, phrase;
+        (() => {
+            i = 0;
+            const __forInstance0 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < responses.length ? 1 : 0;
+                    },
+                    update: () => {
+                        i += 1;
+                    },
+                    body: () => {
+                        {
+                            r = responses[i];
+                            (() => {
+                                const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+                                    env: {
+                                        impFunc1: () => {
+                                            {
+                                                articleKey = r.Article.ArticleKey.Key;
+                                                commentCount = r.Article.Comments.NumberOfComments;
+                                                phrase = commentCount > 1 ? lS(0, 0) : lS(0, 1);
+                                                (() => {
+                                                    const __callInstance10 = new WebAssembly.Instance(__callWasmModule, {
+                                                        env: {
+                                                            impFunc: () => {
+                                                                $(lS(0, 2) + articleKey).html(lS(0, 3) + commentCount + lS(0, 4) + phrase + lS(0, 5) + lS(0, 6));
+                                                            }
+                                                        }
+                                                    });
+                                                    const __exports = __callInstance10.exports;
+                                                    return __exports.data();
+                                                })();
+                                            }
+                                        },
+                                        impFunc2: () => {
+                                        }
+                                    }
+                                });
+                                const __exports = __ifInstance0.exports;
+                                return __exports.data(r.Article && r.Article.Comments.NumberOfComments ? 1 : 0);
+                            })();
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance0.exports;
+            return __exports.data();
+        })();
+    };
+    getMostCommentedArticlesComplete = function (responses) {
+        var content, activeDiscussionsMarkup, i;
+        content = responses[0].DiscoveredContent;
+        (() => {
+            const __callInstance9 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        content.sort(function (a, b) {
+                            return b.Comments.NumberOfComments - a.Comments.NumberOfComments;
+                        });
+                    }
+                }
+            });
+            const __exports = __callInstance9.exports;
+            return __exports.data();
+        })();
+        activeDiscussionsMarkup = lS(0, 7);
+        (() => {
+            i = 0;
+            const __forInstance1 = new WebAssembly.Instance(__forWasmModule, {
+                env: {
+                    test: () => {
+                        return i < content.length ? 1 : 0;
+                    },
+                    update: () => {
+                        i += 1;
+                    },
+                    body: () => {
+                        {
+                            activeDiscussionsMarkup += lS(0, 8) + lS(0, 9) + content[i].Comments.NumberOfComments + lS(0, 10) + lS(0, 11) + lS(0, 12) + content[i].Url + lS(0, 13) + content[i].Title + lS(0, 14) + lS(0, 15) + lS(0, 16);
+                        }
+                    }
+                }
+            });
+            const __exports = __forInstance1.exports;
+            return __exports.data();
+        })();
+        (() => {
+            const __callInstance8 = new WebAssembly.Instance(__callWasmModule, {
+                env: {
+                    impFunc: () => {
+                        $(lS(0, 17)).html(activeDiscussionsMarkup);
+                    }
+                }
+            });
+            const __exports = __callInstance8.exports;
+            return __exports.data();
+        })();
+    };
+    getFullDayName = function (numericalDay) {
+        var daysOfTheWeek = [
+            lS(0, 18),
+            lS(0, 19),
+            lS(0, 20),
+            lS(0, 21),
+            lS(0, 22),
+            lS(0, 23),
+            lS(0, 24)
+        ];
+        return daysOfTheWeek[numericalDay - 1];
+    };
+    getFullMonthName = function (numericalMonth) {
+        var month = [
+            lS(0, 25),
+            lS(0, 26),
+            lS(0, 27),
+            lS(0, 28),
+            lS(0, 29),
+            lS(0, 30),
+            lS(0, 31),
+            lS(0, 32),
+            lS(0, 33),
+            lS(0, 34),
+            lS(0, 35),
+            lS(0, 36)
+        ];
+        return month[numericalMonth - 1];
+    };
+    getTimeString = function (date) {
+        var hours, half_of_day, minutes;
+        hours = date.getHours();
+        half_of_day = hours > 12 ? lS(0, 37) : lS(0, 38);
+        hours = hours > 12 ? hours - 12 : hours == 0 ? 12 : hours;
+        minutes = date.getMinutes() > 9 ? date.getMinutes() : lS(0, 39) + date.getMinutes();
+        return lS(0, 40) + hours + lS(0, 41) + minutes + half_of_day;
+    };
+    getRelativeOrAbsoluteDateString = function (date) {
+        var difference_in_days = Date.today().getDayOfYear() - date.getDayOfYear();
+        if (difference_in_days <= 1) {
+            return (difference_in_days == 0 ? lS(0, 42) : lS(0, 43)) + getTimeString(date);
+        }
+        return getTimeString(date) + lS(0, 44) + date.getMonth() + lS(0, 45) + date.getDate() + lS(0, 46) + date.getFullYear();
+    };
+    return {
+        addEntryIdToCommentCountQueue: function (entryId) {
+            (() => {
+                const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+                    env: {
+                        impFunc1: () => {
+                            {
+                                (() => {
+                                    const __callInstance7 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                commentCountQueue.push(entryId);
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance7.exports;
+                                    return __exports.data();
+                                })();
+                            }
+                        },
+                        impFunc2: () => {
+                        }
+                    }
+                });
+                const __exports = __ifInstance1.exports;
+                return __exports.data(entryId != 0 ? 1 : 0);
+            })();
+        },
+        displayCommentCounts: function () {
+            var articleRequests, i, entryId;
+            articleRequests = [];
+            (() => {
+                i = 0;
+                const __forInstance2 = new WebAssembly.Instance(__forWasmModule, {
+                    env: {
+                        test: () => {
+                            return i < commentCountQueue.length ? 1 : 0;
+                        },
+                        update: () => {
+                            i += 1;
+                        },
+                        body: () => {
+                            {
+                                entryId = commentCountQueue[i];
+                                (() => {
+                                    const __callInstance6 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                articleRequests.push(new PluckSDK.ArticleRequest({ ArticleKey: new PluckSDK.ExternalResourceKey({ Key: entryId }) }));
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance6.exports;
+                                    return __exports.data();
+                                })();
+                            }
+                        }
+                    }
+                });
+                const __exports = __forInstance2.exports;
+                return __exports.data();
+            })();
+            (() => {
+                const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+                    env: {
+                        impFunc1: () => {
+                            {
+                                (() => {
+                                    const __callInstance5 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                PluckSDK.SendRequests(articleRequests, getCommentCountsComplete);
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance5.exports;
+                                    return __exports.data();
+                                })();
+                            }
+                        },
+                        impFunc2: () => {
+                        }
+                    }
+                });
+                const __exports = __ifInstance2.exports;
+                return __exports.data(articleRequests.length ? 1 : 0);
+            })();
+        },
+        displayMostCommentedArticles: function () {
+            (() => {
+                const __callInstance4 = new WebAssembly.Instance(__callWasmModule, {
+                    env: {
+                        impFunc: () => {
+                            PluckSDK.SendRequests([new PluckSDK.DiscoverContentActionRequest({
+                                    Type: PluckSDK.ContentType.Article,
+                                    Activity: PluckSDK.DiscoveryActivity.Commented,
+                                    MaximumNumberOfDiscoveries: 6,
+                                    Age: 1,
+                                    Sections: [new PluckSDK.DiscoverySection({ Name: 'all' })],
+                                    Categories: [new PluckSDK.DiscoveryCategory({ Name: 'all' })],
+                                    LimitToContributors: [lS(0, 47)]
+                                })], getMostCommentedArticlesComplete);
+                        }
+                    }
+                });
+                const __exports = __callInstance4.exports;
+                return __exports.data();
+            })();
+        },
+        getUserComments: function (userId, template) {
+            function userCommentsCallback(responses, template) {
+                var buffer, comments, userComments, i, comment, timestamp, article, contents;
+                if (!responses || responses.length <= 0 || responses[0].ResponseStatus.StatusCode != PluckSDK.ResponseStatusCode.OK) {
+                    return null;
+                }
+                userComments = responses[0].Items;
+                if (userComments.length <= 0) {
+                    return null;
+                }
+                buffer = [];
+                comments = $(lS(0, 48));
+                for (i = 0; i < userComments.length; i++) {
+                    if (userComments[i].Activity.ContentBlockingState == PluckSDK.ContentBlockingEnum.BlockedByAdmin) {
+                        continue;
+                    }
+                    template_data = {
+                        timestamp: getRelativeOrAbsoluteDateString(userComments[i].Activity.PostedAtTime),
+                        article_url: userComments[i].Url,
+                        article_title: userComments[i].Title,
+                        comment_body: userComments[i].Activity.Body
+                    };
+                    (() => {
+                        const __callInstance3 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    $(template(template_data)).appendTo(comments);
+                                }
+                            }
+                        });
+                        const __exports = __callInstance3.exports;
+                        return __exports.data();
+                    })();
+                }
+            }
+            var commentsPageRequest, requests;
+            commentsPageRequest = new PluckSDK.UserCommentsPageRequest();
+            commentsPageRequest.CommentsOnly = true;
+            commentsPageRequest.IncludeDeletedComments = false;
+            commentsPageRequest.ItemsPerPage = 10;
+            commentsPageRequest.OneBasedOnPage = 1;
+            commentsPageRequest.SortType = PluckSDK.TimestampSort;
+            commentsPageRequest.UserKey = new PluckSDK.UserKey();
+            commentsPageRequest.UserKey.Key = userId;
+            requests = [];
+            (() => {
+                const __callInstance2 = new WebAssembly.Instance(__callWasmModule, {
+                    env: {
+                        impFunc: () => {
+                            requests.push(commentsPageRequest);
+                        }
+                    }
+                });
+                const __exports = __callInstance2.exports;
+                return __exports.data();
+            })();
+            (() => {
+                const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+                    env: {
+                        impFunc: () => {
+                            PluckSDK.SendRequests(requests, function (response) {
+                                (() => {
+                                    const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                                        env: {
+                                            impFunc: () => {
+                                                userCommentsCallback(response, template);
+                                            }
+                                        }
+                                    });
+                                    const __exports = __callInstance0.exports;
+                                    return __exports.data();
+                                })();
+                            });
+                        }
+                    }
+                });
+                const __exports = __callInstance1.exports;
+                return __exports.data();
+            })();
+        }
+    };
+}();</script>
+</body>
+</html>

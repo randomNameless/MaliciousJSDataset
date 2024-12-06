@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>add_favorite.html</title>
+</head>
+<body>
+
+<script>
+$(document).ready(function() {
+	var $favBtn = $('.add-to-fav');
+
+	$favBtn.click(function() {
+		var band = $favBtn.data('band');
+
+		$favBtn.fadeOut(0);
+
+		$.ajax({
+			url: '/ajax/add_to_favorites.php?'+band,
+			dataType: 'json',
+			success: function(l) {
+				if ((l.status == 'success') || (l.status == 'already'))	{
+					$favBtn.removeClass('add-to-fav').addClass('added-to-fav').html('<span></span>Added to favorites');
+
+				} else if (l.status == 'signin') {
+					$('#signin').click();
+				}
+			},
+			complete: function() {
+				$favBtn.fadeIn(0);
+			}
+		});
+	});
+});
+</script>
+
+</body>
+</html>

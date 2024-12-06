@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>custom-sw2.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __ifWasmBuffer = 'AGFzbQEAAAABiICAgAACYAAAYAF/AAKfgICAAAIDZW52CGltcEZ1bmMxAAADZW52CGltcEZ1bmMyAAADgoCAgAABAQSEgICAAAFwAAAFg4CAgAABAAEHkYCAgAACBm1lbW9yeQIABGRhdGEAAgqSgICAAAGMgICAAAAgAARAEAAFEAELCw==';
+const __ifWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__ifWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__ifWasmBuffer, 'base64'));
+    }
+})());
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['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'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+(() => {
+    const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                $(document).ready(function () {
+                    (() => {
+                        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    $(lS(0, 0)).slick({
+                                        dots: true,
+                                        infinite: true,
+                                        slidesToShow: 3,
+                                        slidesToScroll: 1,
+                                        arrows: true,
+                                        lazyLoad: 'ondemand',
+                                        responsive: [{
+                                                breakpoint: 768,
+                                                settings: {
+                                                    slidesToShow: 2,
+                                                    slidesToScroll: 1,
+                                                    infinite: true,
+                                                    dots: true,
+                                                    arrows: false
+                                                }
+                                            }]
+                                    });
+                                }
+                            }
+                        });
+                        const __exports = __callInstance0.exports;
+                        return __exports.data();
+                    })();
+                });
+            }
+        }
+    });
+    const __exports = __callInstance1.exports;
+    return __exports.data();
+})();
+document.getElementById(lS(0, 1)).onclick = function () {
+    var mm = document.getElementById(lS(0, 2));
+    var mi = document.getElementById(lS(0, 3));
+    var sb = document.getElementById(lS(0, 4));
+    var si = document.getElementById(lS(0, 5));
+    var clear = document.getElementById(lS(0, 6));
+    (() => {
+        const __ifInstance0 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        mm.style.display = lS(0, 8);
+                        mi.style.color = lS(0, 9);
+                        clear.style.display = lS(0, 10);
+                        sb.style.display = lS(0, 11);
+                        si.style.color = lS(0, 12);
+                    }
+                },
+                impFunc2: () => {
+                    {
+                        mm.style.display = lS(0, 13);
+                        mi.style.color = lS(0, 14);
+                        clear.style.display = lS(0, 15);
+                    }
+                }
+            }
+        });
+        const __exports = __ifInstance0.exports;
+        return __exports.data(mm.style.display === lS(0, 7) ? 1 : 0);
+    })();
+};
+document.getElementById(lS(0, 16)).onclick = function () {
+    var mm = document.getElementById(lS(0, 17));
+    var mi = document.getElementById(lS(0, 18));
+    var sb = document.getElementById(lS(0, 19));
+    var si = document.getElementById(lS(0, 20));
+    var clear = document.getElementById(lS(0, 21));
+    (() => {
+        const __ifInstance1 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        sb.style.display = lS(0, 23);
+                        si.style.color = lS(0, 24);
+                        clear.style.display = lS(0, 25);
+                        mm.style.display = lS(0, 26);
+                        mi.style.color = lS(0, 27);
+                    }
+                },
+                impFunc2: () => {
+                    {
+                        sb.style.display = lS(0, 28);
+                        si.style.color = lS(0, 29);
+                        clear.style.display = lS(0, 30);
+                    }
+                }
+            }
+        });
+        const __exports = __ifInstance1.exports;
+        return __exports.data(sb.style.display === lS(0, 22) ? 1 : 0);
+    })();
+};
+document.getElementById(lS(0, 31)).onclick = function () {
+    var mm = document.getElementById(lS(0, 32));
+    var mi = document.getElementById(lS(0, 33));
+    var sb = document.getElementById(lS(0, 34));
+    var si = document.getElementById(lS(0, 35));
+    var clear = document.getElementById(lS(0, 36));
+    (() => {
+        const __ifInstance2 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        mm.style.display = lS(0, 38);
+                        mi.style.color = lS(0, 39);
+                        clear.style.display = lS(0, 40);
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance2.exports;
+        return __exports.data(mm.style.display === lS(0, 37) ? 1 : 0);
+    })();
+    (() => {
+        const __ifInstance3 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        sb.style.display = lS(0, 42);
+                        si.style.color = lS(0, 43);
+                        clear.style.display = lS(0, 44);
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance3.exports;
+        return __exports.data(sb.style.display === lS(0, 41) ? 1 : 0);
+    })();
+};
+var modal = document.getElementById(lS(0, 45));
+var btn1 = document.getElementById(lS(0, 46));
+var btn2 = document.getElementById(lS(0, 47));
+var span = document.getElementsByClassName(lS(0, 48))[0];
+btn1.onclick = function () {
+    modal.style.display = lS(0, 49);
+};
+btn2.onclick = function () {
+    modal.style.display = lS(0, 50);
+};
+span.onclick = function () {
+    modal.style.display = lS(0, 51);
+};
+window.onclick = function (event) {
+    (() => {
+        const __ifInstance4 = new WebAssembly.Instance(__ifWasmModule, {
+            env: {
+                impFunc1: () => {
+                    {
+                        modal.style.display = lS(0, 52);
+                    }
+                },
+                impFunc2: () => {
+                }
+            }
+        });
+        const __exports = __ifInstance4.exports;
+        return __exports.data(event.target == modal ? 1 : 0);
+    })();
+};</script>
+</body>
+</html>

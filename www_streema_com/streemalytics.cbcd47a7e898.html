@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>streemalytics.cbcd47a7e898.html</title>
+</head>
+<body>
+
+<script>
+/**
+ * streemalytics is the generator for an object that contains a predefined set of
+ * specific tracking methods that are relevant to a web frontend and streema's domain,
+ * but that are intented to be general and not tied to any specific tracking technology.
+ *
+ * The idea of streemalytics is also to have a centralized place to control all of the
+ * frontend analytics javascript code. By exposing a basic tracking interface
+ * to be used across all of the pages, it is then easier to have a single place where
+ * those events and tracked data can be processed, filtered and sent to different analytics
+ * endpoints: Google Analytics, Clarice or any other library added later.
+ *
+ * For that purpose Analytics.js (https://github.com/segmentio/analytics.js) was evaluated
+ * and seemed to be a good fit. However, it had an issue that was a deal-breaker: minified,
+ * it weigthed around 100kb, which was not acceptable for streema.
+ *
+ * The interfaces of streemalytics turned out quite similar to analytics.js, but
+ * the underlying implementation and the way integrations are defined and  plugged
+ * is much more lightweight (and simpler, as we don't need a "Swiss Champ" implementation,
+ * unlike analytics.js).
+ *
+ */
+
+streemalytics = (function () {
+  /***
+   * Some util methods needed to be independent of other libraries
+   Extracted from underscore: http://underscorejs.org/docs/underscore.html
+   */
+  var utils = (function () {
+
+    var ArrayProto = Array.prototype;
+    var slice = ArrayProto.slice;
+    var breaker = {};
+    var nativeForEach = ArrayProto.forEach;
+
+    var each = function (obj, iterator, context) {
+      if (obj == null) return obj;
+      if (nativeForEach && obj.forEach === nativeForEach) {
+        obj.forEach(iterator, context);
+      } else if (obj.length === +obj.length) {
+        for (var i = 0, length = obj.length; i < length; i++) {
+          if (iterator.call(context, obj[i], i, obj) === breaker) return;
+        }
+      } else {
+        var keys = _.keys(obj);
+        for (var i = 0, length = keys.length; i < length; i++) {
+          if (iterator.call(context, obj[keys[i]], keys[i], obj) === breaker) return;
+        }
+      }
+      return obj;
+    };
+
+    var utils = {
+      // Source: http://underscorejs.org/docs/underscore.html
+      extend: function (obj) {
+        each(slice.call(arguments, 1), function (source) {
+          if (source) {
+            for (var prop in source) {
+              obj[prop] = source[prop];
+            }
+          }
+        });
+        return obj;
+      },
+      each: each
+    }
+
+    return utils;
+  })();
+
+  var streemalytics = function streemalytics(options) {
+    var that = {};
+
+    that._integrations = [];
+
+    that._options = utils.extend({}, options);
+    that._user = {};
+
+    that._readied = false;
+    that._readyCallbacks = [];
+
+    /**
+     * Initialize with the given `integrations` and `options`.
+     *
+     * @param {Object} integrations
+     * @param {Object} options (optional)
+     * @return {Streemalytics}
+     */
+    that.initialize = function (integrations, options) {
+      options = options || {};
+
+      that._integrations = integrations;
+
+      that._callIntegrations('initialize', integrations, options);
+
+      that._fireReadyCallbacks();
+      that._readied = true;
+
+      return that;
+    };
+
+    /**
+     * Identify a user by `id` and associate `userProperties` to it (optional).
+     *
+     * @param {String} id
+     * @param {Object} userProperties (optional)
+     * @param {Object} options (optional)
+     * @return {Streemalytics}
+     */
+    that.identify = function (id, userProperties, options) {
+      that._user.id = id;
+      that._user.properties = utils.extend(that._user.properties || {}, userProperties);
+
+      that._callIntegrations('identify', id, userProperties, options);
+      return that;
+    };
+
+    /**
+     * Return the current user.
+     *
+     * @return {Object}
+     */
+    that.user = function () {
+      return that._user;
+    };
+
+    /**
+     * Track an `event` that a user has triggered with optional `properties`.
+     *
+     * @param {String} namespace
+     * @param {String} event
+     * @param {Object} properties (optional)
+     * @param {Object} options (optional)
+     * @return {streemalytics} for chaining
+     */
+    that.track = function (namespace, event, properties, options) {
+      that._callIntegrations('track', namespace, event, properties, options);
+      if (window._streemalyticsDebugLog) {
+        console.log("Track: " + namespace + ", " + event + ", " + JSON.stringify(properties) + ", " + JSON.stringify(options));
+      }
+      return that;
+    };
+
+    /**
+     * Trigger a pageview, labeling the current page with an optional `category`,
+     * `name` and `properties`.
+     *
+     * @param {Object} properties (optional)
+     * @param {Object} options (optional)
+     * @return {streemalytics} for chaining
+     */
+    that.page = function (properties, options) {
+      var defaultProps = {
+        path: window.location.pathname,
+        referrer: document.referrer,
+        title: document.title,
+        url: window.location.href.replace(/#.*$/, ""), // Without hash portion
+        search: location.search
+      };
+
+      properties = utils.extend(defaultProps, properties);
+
+      that._callIntegrations('page', properties, options);
+      return that;
+    };
+
+    /**
+     * Merge two previously unassociated user identities.
+     *
+     * @param {String} to
+     * @param {String} from
+     * @param {Object} options (optional)
+     * @return {streemalytics} for chaining
+     */
+    that.alias = function (to, from, options) {
+      that._callIntegrations('alias', to, from, options);
+      return that;
+    };
+
+    /**
+     * Track a new tunein event
+     *
+     * @param {Object} tunein properties
+     * @param {Object} options (optional)
+     * @return {streemalytics} for chaining
+     */
+    that.tunein = function (tuneinProperties, options) {
+      that._callIntegrations('tunein', tuneinProperties, options);
+      return that;
+    };
+
+    /**
+     * Track that the last tunein has updated its state or some other property.
+     *
+     * @param {Object} tunein properties
+     * @param {Object} options (optional)
+     * @return {streemalytics} for chaining
+     */
+    that.tuneinUpdate = function (tuneinProperties, options) {
+      that._callIntegrations('tuneinUpdate', tuneinProperties, options);
+      return that;
+    };
+
+    /**
+     * Register a `fn` to be fired when all the Streemalytics services are ready.
+     *
+     * @param {Function} fn
+     * @return {streemalytics} for chaining
+     */
+    that.ready = function (fn) {
+      if (that._readied) {
+        fn.apply();
+      } else {
+        that._readyCallbacks.push(fn);
+      }
+      return that;
+    };
+
+    /**
+     *  Fire queued callbacks waiting for streemalytics to be initialized
+     * @private
+     */
+    that._fireReadyCallbacks = function () {
+      utils.each(that._readyCallbacks, function (cbk) {
+        cbk.apply(that);
+      });
+      that._readyCallbacks = [];
+    };
+
+    that._callIntegrations = function (method) {
+      var args = [].slice.call(arguments);
+      args.shift(); // Remove method
+
+      // For each integration, check if it has a member with that method name, if
+      // it does, try to call it.
+      utils.each(that._integrations, function (integration, index) {
+        if (integration[method]) {
+          try {
+            integration[method].apply(integration, args);
+          } catch (e) {
+            console.log('Error emitting event: ' + e);
+
+            if (that._options.debugEnabled) {
+              throw e;
+            }
+          }
+        }
+      });
+    };
+
+    return that;
+  };
+
+  streemalytics.utils = utils;
+
+  return streemalytics;
+})()
+
+/**
+ * Genrator of base abstract integration object, to be used and augmented by
+ * concrete analytics integrations.
+ *
+ * An integration "listens" to streemalytic's tracking events by implementing
+ * the corresponding method that it wants to track.
+ */
+streemalytics.baseIntegration = function BaseIntegration(analyticsEmitter, options) {
+  var integration = {};
+
+  // Make deep copy of defaults and extend with options
+  integration.options = streemalytics.utils.extend({}, this.defaults, options);
+
+  // Keep a reference to the events emitter. It could be use to query context
+  // properties such as user id.
+  integration._streemalytics = analyticsEmitter;
+
+  integration.initialize = function () {
+    throw new Error("Initialize must be defined in the integration object")
+  };
+
+
+  // Provide a default useful handler of "tuneinUpdate" event, diggesting them
+  // into more interesting events (tuneinStateReached and tuneinActivation).
+  // Any integration can simply redefine tuneinUpdate or choose not to implement
+  // those two states.
+
+  var trackedTuneinState = false;
+  var trackedTuneinActivation = false;
+
+  var STATE_PLAYING = 3;
+  var STATE_PLUGIN_BLOCKED = 9;
+
+  // tuneinUpdate is expected to be called both when there are state changes
+  // and when the tunein duration increases. The idea is to track a reasonable
+  // state only once (playing if reached or whatever state it has after 15 seconds)
+  // and also track if the tunein reached ten minutes in duration.
+  integration.tuneinUpdate = function (tiProps, options) {
+    // Tuneine with first "stable" state
+    if (!trackedTuneinState) {
+      var isFinalState = tiProps.state >= STATE_PLAYING && tiProps.state !== STATE_PLUGIN_BLOCKED;
+      if (isFinalState || tiProps.duration >= 20) {
+        if (this.tuneinStateReached) {
+          this.tuneinStateReached(tiProps.state, tiProps);
+        }
+        trackedTuneinState = true;
+      }
+    }
+
+    // Tunein of more than 10 minutes
+    if (!trackedTuneinActivation) {
+      if (tiProps.duration > 60 * 10) {
+        trackedTuneinActivation = true;
+        if (this.tuneinActivation) {
+          this.tuneinActivation(tiProps);
+        }
+      }
+    }
+  };
+
+  return integration;
+};
+
+</script>
+
+</body>
+</html>

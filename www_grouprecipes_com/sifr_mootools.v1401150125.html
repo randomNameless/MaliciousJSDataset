@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sifr_mootools.v1401150125.html</title>
+</head>
+<body>
+
+<script>
+ 
+var sifr = new Class({
+   
+    options:{
+        swfPath: '/images/_site/',
+        font: 'itco_436_extra_chars',
+        padding_bottom: 5
+    },
+ 
+    initialize:function(selector, options){
+        if($(selector)){
+            selector = $(selector);
+        }
+        this.setOptions(options);
+        this.elements = $$(selector);
+        this.elements.each(this.createSWF,this);
+    },
+    
+    createSWF:function(el){
+    	
+        var text = el.getText();
+        var dimension = el.getSize();
+        var styles = el.getStyles('padding-top','padding-bottom','padding-left','padding-right','font-size','color','padding-left','line-height');
+       
+        var swf_width = dimension.size.x - ( styles['padding-left'].toInt() + styles['padding-right'].toInt() );
+        // Using fixed height now set in css, padding not needed
+        //var swf_height = dimension.size.y + this.options.padding_bottom - ( styles['padding-top'].toInt() + styles['padding-bottom'].toInt() );
+        var swf_height = dimension.size.y - ( styles['padding-top'].toInt() + styles['padding-bottom'].toInt() );
+        
+        var obj = new Swiff(this.options.swfPath+this.options.font+'.swf', {
+            width: swf_width,
+            height: swf_height,
+            id: 'swiff_0',
+            container: el,
+            params: {
+                wmode: 'transparent'
+            },
+            vars: {
+            	id: 'swiff_0',
+			    content: text,
+			    width: swf_width,
+			    renderheight: swf_height,
+			    size: styles['font-size'],
+			    css: '.sIFR-root {color: #818181; letter-spacing:0.4}',
+			    cursor: 'default',
+			    tunewidth: 0,
+			    fitexactly: false,
+			    preventwrap: false,
+			    thickness: -10,
+				sharpness: 50,
+			    gridfittype: 'pixel',
+			    selectable: true,
+			    events: false,
+			    delayrun: false,
+			    version: 436
+            }
+        });
+    }
+});
+
+sifr.implement(new Options);
+</script>
+
+</body>
+</html>

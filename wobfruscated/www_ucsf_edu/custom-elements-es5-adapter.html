@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>custom-elements-es5-adapter.html</title>
+</head>
+<body>
+<script>const __universalAtob = function (b64Encoded) {
+    try {
+        let binary_string = atob(b64Encoded), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(b64Encoded, 'base64'));
+    }
+};
+const __callWasmBuffer = 'AGFzbQEAAAABhICAgAABYAAAAo+AgIAAAQNlbnYHaW1wRnVuYwAAA4KAgIAAAQAEhICAgAABcAAABYOAgIAAAQABB5GAgIAAAgZtZW1vcnkCAARkYXRhAAEKioCAgAABhICAgAAAEAAL';
+const __callWasmModule = new WebAssembly.Module((() => {
+    try {
+        let binary_string = atob(__callWasmBuffer), len = binary_string.length, bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    } catch (err) {
+        return new Uint8Array(global.Buffer.from(__callWasmBuffer, 'base64'));
+    }
+})());
+const __wasmStringModules = ['AGFzbQEAAAAFg4CAgAABAAEGmoCAgAAFfwBBAQt/AEEQC38AQR4LfwBBLgt/AEE2CweygICAAAYGbWVtb3J5AgAFZGF0YTADAAVkYXRhMQMBBWRhdGEyAwIFZGF0YTMDAwVkYXRhNAMEC86AgIAABQBBAQsNdXNlJTIwc3RyaWN0AABBEAsNdXNlJTIwc3RyaWN0AABBHgsPY3VzdG9tRWxlbWVudHMAAEEuCwdkZWZpbmUAAEE2CwRnZXQA'].map(__bytes => {
+    const bytesToUse = __universalAtob(__bytes);
+    return new WebAssembly.Instance(new WebAssembly.Module(bytesToUse));
+});
+const lS = (wI, pos, iWC) => {
+    let __str = '';
+    if (!Array.isArray(wI)) {
+        let __targetModule = __wasmStringModules[wI];
+        let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+        const __stringKey = `data${ pos }`;
+        let __start = __targetModule.exports[__stringKey] - 1;
+        let __str = '';
+        let i = __start;
+        let __c = __mem[i++];
+        while (!(parseInt(__c) & 128) && __mem[i]) {
+            __str += __c;
+            __c = String.fromCharCode(__mem[i++]);
+        }
+        __str += __c;
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    } else {
+        for (const __wasmIndex of wI) {
+            let __targetModule = __wasmStringModules[__wasmIndex];
+            let __mem = new Uint8Array(__targetModule.exports.memory.buffer);
+            const __stringKey = `data${ pos }`;
+            let __start = __targetModule.exports[__stringKey] - 1;
+            let i = __start;
+            let __c = __mem[i++];
+            while (!(parseInt(__c) & 128) && __mem[i]) {
+                __str += __c;
+                __c = String.fromCharCode(__mem[i++]);
+            }
+            __str += __c;
+        }
+        __str = decodeURIComponent(__str.substring(1));
+        return __str;
+    }
+};
+(() => {
+    const __callInstance1 = new WebAssembly.Instance(__callWasmModule, {
+        env: {
+            impFunc: () => {
+                (function () {
+                    lS(0, 0);
+                    (() => {
+                        const __callInstance0 = new WebAssembly.Instance(__callWasmModule, {
+                            env: {
+                                impFunc: () => {
+                                    (() => {
+                                        lS(0, 1);
+                                        if (!window.customElements)
+                                            return;
+                                        const a = window.HTMLElement, b = window.customElements.define, c = window.customElements.get, d = new Map(), e = new Map();
+                                        let f = !1, g = !1;
+                                        window.HTMLElement = function () {
+                                            if (!f) {
+                                                const j = d.get(this.constructor), k = c.call(window.customElements, j);
+                                                g = !0;
+                                                const l = new k();
+                                                return l;
+                                            }
+                                            f = !1;
+                                        }, window.HTMLElement.prototype = a.prototype;
+                                        Object.defineProperty(window, lS(0, 2), {
+                                            value: window.customElements,
+                                            configurable: !0,
+                                            writable: !0
+                                        }), Object.defineProperty(window.customElements, lS(0, 3), {
+                                            value: (j, k) => {
+                                                const l = k.prototype, m = class extends a {
+                                                        constructor() {
+                                                            super(), Object.setPrototypeOf(this, l), g || (f = !0, k.call(this)), g = !1;
+                                                        }
+                                                    }, n = m.prototype;
+                                                m.observedAttributes = k.observedAttributes, n.connectedCallback = l.connectedCallback, n.disconnectedCallback = l.disconnectedCallback, n.attributeChangedCallback = l.attributeChangedCallback, n.adoptedCallback = l.adoptedCallback, d.set(k, j), e.set(j, k), b.call(window.customElements, j, m);
+                                            },
+                                            configurable: !0,
+                                            writable: !0
+                                        }), Object.defineProperty(window.customElements, lS(0, 4), {
+                                            value: j => e.get(j),
+                                            configurable: !0,
+                                            writable: !0
+                                        });
+                                    })();
+                                }
+                            }
+                        });
+                        const __exports = __callInstance0.exports;
+                        return __exports.data();
+                    })();
+                }());
+            }
+        }
+    });
+    const __exports = __callInstance1.exports;
+    return __exports.data();
+})();</script>
+</body>
+</html>

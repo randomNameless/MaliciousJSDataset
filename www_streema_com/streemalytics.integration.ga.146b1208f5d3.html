@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>streemalytics.integration.ga.146b1208f5d3.html</title>
+</head>
+<body>
+
+<script>
+streemalytics.googleAnalyticsIntegration = function googleAnalyticsIntegration(analyticsEmitter, options) {
+  var gaIntegration = streemalytics.baseIntegration(analyticsEmitter, options);
+
+  if (!options || !options.ga4code) {
+    throw new Error("Google analytics integration requires option 'ga4code'")
+  }
+
+  gaIntegration.name = "Google Analytics Integration";
+
+  gaIntegration.initialize = function () {
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', options.ga4code, { 'debug_mode':true });
+    // TODO: this should be removed once Universal Analytics is deprecated
+    gtag('config', options.uacode);
+
+    if (options.ga4code) {
+      (function () {
+        var analytics = document.createElement('script');
+        var s = document.getElementsByTagName('script')[0];
+
+        analytics.type = 'text/javascript';
+        analytics.async = true;
+        analytics.src = 'https://www.googletagmanager.com/gtag/js?id=' + options.ga4code;
+
+        s.parentNode.insertBefore(analytics, s);
+      })();
+    }
+
+    // We have to simulate the old ga.js interface
+    window._gaq = this;
+    window._gaq.push = function () {
+      var eventType = arguments[0][0]
+      var namespace = arguments[0][1]
+      var event = arguments[0][2]
+      var property = arguments[0][3]
+      var value = arguments[0][4]
+      var options = arguments[0][5]
+
+      switch (eventType) {
+        case '_trackPageview':
+          this.page()
+          break;
+        case '_trackEvent':
+          this.track(namespace, event, {'label': property, 'value': value}, options)
+          break;
+        case '_trackTiming':
+          this.track(namespace, event, {'label': property, 'value': value}, options)
+          break;
+        case '_setCustomVar':
+          break;
+      }
+    }
+  };
+
+  gaIntegration.page = function (properties, options) {
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    if (properties.forcedLocation) {
+      gtag('config', options.ga4code, {'page_path': properties.forcedLocation});
+    } else {
+      gtag('config', options.ga4code, {'page_path': properties.path});
+    }
+  };
+
+  gaIntegration.track = function (namespace, event, properties, options) {
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    var opts = streemalytics.utils.extend({noninteraction: true}, options);
+    var props = streemalytics.utils.extend({}, properties);
+
+    var category = namespace || 'All';
+    var label = props.label || '';
+    var value = Math.max(0, Math.round(props.value == null ? 1 : props.value)); // Only positive integers
+    var noninteraction = (props.noninteraction === false) ? false : opts.noninteraction;
+
+    var eventObject = {
+      'event_category': category,
+      'event_label': label,
+      'value': value,
+      'non_interaction': noninteraction,
+      'cluster_id': 'variant',
+    };
+    if (props.radio_id !== undefined) {
+      eventObject['profile_experiment'] = 'variant'
+    }
+
+    gtag('event', event, eventObject);
+  };
+
+  return gaIntegration;
+};
+
+</script>
+
+</body>
+</html>
